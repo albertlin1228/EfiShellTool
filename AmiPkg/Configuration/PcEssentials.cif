@@ -1,0 +1,8 @@
+<component>
+	name = "PC Essentials"
+	category = eModule
+	LocalRoot = "AmiPkg\Configuration\"
+	RefName = "AmiPkg.PcEssentials"
+[parts]
+"AmiPkg.IntelArchitecture"
+<endComponent>

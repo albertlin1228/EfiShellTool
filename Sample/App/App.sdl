@@ -1,0 +1,58 @@
+
+#*************************************************************************
+#*************************************************************************
+#**                                                                     **
+#**        (C)Copyright 1985-2011, American Megatrends, Inc.            **
+#**                                                                     **
+#**                       All Rights Reserved.                          **
+#**                                                                     **
+#**      5555 Oakbrook Parkway, Suite 200, Norcross, GA 30093           **
+#**                                                                     **
+#**                       Phone: (770)-246-8600                         **
+#**                                                                     **
+#*************************************************************************
+#*************************************************************************
+#
+#*************************************************************************
+# $Header: $
+#
+# $Revision: $
+#
+# $Date: $
+#*************************************************************************
+#<AMI_FHDR_START>
+#
+# Name:  <CspLib.SDL>
+#
+# Description:     
+#
+#<AMI_FHDR_END>
+#*************************************************************************
+
+PATH
+	Name  = "App_DIR"
+End
+
+PATH
+	Name  = "App_DIR"
+	Path  = "Sample/App"
+End
+
+INFComponent
+	Name  = "App"
+	File  = "App.inf"
+	Package  = "ToolPkg"
+	Arch  = "X64"
+	ModuleTypes  = "DXE_DRIVER"
+	Token = "X64_SUPPORT" "=" "1"
+End
+
+INFComponent
+	Name  = "App"
+	File  = "App.inf"
+	Package  = "ToolPkg"
+	ModuleTypes  = "DXE_DRIVER"
+	Token = "X64_SUPPORT" "=" "0"
+End
+
+

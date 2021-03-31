@@ -1,0 +1,11 @@
+<component>
+	name = "Sample"
+	category = eTool
+	LocalRoot = "Sample\"
+	RefName = "Sample"
+[inf]
+"App\App.inf"
+[files]
+"App\App.sdl"
+[parts]
+<endComponent>

@@ -1,0 +1,79 @@
+TOKEN
+	Name  = "CRB_SUPPORT"
+	Value  = "1"
+	Help  = "Main switch to enable Chipset Reference Board support in Project"
+	TokenType = Boolean
+	TargetEQU = Yes
+	TargetMAK = Yes
+	TargetH = Yes
+	Master = Yes
+End
+
+TOKEN
+	Name  = "X64_SUPPORT"
+	Value  = "1"
+	TokenType = Boolean
+	TargetMAK = Yes
+End
+
+INFComponent
+    Name  = "PcdPei"
+    File  = "Pei/Pcd.inf"
+    Package  = "MdeModulePkg"
+    ModuleTypes  = "PEIM"
+    Disable = Yes
+End
+
+FFS_FILE
+	Name  = "PcdPei"
+	FD_AREA  = "FV_BB"
+	INFComponent  = "MdeModulePkg.PcdPei"
+	Apriori_Index  = "1"
+	Disable = Yes
+End
+
+INFComponent
+    Name  = "PcdDxe"
+    File  = "Dxe/Pcd.inf"
+    Package  = "MdeModulePkg"
+    ModuleTypes  = "DXE_DRIVER"
+    Disable = Yes
+End
+
+FFS_FILE
+	Name  = "PcdDxe"
+	FD_AREA  = "FV_MAIN"
+	INFComponent  = "MdeModulePkg.PcdDxe"
+	Apriori_Index  = "1"
+	Disable = Yes
+End
+
+TOKEN
+	Name  = "PLATFORM_GUID"
+	Value  = "00000000-0000-0000-0000-000000000001"
+	Help  = "The unique platform GUID that does into the description file.\MUST BE CLONED IN EVERY PROJECT!"
+	TokenType = Expression
+	TargetDSC = Yes
+End
+
+INFComponent
+	Name  = "SerialPortLib"
+	File  = "MdePkg/Library/BaseSerialPortLibNull/BaseSerialPortLibNull.inf"
+	Package  = "MdePkg"
+End
+
+LibraryMapping
+	Class  = "SerialPortLib"
+	Instance  = "MdePkg.SerialPortLib"
+End
+
+INFComponent
+	Name  = "BaseDebugLibNull"
+	File  = "MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf"
+	Package  = "MdePkg"
+End
+
+LibraryMapping
+	Class  = "DebugLib"
+	Instance  = "MdePkg.BaseDebugLibNull"
+End

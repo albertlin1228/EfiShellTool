@@ -1,0 +1,403 @@
+Deleting temporary files...
+Done.
+mkdir Build
+java -jar C:/Aptio_Windows-x86_25.6/Aptio_5.x_TOOLS_32_1/Aptio_5.x_TOOLS_32.1/BuildTools/ParseVeB.jar /vproject.veb /sproject.ldl /oproject.lfo /i /b
+
+ParseVeB v7.04.0124 (CIF version v3.8) 
+Release date: Feb 02 2018, 09:06:52
+Copyright (C) American Megatrends, Inc.  All rights reserved.
+----- Open project project.veb -----
+----- Project project.veb has been loaded successfully -----
+----- Loading the SDL registry -----
+----- Loading the SDL registry - Successful -----
+----- Output to project.ldl has been generated successfully -----
+----- Output to project.lfo has been generated successfully -----
+java -jar C:/Aptio_Windows-x86_25.6/Aptio_5.x_TOOLS_32_1/Aptio_5.x_TOOLS_32.1/BuildTools/AMISDL.jar project.ldl /S /Oproject.lfo
+AMIBIOS SDL Processor v7.04.0274 (for SDL Language v2.69)
+[INFO] project.lfo - There are no override files to process
+
+Following tokens are not found in the project but referred in dependency expressions.
+Hence, defaulting the value of these tokens to zero
+FAULT_TOLERANT_NVRAM_UPDATE
+java -jar C:/Aptio_Windows-x86_25.6/Aptio_5.x_TOOLS_32_1/Aptio_5.x_TOOLS_32.1/BuildTools/OverrideProcessor.jar /iproject.lfo
+
+OverrideProcessor  (Version 7.04.0054) 
+Copyright (C) American Megatrends, Inc.  All rights reserved. 
+
+project Location : D:\Code\ToolEdk\
+project.lfo file is empty
+make --no-print-directory -f AmiPkg/Configuration/Main.mak 
+Build environment: Windows-10-10.0.19041
+Build start time: 14:42:37, Mar.31 2021
+
+WORKSPACE        = d:\code\tooledk
+ECP_SOURCE       = d:\code\tooledk\edkcompatibilitypkg
+EDK_SOURCE       = d:\code\tooledk\edkcompatibilitypkg
+EFI_SOURCE       = d:\code\tooledk\edkcompatibilitypkg
+EDK_TOOLS_PATH   = c:\aptio_windows-x86_25.6\aptio_5.x_tools_32_1\aptio_5.x_tools_32.1\buildtools
+CONF_PATH        = d:\code\tooledk\Conf
+
+
+Architecture(s)  = IA32 X64
+Build target     = RELEASE
+Toolchain        = MYTOOLS
+
+Active Platform          = d:\code\tooledk\Build\Platform.dsc
+Flash Image Definition   = d:\code\tooledk\Build\Platform.fdf
+
+Processing meta-data . done!
+Building ... d:\code\tooledk\MdePkg\Library\UefiBootServicesTableLib\UefiBootServicesTableLib.inf [X64]
+Building ... d:\code\tooledk\MdePkg\Library\UefiRuntimeServicesTableLib\UefiRuntimeServicesTableLib.inf [X64]
+Building ... d:\code\tooledk\MdePkg\Library\DxePcdLib\DxePcdLib.inf [X64]
+Building ... d:\code\tooledk\MdePkg\Library\BaseDebugLibNull\BaseDebugLibNull.inf [X64]
+Building ... d:\code\tooledk\MdePkg\Library\BaseMemoryLibRepStr\BaseMemoryLibRepStr.inf [X64]
+UefiRuntimeServicesTableLib.c
+UefiBootServicesTableLib.c
+Building ... d:\code\tooledk\MdePkg\Library\BaseLib\BaseLib.inf [X64]
+DxePcdLib.c
+DebugLib.c
+Building ... d:\code\tooledk\MdePkg\Library\UefiMemoryAllocationLib\UefiMemoryAllocationLib.inf [X64]
+ScanMem64Wrapper.c
+Building ... d:\code\tooledk\MdePkg\Library\BasePrintLib\BasePrintLib.inf [X64]
+Building ... d:\code\tooledk\MdePkg\Library\BaseIoLibIntrinsic\BaseIoLibIntrinsic.inf [X64]
+MemoryAllocationLib.c
+Building ... d:\code\tooledk\MdePkg\Library\UefiDevicePathLib\UefiDevicePathLib.inf [X64]
+Building ... d:\code\tooledk\MdePkg\Library\BasePciExpressLib\BasePciExpressLib.inf [X64]
+Building ... d:\code\tooledk\MdePkg\Library\UefiLib\UefiLib.inf [X64]
+CheckSum.c
+PrintLibInternal.c
+IoLibMmioBuffer.c
+PciExpressLib.c
+DevicePathUtilities.c
+UefiLibPrint.c
+SwitchStack.c
+ScanMem32Wrapper.c
+PrintLib.c
+IoHighLevel.c
+Building ... d:\code\tooledk\MdePkg\Library\UefiApplicationEntryPoint\UefiApplicationEntryPoint.inf [X64]
+Building ... d:\code\tooledk\MdePkg\Library\BasePciLibPciExpress\BasePciLibPciExpress.inf [X64]
+DevicePathToText.c
+Building ... d:\code\tooledk\MdePkg\Library\DxeServicesTableLib\DxeServicesTableLib.inf [X64]
+ApplicationEntryPoint.c
+PciLib.c
+SwapBytes64.c
+ScanMem16Wrapper.c
+UefiNotTiano.c
+DxeServicesTableLib.c
+IoLibMsc.c
+DevicePathFromText.c
+ScanMem8Wrapper.c
+SwapBytes32.c
+IoLib.c
+UefiDriverModel.c
+UefiDevicePathLib.c
+ZeroMemWrapper.c
+SwapBytes16.c
+Console.c
+CompareMemWrapper.c
+LongJump.c
+SetMem64Wrapper.c
+UefiLib.c
+SetJump.c
+SetMem32Wrapper.c
+RShiftU64.c
+SetMem16Wrapper.c
+RRotU64.c
+SetMemWrapper.c
+RRotU32.c
+CopyMemWrapper.c
+MultU64x64.c
+MemLibGuid.c
+MultU64x32.c
+ScanMem64.asm
+MultS64x64.c
+ModU64x32.c
+LShiftU64.c
+LRotU64.c
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseMemoryLibRepStr\BaseMemoryLibRepStr\OUTPUT\X64\ScanMem64.iii
+ScanMem32.asm
+LRotU32.c
+LowBitSet64.c
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseMemoryLibRepStr\BaseMemoryLibRepStr\OUTPUT\X64\ScanMem32.iii
+LowBitSet32.c
+ScanMem16.asm
+HighBitSet64.c
+HighBitSet32.c
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseMemoryLibRepStr\BaseMemoryLibRepStr\OUTPUT\X64\ScanMem16.iii
+ScanMem8.asm
+GetPowerOfTwo64.c
+GetPowerOfTwo32.c
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseMemoryLibRepStr\BaseMemoryLibRepStr\OUTPUT\X64\ScanMem8.iii
+DivU64x64Remainder.c
+CompareMem.asm
+DivU64x32Remainder.c
+DivU64x32.c
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseMemoryLibRepStr\BaseMemoryLibRepStr\OUTPUT\X64\CompareMem.iii
+ZeroMem.asm
+DivS64x64Remainder.c
+ARShiftU64.c
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseMemoryLibRepStr\BaseMemoryLibRepStr\OUTPUT\X64\ZeroMem.iii
+BitField.c
+SetMem64.asm
+CpuDeadLoop.c
+Cpu.c
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseMemoryLibRepStr\BaseMemoryLibRepStr\OUTPUT\X64\SetMem64.iii
+SetMem32.asm
+LinkedList.c
+String.c
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseMemoryLibRepStr\BaseMemoryLibRepStr\OUTPUT\X64\SetMem32.iii
+SetMem16.asm
+Thunk16.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseMemoryLibRepStr\BaseMemoryLibRepStr\OUTPUT\X64\SetMem16.iii
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\Thunk16.iii
+SetMem.asm
+CpuPause.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseMemoryLibRepStr\BaseMemoryLibRepStr\OUTPUT\X64\SetMem.iii
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\CpuPause.iii
+CopyMem.asm
+EnableDisableInterrupts.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseMemoryLibRepStr\BaseMemoryLibRepStr\OUTPUT\X64\CopyMem.iii
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\EnableDisableInterrupts.iii
+DisableInterrupts.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\DisableInterrupts.iii
+EnableInterrupts.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\EnableInterrupts.iii
+FlushCacheLine.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\FlushCacheLine.iii
+Invd.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\Invd.iii
+Wbinvd.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\Wbinvd.iii
+DisablePaging64.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\DisablePaging64.iii
+Mwait.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\Mwait.iii
+Monitor.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\Monitor.iii
+ReadPmc.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadPmc.iii
+ReadTsc.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadTsc.iii
+WriteMm7.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\WriteMm7.iii
+WriteMm6.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\WriteMm6.iii
+WriteMm5.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\WriteMm5.iii
+WriteMm4.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\WriteMm4.iii
+WriteMm3.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\WriteMm3.iii
+WriteMm2.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\WriteMm2.iii
+WriteMm1.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\WriteMm1.iii
+WriteMm0.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\WriteMm0.iii
+ReadMm7.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadMm7.iii
+ReadMm6.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadMm6.iii
+ReadMm5.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadMm5.iii
+ReadMm4.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadMm4.iii
+ReadMm3.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadMm3.iii
+ReadMm2.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadMm2.iii
+ReadMm1.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadMm1.iii
+ReadMm0.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadMm0.iii
+FxRestore.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\FxRestore.iii
+FxSave.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\FxSave.iii
+WriteLdtr.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\WriteLdtr.iii
+ReadLdtr.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadLdtr.iii
+WriteIdtr.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\WriteIdtr.iii
+ReadIdtr.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadIdtr.iii
+WriteGdtr.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\WriteGdtr.iii
+ReadGdtr.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadGdtr.iii
+ReadTr.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadTr.iii
+ReadSs.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadSs.iii
+ReadGs.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadGs.iii
+ReadFs.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadFs.iii
+ReadEs.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadEs.iii
+ReadDs.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadDs.iii
+ReadCs.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadCs.iii
+WriteDr7.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\WriteDr7.iii
+WriteDr6.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\WriteDr6.iii
+WriteDr5.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\WriteDr5.iii
+WriteDr4.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\WriteDr4.iii
+WriteDr3.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\WriteDr3.iii
+WriteDr2.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\WriteDr2.iii
+WriteDr1.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\WriteDr1.iii
+WriteDr0.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\WriteDr0.iii
+ReadDr7.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadDr7.iii
+ReadDr6.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadDr6.iii
+ReadDr5.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadDr5.iii
+ReadDr4.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadDr4.iii
+ReadDr3.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadDr3.iii
+ReadDr2.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadDr2.iii
+ReadDr1.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadDr1.iii
+ReadDr0.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadDr0.iii
+WriteCr4.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\WriteCr4.iii
+WriteCr3.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\WriteCr3.iii
+WriteCr2.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\WriteCr2.iii
+WriteCr0.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\WriteCr0.iii
+ReadCr4.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadCr4.iii
+ReadCr3.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadCr3.iii
+ReadCr2.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadCr2.iii
+ReadCr0.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadCr0.iii
+ReadEflags.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\ReadEflags.iii
+CpuIdEx.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\CpuIdEx.iii
+CpuId.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\CpuId.iii
+LongJump.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\LongJump.iii
+SetJump.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\SetJump.iii
+SwitchStack.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\SwitchStack.iii
+EnableCache.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\EnableCache.iii
+DisableCache.asm
+ Assembling: d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\MdePkg\Library\BaseLib\BaseLib\OUTPUT\X64\DisableCache.iii
+CpuBreakpoint.c
+WriteMsr64.c
+ReadMsr64.c
+Non-existing.c
+Math64.c
+Unaligned.c
+X86WriteIdtr.c
+X86WriteGdtr.c
+X86Thunk.c
+X86ReadIdtr.c
+X86ReadGdtr.c
+X86Msr.c
+X86MemoryFence.c
+X86GetInterruptState.c
+X86FxSave.c
+X86FxRestore.c
+X86EnablePaging64.c
+X86EnablePaging32.c
+X86DisablePaging64.c
+X86DisablePaging32.c
+Building ... d:\code\tooledk\Sample\App\App.inf [X64]
+App.c
+StdLibC.c
+AutoGen.c
+Generating code
+Finished generating code
+複製了         1 個檔案。
+複製了         1 個檔案。
+d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\X64\Sample\App\App\DEBUG\App.map
+複製了         1 個檔案。
+*** running custom command:
+make --no-print-directory -s -f Build/BeforeGenFds.mak
+
+ Success:Temp File Generated!!
+ Success:Font Pack Generated!!
+Fd File Name:AMIROM (d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\FV\AMIROM.fd)
+
+Generate Region at Offset 0x0
+   Region Size = 0x10000
+   Region Name = FV
+
+Generating NVRAM FV
+#
+Generate Region at Offset 0x10000
+   Region Size = 0x30000
+   Region Name = FV
+
+Generating FV_MAIN FV
+########
+Generate Region at Offset 0x40000
+   Region Size = 0xC0000
+   Region Name = FV
+
+Generating FV_BB FV
+#
+GUID cross reference file can be found at d:\code\tooledk\Build\AptioV\RELEASE_MYTOOLS\FV\Guid.xref
+
+FV Space Information
+FV_MAIN [3%Full] 196608 total, 6408 used, 190200 free
+FV_BB [%Full] 786432 total, 120 used, 786312 free
+
+- Done -
+Build end time: 14:42:53, Mar.31 2021
+Build total time: 00:00:16
+
++-----------------------------------------------------------------------------+
+| FWBUILD  Ver 1.23.0050                                                      |
+| Copyright (c)2017 American Megatrends Inc.                                  |
++-----------------------------------------------------------------------------+
+| Firmware Image Information                                                  |
++-----------------------------------------------------------------------------+
+| Image Size : 100000                                                         |
++-----------------------------------------------------------------------------+
+| Firmware Volume Information                                                 |
++------+-------------------------------+--------------+-----------+-----------+
+|  FV  |            FV TYPE            |   Location   |   Length  |    FFSs   |
++------+-------------------------------+--------------+-----------+-----------+
+|  00  |          FFS FV               |   00000000   |  010000   |    000    |
+|  01  |          FFS FV               |   00010000   |  030000   |    002    |
+|  02  |          Boot Block FV        |   00040000   |  0C0000   |    000    |
++------+-------------------------------+--------------+-----------+-----------+
+| Nested Firmware Volume Information                                          |
++-----------------------------------------------------------------------------+
+| Image contains no nested firmware                                           |
++------+-------------------------------+--------------+-----------+-----------+
++------------+------------------------------+---------------------------------+
+|     FV     |           Bytes Free         |         Bytes Used              |
++------------+------------------------------+---------------------------------+
+|     00     |      00FFB8 (  63KB)         |          000048 (   0KB)        |
+|     01     |      02E724 ( 185KB)         |          0018DC (   6KB)        |
+|     02     |      0BFFB4 ( 767KB)         |          00004C (   0KB)        |
++------------+------------------------------+---------------------------------+
+|   Total    |    000FE690 (1017KB)         |        00001970 (   6KB)        |
++------------+------------------------------+---------------------------------+
+TARGET: RELEASE. TOOL CHAIN: MYTOOLS. ARCHITECTURE: IA32 | X64.
+Build Tools: 32. ROM IMAGE: Build\AptioV\RELEASE_MYTOOLS\FV\AMIROM.fd.
+All output modules were successfully built.

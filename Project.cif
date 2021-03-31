@@ -1,0 +1,7 @@
+<component>
+	name = "Project"
+	category = Flavor
+	RefName = "Project"
+[files]	
+"Crb.sdl"		
+<endComponent>

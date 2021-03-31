@@ -1,0 +1,35 @@
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = App
+  FILE_GUID                      = 22ECD0B2-3232-ABCC-BECB-E4D13C9A8132
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = ApplicationEntry
+
+#
+# The following information is for reference only and not required by the build tools.
+#
+#  VALID_ARCHITECTURES           = IA32 X64
+#
+
+[Sources]
+  App.c
+  App.h
+  AppLib\PciInfo.h
+  StdLib\StdLibC.c
+  StdLib\StdLib.h
+  
+[Packages]
+  MdePkg/MdePkg.dec 
+  
+[LibraryClasses]
+  UefiApplicationEntryPoint
+  UefiBootServicesTableLib
+  BaseLib
+  BaseMemoryLib
+  UefiLib
+  IoLib
+  PrintLib
+  DebugLib
+  PciLib
+  DxeServicesTableLib
