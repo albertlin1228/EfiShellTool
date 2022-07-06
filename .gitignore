@@ -1,0 +1,7 @@
+Build/*
+Conf/*
+build.log
+project.ldl
+project.lfo
+checksum.json
+project.lsd
