@@ -3,7 +3,6 @@ TOKEN
 	Value  = "5"
 	Help  = "Version of this product family.\Do not change."
 	TokenType = Integer
-	TargetEQU = Yes
 	TargetMAK = Yes
 	TargetH = Yes
 	Lock = Yes
@@ -12,7 +11,7 @@ End
 
 TOKEN
 	Name  = "AMI_PKG_VERSION"
-	Value  = "12"
+	Value  = "37"
 	Help  = "AmiPkg version.\Do not change."
 	TokenType = Integer
 	TargetMAK = Yes
@@ -31,7 +30,7 @@ End
 TOKEN
 	Name  = "DEBUG_MODE"
 	Value  = "0"
-	Help  = "Main switch to enable/disable debug mode."
+	Help  = "Main switch to enable/disable debug mode.\When this switch is off, all debugging capabilities are disabled."
 	TokenType = Boolean
 	TargetMAK = Yes
 End
@@ -46,9 +45,18 @@ TOKEN
 End
 
 TOKEN
+	Name  = "STACK_OVERFLOW_CHECK"
+	Value  = "0"
+	Help  = "Enables/disables runtime check for stack overflow"
+	TokenType = Boolean
+	TargetMAK = Yes
+	Token = "DEBUG_MODE" "=" "1"
+End
+
+TOKEN
 	Name  = "DEBUG_CODE"
 	Value  = "1"
-	Help  = "Enables/disables debug-specific code such as debug messages."
+	Help  = "Enables/disables debug-specific code such as debug messages and assert statements."
 	TokenType = Boolean
 	TargetMAK = Yes
 	Token = "DEBUG_MODE" "=" "1"
@@ -63,6 +71,14 @@ TOKEN
 End
 
 TOKEN
+	Name  = "STRICT_BUILD_MODE"
+	Value  = "0"
+	Help  = "Enables/disables strict build mode.\In strict build mode stricter warning settings are used."
+	TokenType = Boolean
+	TargetMAK = Yes
+End
+
+TOKEN
 	Name  = "ACTIVE_PLATFORM"
 	Value  = "Build/Platform.dsc"
 	Help  = "Name of the description (.dsc) file for the active platform.\Must be the same as the name specified in the PLATFORM_DSC or <Arch-Type>_PLATFORM_DSC SDL output directive."
@@ -72,7 +88,7 @@ End
 
 TOKEN
 	Name  = "TOOL_CHAIN_TAG"
-	Value  = "MYTOOLS"
+	Value  = "VS2015"
 	Help  = "Tool chain tag"
 	TokenType = Expression
 	TargetMAK = Yes
@@ -104,7 +120,7 @@ End
 
 TOKEN
 	Name  = "EXTERNAL_CC_FLAGS"
-	Value  = "-D PI_SPECIFICATION_VERSION=0x1001E -D EFI_SPECIFICATION_VERSION=0x20028"
+	Value  = ""
 	Help  = "C compiler flags that will be appended to the standard C flags in tools_def.txt"
 	TokenType = Expression
 	TargetMAK = Yes
@@ -178,7 +194,7 @@ End
 TOKEN
 	Name  = "SUPPORTED_LANGUAGES"
 	Value  = "$(DEFAULT_LANGUAGE)"
-	Help  = "Semicolon separated list of names of the languages that the firmware can support in RFC 4646 format."
+	Help  = "Semicolon separated list of names of the languages that the firmware supports in RFC 4646 format.\These are human readable languages that the end user will see in Setup.\Use RFC_LANGUAGES token to add configuration languages."
 	TokenType = Expression
 	TargetMAK = Yes
 End
@@ -193,8 +209,8 @@ End
 
 TOKEN
 	Name  = "RFC_LANGUAGES"
-	Value  = '"$(SUPPORTED_LANGUAGES)"'
-	Help  = "This goes to .dsc file.\Should be set to '$(SUPPORTED_LANGUAGES)'."
+	Value  = '"$(SUPPORTED_LANGUAGES);x-UEFI-AMI"'
+	Help  = "Semicolon separated list of human readable and configuration languages. The build process will strip out strings for languages that are not listed here.\Typically should be set to '$(SUPPORTED_LANGUAGES)' (Don't forget the quotes!).\If project uses configuration languages such as x-UEFI-AMI, add them after $(SUPPORTED_LANGUAGES) and before the ending quote.\Do not add human readable languages here. Use SUPPORTED_LANGUAGES instead."
 	TokenType = Expression
 	TargetDSC = Yes
 End
@@ -318,9 +334,24 @@ TOKEN
 End
 
 TOKEN
+	Name  = "COMPRESSION_TYPE"
+	Value  = "1"
+	Help  = "Define compression algorithm used to package firmware images.\0 - No compression\1 - Standard UEFI compression\2 - LZMA compression*\3 - Brotli compression\(*) - LZMA algorithm comes in two flavors: standard and LZMAF86.\The flavor is selected based on the value of the LZMAF86_SUPPORT SDL token.\LZMAF86 is LZMA flavor optimized for IA32/X64 instruction set.\It has better compression ratio but longer decompression time."
+	TokenType = Integer
+End
+
+TOKEN
+	Name  = "COMPRESSION_TYPE"
+	Value  = "2"
+	Help  = "Define compression algorithm used to package firmware images.\0 - No compression\1 - Standard UEFI compression\2 - LZMA compression*\3 - Brotli compression\(*) - LZMA algorithm comes in two flavors: standard and LZMAF86.\The flavor is selected based on the value of the LZMAF86_SUPPORT SDL token.\LZMAF86 is LZMA flavor optimized for IA32/X64 instruction set.\It has better compression ratio but longer decompression time."
+	TokenType = Integer
+	Token = "LZMA_SUPPORT" "=" "1"
+End
+
+TOKEN
 	Name  = "LZMA_SUPPORT"
 	Value  = "0"
-	Help  = "Use this to turn on LZMA compression.\When LZMA compression is disabled, standard UEFI compression is used."
+	Help  = "This token is deprecated. Use COMPRESSION_TYPE instead.\When this token is on, LZMA compression is used.\When this token is off, compression defined by COMPRESSION_TYPE is used."
 	TokenType = Boolean
 	TargetFDF = Yes
 End
@@ -330,9 +361,8 @@ TOKEN
 	Value  = "0"
 	Help  = "This token enables flavor of the LZMA compression algorithm(LZMAF86) optimized for IA32/X64 instruction set.\LZMAF86 has a better compression ratio but longer decompression time."
 	TokenType = Boolean
-	Token = "LZMA_SUPPORT" "=" "1"
+	Token = "COMPRESSION_TYPE" "=" "2"
 	Token = "INTEL_ARCHITECTURE_SUPPORT" "=" "1"
-	Token = "INTEL_FRAMEWORK_MODULE_PKG_VERSION" ">=" "5"
 End
 
 TOKEN
@@ -385,8 +415,16 @@ TOKEN
 End
 
 TOKEN
+	Name  = "ROM_IMAGE_DIRECTORY"
+	Value  = "$(subst /,$(PATH_SLASH),$(OUTPUT_DIRECTORY))$(PATH_SLASH)$(TARGET)_$(TOOL_CHAIN_TAG)$(PATH_SLASH)ROM"
+	Help  = "Defines directory where all final firmware image binaries are placed."
+	TokenType = Expression
+	TargetMAK = Yes
+End
+
+TOKEN
 	Name  = "ROM_FILE_NAME"
-	Value  = "$(BUILD_DIR)$(PATH_SLASH)$(PLATFORM_NAME)$(PATH_SLASH)$(TARGET)_$(TOOL_CHAIN_TAG)$(PATH_SLASH)FV$(PATH_SLASH)AMIROM.fd"
+	Value  = "$(subst /,$(PATH_SLASH),$(OUTPUT_DIRECTORY))$(PATH_SLASH)$(TARGET)_$(TOOL_CHAIN_TAG)$(PATH_SLASH)FV$(PATH_SLASH)AMIROM.fd"
 	Help  = "Name of the ROM image produced by EDKII build system.\NOTE: The file name used here must be the same as the name of the FD_INFO object."
 	TokenType = Expression
 	TargetMAK = Yes
@@ -408,33 +446,57 @@ TOKEN
 End
 
 TOKEN
+	Name  = "ASL_COMPILER"
+	Value  = "iasl6"
+	Help  = "Name of the ASL compiler executable.\Supported values:\  iasl6 - even newer ACPI 6.1 compliant compiler. May cause compatibility issues with older OS.\  iasl5 - newer ACPI 5.0 compliant compiler. May cause compatibility issues with older OS.\  iasl - older ACPI 3.0a compliant compiler. May not support features introduced by the newer versions of the ACPI specification."
+	TokenType = Expression
+	TargetMAK = Yes
+	Range  = "iasl, iasl5, iasl6"
+End
+
+TOKEN
 	Name  = "COMPRESSION_SECTION"
-	Value  = "COMPRESS PI_STD"
-	Help  = "Compression type.\Do not modify this token.\A proper value is automatically selected based on value of the\LZMA_SUPPORT and LZMAF86_SUPPORT SDL tokens."
+	Value  = "NONE"
+	Help  = "Compression type.\Do not modify this token.\A proper value is automatically selected based on value of the\COMPRESSION_TYPE and LZMAF86_SUPPORT SDL tokens."
 	TokenType = Expression
 	TargetFDF = Yes
-	Lock = Yes
-	Token = "LZMA_SUPPORT" "=" "0"
+	Token = "COMPRESSION_TYPE" "=" "0"
+End
+
+TOKEN
+	Name  = "COMPRESSION_SECTION"
+	Value  = "COMPRESS PI_STD"
+	Help  = "Compression type.\Do not modify this token.\A proper value is automatically selected based on value of the\COMPRESSION_TYPE and LZMAF86_SUPPORT SDL tokens."
+	TokenType = Expression
+	TargetFDF = Yes
+	Token = "COMPRESSION_TYPE" "=" "1"
 End
 
 TOKEN
 	Name  = "COMPRESSION_SECTION"
 	Value  = "GUIDED EE4E5898-3914-4259-9D6E-DC7BD79403CF PROCESSING_REQUIRED = TRUE"
-	Help  = "Compression type.\Do not modify this token.\A proper value is automatically selected based on value of the\LZMA_SUPPORT and LZMAF86_SUPPORT SDL tokens."
+	Help  = "Compression type.\Do not modify this token.\A proper value is automatically selected based on value of the\COMPRESSION_TYPE and LZMAF86_SUPPORT SDL tokens."
 	TokenType = Expression
 	TargetFDF = Yes
-	Lock = Yes
-	Token = "LZMA_SUPPORT" "=" "1"
+	Token = "COMPRESSION_TYPE" "=" "2"
 End
 
 TOKEN
 	Name  = "COMPRESSION_SECTION"
 	Value  = "GUIDED D42AE6BD-1352-4bfb-909A-CA72A6EAE889 PROCESSING_REQUIRED = TRUE"
-	Help  = "Compression type.\Do not modify this token.\A proper value is automatically selected based on value of the\LZMA_SUPPORT and LZMAF86_SUPPORT SDL tokens."
+	Help  = "Compression type.\Do not modify this token.\A proper value is automatically selected based on value of the\COMPRESSION_TYPE and LZMAF86_SUPPORT SDL tokens."
 	TokenType = Expression
 	TargetFDF = Yes
-	Lock = Yes
 	Token = "LZMAF86_SUPPORT" "=" "1"
+End
+
+TOKEN
+	Name  = "COMPRESSION_SECTION"
+	Value  = "GUIDED 3D532050-5CDA-4FD0-879E-0F7F630D5AFB PROCESSING_REQUIRED = TRUE"
+	Help  = "Compression type.\Do not modify this token.\A proper value is automatically selected based on value of the\COMPRESSION_TYPE and LZMAF86_SUPPORT SDL tokens."
+	TokenType = Expression
+	TargetFDF = Yes
+	Token = "COMPRESSION_TYPE" "=" "3"
 End
 
 TOKEN
@@ -443,7 +505,6 @@ TOKEN
 	Help  = "Compression type that is used to package PEI modules.\Do not modify this token.\A proper value is automatically selected based on value of the\LZMA_SUPPORT, LZMAF86_SUPPORT, and NESTED_FV_MAIN SDL tokens."
 	TokenType = Expression
 	TargetFDF = Yes
-	Lock = Yes
 End
 
 TOKEN
@@ -452,7 +513,6 @@ TOKEN
 	Help  = "Compression type that is used to package DXE modules.\Do not modify this token.\A proper value is automatically selected based on value of the\LZMA_SUPPORT, LZMAF86_SUPPORT, and NESTED_FV_MAIN SDL tokens."
 	TokenType = Expression
 	TargetFDF = Yes
-	Lock = Yes
 	Token = "NESTED_FV_MAIN" "=" "0"
 End
 
@@ -462,7 +522,6 @@ TOKEN
 	Help  = "Compression type that is used to package DXE modules.\Do not modify this token.\A proper value is automatically selected based on value of the\LZMA_SUPPORT, LZMAF86_SUPPORT, and NESTED_FV_MAIN SDL tokens."
 	TokenType = Expression
 	TargetFDF = Yes
-	Lock = Yes
 	Token = "NESTED_FV_MAIN" "=" "1"
 End
 
@@ -517,6 +576,20 @@ ELINK
 	Type  = "Rule"
 	InvokeOrder = ReplaceParent
 	OutFDF = Yes
+End
+
+ELINK
+	Name  = "MSFT:*_*_*_CC_FLAGS"
+	Type  = "BuildOptions"
+	InvokeOrder = ReplaceParent
+	OutDSC = Yes
+End
+
+ELINK
+	Name  = "GCC:*_*_*_CC_FLAGS"
+	Type  = "BuildOptions"
+	InvokeOrder = ReplaceParent
+	OutDSC = Yes
 End
 
 OUTPUTREGISTER
@@ -596,6 +669,7 @@ FD_AREA
 	Layout_Attribute  = "0xd00"
 	Attributes  = "0xffff"
 	Alignment  = "16"
+	Token = "NVRAM_VERSION" "<" "7"
 End
 
 FD_AREA
@@ -607,6 +681,7 @@ FD_AREA
 	Layout_Attribute  = "0xd00"
 	Attributes  = "0x0"
 	Token = "FAULT_TOLERANT_NVRAM_UPDATE" "=" "1"
+	Token = "NVRAM_VERSION" "<" "7"
 End
 
 FD_AREA

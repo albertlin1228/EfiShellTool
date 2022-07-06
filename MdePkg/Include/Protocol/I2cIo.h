@@ -1,17 +1,11 @@
 /** @file
   I2C I/O Protocol as defined in the PI 1.3 specification.
 
-  The EFI I2C I/O protocol enables the user to manipulate a single 
+  The EFI I2C I/O protocol enables the user to manipulate a single
   I2C device independent of the host controller and I2C design.
 
-  Copyright (c) 2013, Intel Corporation. All rights reserved.<BR>
-  This program and the accompanying materials                          
-  are licensed and made available under the terms and conditions of the BSD License         
-  which accompanies this distribution.  The full text of the license may be found at        
-  http://opensource.org/licenses/bsd-license.php                                            
-
-  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,                     
-  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.             
+  Copyright (c) 2013 - 2018, Intel Corporation. All rights reserved.<BR>
+  SPDX-License-Identifier: BSD-2-Clause-Patent
 
   @par Revision Reference:
   This protocol is from PI Version 1.3.
@@ -23,7 +17,7 @@
 
 #include <Pi/PiI2c.h>
 
-#define EFI_I2C_IO_PROTOCOL_GUID { 0xb60a3e6b, 0x18c4, 0x46e5, { 0xa2, 0x9a, 0xc9, 0xa1, 0x06, 0x65, 0xa2, 0x8e }}
+#define EFI_I2C_IO_PROTOCOL_GUID  { 0xb60a3e6b, 0x18c4, 0x46e5, { 0xa2, 0x9a, 0xc9, 0xa1, 0x06, 0x65, 0xa2, 0x8e }}
 
 ///
 /// I2C I/O protocol
@@ -44,8 +38,7 @@
 /// for the I2C device required to implement the EFI_I2C_ENUMERATE_PROTOCOL.
 /// The order of the list must be preserved.
 ///
-typedef struct _EFI_I2C_IO_PROTOCOL  EFI_I2C_IO_PROTOCOL;
-
+typedef struct _EFI_I2C_IO_PROTOCOL EFI_I2C_IO_PROTOCOL;
 
 /**
   Queue an I2C transaction for execution on the I2C device.
@@ -66,7 +59,7 @@ typedef struct _EFI_I2C_IO_PROTOCOL  EFI_I2C_IO_PROTOCOL;
 
   The upper layer driver writer provides the following to the platform
   vendor:
-  
+
   1.  Vendor specific GUID for the I2C part
   2.  Guidance on proper construction of the slave address array when the
       I2C device uses more than one slave address.  The I2C bus protocol
@@ -100,14 +93,11 @@ typedef struct _EFI_I2C_IO_PROTOCOL  EFI_I2C_IO_PROTOCOL;
                                 queued when Event is not NULL.
   @retval EFI_SUCCESS           The transaction completed successfully when
                                 Event is NULL.
-  @retval EFI_ABORTED           The request did not complete because the driver
-                                binding Stop() routine was called.
   @retval EFI_BAD_BUFFER_SIZE   The RequestPacket->LengthInBytes value is too
                                 large.
   @retval EFI_DEVICE_ERROR      There was an I2C error (NACK) during the
                                 transaction.
-  @retval EFI_INVALID_PARAMETER RequestPacket is NULL
-  @retval EFI_NOT_FOUND         Reserved bit set in the SlaveAddress parameter
+  @retval EFI_INVALID_PARAMETER RequestPacket is NULL.
   @retval EFI_NO_MAPPING        The EFI_I2C_HOST_PROTOCOL could not set the
                                 bus configuration required to access this I2C
                                 device.
@@ -123,7 +113,7 @@ typedef struct _EFI_I2C_IO_PROTOCOL  EFI_I2C_IO_PROTOCOL;
 **/
 typedef
 EFI_STATUS
-(EFIAPI *EFI_I2C_IO_PROTOCOL_QUEUE_REQUEST) (
+(EFIAPI *EFI_I2C_IO_PROTOCOL_QUEUE_REQUEST)(
   IN CONST EFI_I2C_IO_PROTOCOL  *This,
   IN UINTN                      SlaveAddressIndex,
   IN EFI_EVENT                  Event      OPTIONAL,
@@ -138,7 +128,7 @@ struct _EFI_I2C_IO_PROTOCOL {
   ///
   /// Queue an I2C transaction for execution on the I2C device.
   ///
-  EFI_I2C_IO_PROTOCOL_QUEUE_REQUEST         QueueRequest;
+  EFI_I2C_IO_PROTOCOL_QUEUE_REQUEST        QueueRequest;
 
   ///
   /// Unique value assigned by the silicon manufacture or the third
@@ -146,30 +136,30 @@ struct _EFI_I2C_IO_PROTOCOL {
   /// combines both the manufacture name and the I2C part number into
   /// a single value specified as a GUID.
   ///
-  CONST EFI_GUID                            *DeviceGuid;
+  CONST EFI_GUID                           *DeviceGuid;
 
   ///
   /// Unique ID of the I2C part within the system
   ///
-  UINT32                                    DeviceIndex;
+  UINT32                                   DeviceIndex;
 
   ///
   /// Hardware revision - ACPI _HRV value.  See the Advanced Configuration
   /// and Power Interface Specification, Revision 5.0  for the field format
   /// and the Plug and play support for I2C web-page for restriction on values.
   ///
-  UINT32                                    HardwareRevision;
+  UINT32                                   HardwareRevision;
 
   ///
   /// Pointer to an EFI_I2C_CONTROLLER_CAPABILITIES data structure containing
   /// the capabilities of the I2C host controller.
   ///
-  CONST EFI_I2C_CONTROLLER_CAPABILITIES     *I2cControllerCapabilities;
+  CONST EFI_I2C_CONTROLLER_CAPABILITIES    *I2cControllerCapabilities;
 };
 
 ///
 /// Reference to variable defined in the .DEC file
 ///
-extern EFI_GUID gEfiI2cIoProtocolGuid;
+extern EFI_GUID  gEfiI2cIoProtocolGuid;
 
-#endif  //  __I2C_IO_H__
+#endif //  __I2C_IO_H__

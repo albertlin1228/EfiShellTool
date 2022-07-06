@@ -1,35 +1,23 @@
 #**********************************************************************
-#**********************************************************************
-#**                                                                  **
-#**        (C)Copyright 1985-2014, American Megatrends, Inc.         **
-#**                                                                  **
-#**                       All Rights Reserved.                       **
-#**                                                                  **
-#**      5555 Oakbrook Parkway, Suite 200, Norcross, GA 30093        **
-#**                                                                  **
-#**                       Phone: (770)-246-8600                      **
-#**                                                                  **
-#**********************************************************************
+#*                                                                    *
+#*   Copyright (c) 1985-2019, American Megatrends International LLC.  *
+#*                                                                    *
+#*      All rights reserved. Subject to AMI licensing agreement.      *
+#*                                                                    *
 #**********************************************************************
 
 #**********************************************************************
-# $Header: $
-#
-# $Revision:  $
-#
-# $Date:  $
-#**********************************************************************
-#<AMI_FHDR_START>
-#
-# Name:	Main.mak
-#
-# Description:	Called by makefile, this includes all of the makefiles
+## @file
+# Called by makefile, this includes all of the makefiles
 #  from module.mak, generates target.txt, then launches the EDK2 build.exe
-#
-#<AMI_FHDR_END>
 #**********************************************************************
 include $(UTILITIES_MAK)
 include $(TOKEN_MAK)
+
+# Make sure required version of build tools is available.
+ifeq ($(call __ge, $(BUILD_TOOLS_VERSION), 28),no)
+$(error This version of AmiPkg requires build tools 28 or newer (you are using tools $(BUILD_TOOLS_VERSION)))
+endif
 
 ifeq ($(SILENT), 1) 
 APTIO_MAKE+=-s
@@ -43,78 +31,43 @@ else
  TARGET	= RELEASE
 endif	#ifeq ($(DEBUG_MODE), 1)
 
-#TODO: what about optimization flags for other tool chains?
-ifeq ($(TOOL_CHAIN_TAG),MYTOOLS)
-ifeq ($(OPTIMIZATION), 0)
-EXTERNAL_CC_FLAGS +=  /Od 
-else
-EXTERNAL_CC_FLAGS +=  /O1ib2 
-endif
-endif
-ifeq ($(DEBUG_CODE),  1)
-EXTERNAL_CC_FLAGS +=  -DEFI_DEBUG 
-else
-EXTERNAL_CC_FLAGS +=  -DMDEPKG_NDEBUG 
-endif
-export EXTERNAL_CC_FLAGS
-
-ifeq ($(BUILD_OS), $(BUILD_OS_LINUX))
-  ifeq ($(TOOL_CHAIN_TAG), GCC)
-    ifeq ($(INTEL_ARCHITECTURE_SUPPORT), 1)
-      ifndef IA32_TOOLS_DIR
-        export IA32_TOOLS_DIR=/usr/bin
-      endif
-      ifndef X64_TOOLS_DIR
-        export X64_TOOLS_DIR=/usr/bin
-      endif
-    else  # ifeq ($(INTEL_ARCHITECTURE_SUPPORT), 1)
-      ifeq ($(DXE_ARCHITECTURE), AARCH64)
-        ifndef ARCH_TOOL_PREFIX
-          export ARCH_TOOL_PREFIX=aarch64-linux-gnu-
-        endif # ifndef ARCH_TOOL_PREFIX
-      else # ifeq ($(DXE_ARCHITECTURE), AARCH64)
-        ifndef ARM_TOOLS_DIR
-          export ARM_TOOLS_DIR=/usr/bin
-        endif
-        ifndef ARCH_TOOL_PREFIX
-          export ARCH_TOOL_PREFIX=arm-linux-gnueabi-
-        endif # ifndef ARCH_TOOL_PREFIX
-      endif # ifeq ($(DXE_ARCHITECTURE), AARCH64)
-    endif # ifeq ($(INTEL_ARCHITECTURE_SUPPORT), 1)
-  endif # ifeq ($(TOOL_CHAIN_TAG), GCC)
-endif # ifeq ($(BUILD_OS), $(BUILD_OS_LINUX))
-
 ifeq ($(RUN_VSVARS_BAT), 1)
-EDKII_BUILD_COMMAND = $(TOOLS_DIR)\RunInVsEnv.bat $(EDII_BUILD)
+EDKII_BUILD_COMMAND = $(TOOLS_DIR)$(PATH_SLASH)RunInVsEnv.bat $(EDII_BUILD)
 else
 EDKII_BUILD_COMMAND = $(EDII_BUILD)
 endif	#ifeq (TOOL_CHAIN_TAG, MYTOOLS)
 
-.PHONY : all run Prepare EdkII RomPatch End ModuleEnd BuildTimeStamp
+ABS_BUILD_DIR:=$(WORKSPACE)$(PATH_SLASH)$(BUILD_DIR)
+ABS_OUTPUT_DIR:=$(WORKSPACE)$(PATH_SLASH)$(OUTPUT_DIRECTORY)
+
+include $(CONFIGURATION_DIR)ToolChainInit.mak
+
+.PHONY : all run Prepare EdkII RomPatch End ModuleEnd BuildTimeStamp Coda
 
 all: Prepare EdkII
 
-Prepare: BuildTimeStamp
+Prepare: BuildTimeStamp $(ROM_IMAGE_DIRECTORY) $(BUILD_DIR)/RomImageDirectory.mak Conf/target.txt
 
 # Generate new timestamp files
 BuildTimeStamp:
 	$(APTIO_MAKE) -f $(CONFIGURATION_DIR)dater.mak TODAY=$(TODAY) NOW=$(NOW)
 
+$(ROM_IMAGE_DIRECTORY): 
+	$(MKDIR) $(ROM_IMAGE_DIRECTORY)
+
+$(BUILD_DIR)/RomImageDirectory.mak : $(TOKEN_MAK) $(MAIN_MAK)
+	$(ECHO) ROM_IMAGE_DIRECTORY=$(subst /,$(PATH_SLASH),$(WORKSPACE))$(PATH_SLASH)$(ROM_IMAGE_DIRECTORY) > $(BUILD_DIR)/RomImageDirectory.mak
+
 .PHONY : BeforeGenFds InitBeforeGenFds FontFile 
 Prepare : BeforeGenFds
-BeforeGenFds : InitBeforeGenFds FontFile 
-
-ABS_BUILD_DIR:=$(WORKSPACE)$(PATH_SLASH)$(BUILD_DIR)
-ABS_OUTPUT_DIR:=$(WORKSPACE)$(PATH_SLASH)$(OUTPUT_DIRECTORY)
+BeforeGenFds : InitBeforeGenFds FontFile IfrDirList
 
 InitBeforeGenFds :
 	$(ECHO) \
-".PHONY : all\
+"include $(UTILITIES_MAK)\
+$(EOL).PHONY : all\
 $(EOL)all:\
 " > $(BUILD_DIR)/BeforeGenFds.mak
-
-export FONT_TOOL := FontTool -F 2.1 -C $(FONT_INI_FILE)
-export FONT_TOOL_TMP_FILE:=$(ABS_OUTPUT_DIR)/$(TARGET)_$(TOOL_CHAIN_TAG)/font.tmp
 
 FontFile : InitBeforeGenFds
 	$(FONT_TOOL) -S -T $(FONT_TOOL_TMP_FILE)
@@ -124,6 +77,18 @@ $(EOL)FontFile : \
 $(EOL)$(TAB)$(FONT_TOOL) -IL $(subst ;,$(SPACE),$(LANGUAGE_FONT_LIST)) -T $(FONT_TOOL_TMP_FILE)\
 $(EOL)$(TAB)$(FONT_TOOL) -O $(ABS_OUTPUT_DIR)/$(TARGET)_$(TOOL_CHAIN_TAG)/font.out -T $(FONT_TOOL_TMP_FILE)\
 " >> $(BUILD_DIR)/BeforeGenFds.mak
+
+IfrDirList : InitBeforeGenFds $(ABS_OUTPUT_DIR)/$(TARGET)_$(TOOL_CHAIN_TAG)/IfrList
+	$(ECHO) \
+"$(EOL).PHONY : IfrDirList$(EOL)all: IfrDirList\
+$(EOL)IfrDirList : \
+$(EOL)ifneq ('$(DOUBLEDOLLAR)(wildcard $(ABS_OUTPUT_DIR)/$(TARGET)_$(TOOL_CHAIN_TAG)/IfrList/*.txt)','')\
+$(EOL)$(TAB)$(CAT) $(ABS_OUTPUT_DIR)/$(TARGET)_$(TOOL_CHAIN_TAG)/IfrList/*.txt > $(ABS_OUTPUT_DIR)/$(TARGET)_$(TOOL_CHAIN_TAG)/IfrDirList.txt\
+$(EOL)endif\
+" >> $(BUILD_DIR)/BeforeGenFds.mak
+
+$(ABS_OUTPUT_DIR)/$(TARGET)_$(TOOL_CHAIN_TAG)/IfrList:
+	$(MKDIR) $(subst /,$(PATH_SLASH),$(ABS_OUTPUT_DIR)/$(TARGET)_$(TOOL_CHAIN_TAG)/IfrList)
 
 # Clear MAKEFLAGS during execution of the EdkII target. 
 # We don't want to pass our options to EDKII build process.
@@ -147,7 +112,7 @@ $(EOL)\
 $(EOL)BUILD_RULE_CONF = $(BUILD_RULE_FILE)" > Conf/target.txt
 
 Conf: 
-	mkdir Conf
+	$(MKDIR) Conf
 
 # Make sure the variables required to launch EDKII build process are set
 ifeq ("$(wildcard $(ACTIVE_PLATFORM))","")
@@ -164,7 +129,10 @@ ifeq ("$(SUPPORTED_ARCHITECTURES)","INVALID")
 endif
 
 ifeq ($(SILENT), 1) 
-EDKII_FLAGS += -s
+# EDKII_FLAGS can be set with a command line argument.
+# If a variable has been set with a command line argument, the ordinary assignments in the makefile are ignored.
+# Such a variable can be updated using an override directive.
+override EDKII_FLAGS += -s
 endif
 
 ####################################################
@@ -177,19 +145,29 @@ endif
 EDKII_ACTIVE_MODULE_NAME:=$(strip $(subst ~~~~~,,$(filter ~~~~~%,$(subst -m$(SPACE),~~~~~,$(EDKII_FLAGS)))))
 ifneq ("$(EDKII_ACTIVE_MODULE_NAME)","")
 ifneq ("$(VEB_BUILD_MODULE)","")
-$(error Ambiguous single component build parameters. VEB_BUILD_MODULE=$(VEB_BUILD_MODULE). EDKII_FLAGS module = $(EDKII_ACTIVE_MODULE_NAME).)
+$(error Ambiguous single component build parameters. VEB_BUILD_MODULE=$(VEB_BUILD_MODULE). EDKII_FLAGS module(s) = $(EDKII_ACTIVE_MODULE_NAME).)
 endif
 endif
 ifneq ("$(VEB_BUILD_MODULE)","")
-EDKII_FLAGS += -m $(VEB_BUILD_MODULE)
+override EDKII_FLAGS += $(foreach x, $(VEB_BUILD_MODULE), -m $(x))
 EDKII_ACTIVE_MODULE_NAME:=$(VEB_BUILD_MODULE)
 else
-EDKII_FLAGS += --before-fv-command="$(APTIO_MAKE) -f $(BUILD_DIR)/BeforeGenFds.mak"
+override EDKII_FLAGS += --before-fv-command="$(APTIO_MAKE) -f $(BUILD_DIR)/BeforeGenFds.mak"
+ifeq ($(call __ge, $(BUILD_TOOLS_VERSION), 34),yes)
+# Enable multi-threaded FV generation if supported by the build tools
+override EDKII_FLAGS += --genfds-multi-thread
+endif
 endif
 
 ifeq ("$(EDKII_ACTIVE_MODULE_NAME)","")
-all: RomPatch End
+all: End
+End: $(ROM_IMAGE_DIRECTORY)
+# This file does not use RomPatch target
+# It is defined as a "hook" for module/project specific ROM patching
+End: RomPatch
 else
+# This file does not use ModuleEnd target
+# It is defined as a "hook" for module/project specific processing on single module build
 all: ModuleEnd
 endif
 
@@ -200,6 +178,15 @@ EdkII: MAKEFLAGS=
 #  so that the build can inherit the newly set up env variables
 EdkII: Conf/target.txt
 	$(EDKII_BUILD_COMMAND) $(EDKII_FLAGS)
+ifeq ($(MULTIPLATFORM),1)
+ifeq ($(wildcard $(BUILD_DIR)/MultiPlatform),)
+	$(MKDIR) $(BUILD_DIR)$(PATH_SLASH)MultiPlatform
+endif
+ifeq ($(wildcard $(ROM_FILE_NAME)),)
+	$(ECHO) "ROM File $(ROM_FILE_NAME) defined by the ROM_FILE_NAME SDL token is not found"
+endif
+	$(CP) $(ROM_FILE_NAME) $(BUILD_DIR)$(PATH_SLASH)MultiPlatform$(PATH_SLASH)$(PLATFORM_NAME).fd
+endif # ifeq ($(MULTIPLATFORM),1)
 
 # Include all the module makefiles
 include $(MODULE_MAK)
@@ -207,33 +194,25 @@ ifneq ($(LAST_MAKEFILE),)
  include $(LAST_MAKEFILE)
 endif
 
-ModuleEnd:
+all: Coda
+
+ifeq ("$(EDKII_ACTIVE_MODULE_NAME)","")
+Coda:
+	$(ECHO) TARGET: $(TARGET). TOOL CHAIN: $(TOOL_CHAIN_TAG). ARCHITECTURE: "$(SUPPORTED_ARCHITECTURES)".
+	$(ECHO) Build Tools: $(BUILD_TOOLS_VERSION). ROM IMAGE: $(ROM_FILE_NAME).
+	$(ECHO) All output modules were successfully built.
+else
+Coda:
 	$(ECHO) TARGET: $(TARGET). TOOL CHAIN: $(TOOL_CHAIN_TAG). ARCHITECTURE: "$(SUPPORTED_ARCHITECTURES)".
 	$(ECHO) Build Tools: $(BUILD_TOOLS_VERSION). Single component build mode. ROM image generation is skipped.
-	$(ECHO) Active module: $(EDKII_ACTIVE_MODULE_NAME)
+	$(ECHO) "Active module(s): $(EDKII_ACTIVE_MODULE_NAME)"
+endif
 
 End:
 ifdef FWBUILD
   ifeq ($(SILENT), 0) 
-	$(FWBUILD) $(ROM_FILE_NAME) /v
+	$(FWBUILD) $(ROM_FILE_NAME) $(FWBUILD_OPTION_CHAR)v
   else 
-	$(FWBUILD) $(ROM_FILE_NAME) /s
+	$(FWBUILD) $(ROM_FILE_NAME) $(FWBUILD_OPTION_CHAR)s
   endif
 endif
-	$(ECHO) TARGET: $(TARGET). TOOL CHAIN: $(TOOL_CHAIN_TAG). ARCHITECTURE: "$(SUPPORTED_ARCHITECTURES)".
-	$(ECHO) Build Tools: $(BUILD_TOOLS_VERSION). ROM IMAGE: $(ROM_FILE_NAME).
-	$(ECHO) All output modules were successfully built.
-
-#**********************************************************************
-#**********************************************************************
-#**                                                                  **
-#**        (C)Copyright 1985-2014, American Megatrends, Inc.         **
-#**                                                                  **
-#**                       All Rights Reserved.                       **
-#**                                                                  **
-#**      5555 Oakbrook Parkway, Suite 200, Norcross, GA 30093        **
-#**                                                                  **
-#**                       Phone: (770)-246-8600                      **
-#**                                                                  **
-#**********************************************************************
-#**********************************************************************

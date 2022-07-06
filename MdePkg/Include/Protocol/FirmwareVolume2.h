@@ -1,18 +1,12 @@
 /** @file
-  The Firmware Volume Protocol provides file-level access to the firmware volume. 
-  Each firmware volume driver must produce an instance of the 
+  The Firmware Volume Protocol provides file-level access to the firmware volume.
+  Each firmware volume driver must produce an instance of the
   Firmware Volume Protocol if the firmware volume is to be visible to
   the system during the DXE phase. The Firmware Volume Protocol also provides
   mechanisms for determining and modifying some attributes of the firmware volume.
 
-  Copyright (c) 2006 - 2008, Intel Corporation. All rights reserved.<BR>
-  This program and the accompanying materials                          
-  are licensed and made available under the terms and conditions of the BSD License         
-  which accompanies this distribution.  The full text of the license may be found at        
-  http://opensource.org/licenses/bsd-license.php                                            
-
-  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,                     
-  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.             
+  Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
+  SPDX-License-Identifier: BSD-2-Clause-Patent
 
   @par Revision Reference: PI
   Version 1.00.
@@ -27,62 +21,61 @@
 
 typedef struct _EFI_FIRMWARE_VOLUME2_PROTOCOL EFI_FIRMWARE_VOLUME2_PROTOCOL;
 
-
 ///
 /// EFI_FV_ATTRIBUTES
 ///
-typedef UINT64  EFI_FV_ATTRIBUTES;
+typedef UINT64 EFI_FV_ATTRIBUTES;
 
 //
 // EFI_FV_ATTRIBUTES bit definitions
 //
 // EFI_FV_ATTRIBUTES bit semantics
-#define EFI_FV2_READ_DISABLE_CAP        0x0000000000000001ULL
-#define EFI_FV2_READ_ENABLE_CAP         0x0000000000000002ULL
-#define EFI_FV2_READ_STATUS             0x0000000000000004ULL
-#define EFI_FV2_WRITE_DISABLE_CAP       0x0000000000000008ULL
-#define EFI_FV2_WRITE_ENABLE_CAP        0x0000000000000010ULL
-#define EFI_FV2_WRITE_STATUS            0x0000000000000020ULL
-#define EFI_FV2_LOCK_CAP                0x0000000000000040ULL
-#define EFI_FV2_LOCK_STATUS             0x0000000000000080ULL
-#define EFI_FV2_WRITE_POLICY_RELIABLE   0x0000000000000100ULL
-#define EFI_FV2_READ_LOCK_CAP           0x0000000000001000ULL
-#define EFI_FV2_READ_LOCK_STATUS        0x0000000000002000ULL
-#define EFI_FV2_WRITE_LOCK_CAP          0x0000000000004000ULL
-#define EFI_FV2_WRITE_LOCK_STATUS       0x0000000000008000ULL
-#define EFI_FV2_ALIGNMENT               0x00000000001F0000ULL
-#define EFI_FV2_ALIGNMENT_1             0x0000000000000000ULL
-#define EFI_FV2_ALIGNMENT_2             0x0000000000010000ULL
-#define EFI_FV2_ALIGNMENT_4             0x0000000000020000ULL
-#define EFI_FV2_ALIGNMENT_8             0x0000000000030000ULL
-#define EFI_FV2_ALIGNMENT_16            0x0000000000040000ULL
-#define EFI_FV2_ALIGNMENT_32            0x0000000000050000ULL
-#define EFI_FV2_ALIGNMENT_64            0x0000000000060000ULL
-#define EFI_FV2_ALIGNMENT_128           0x0000000000070000ULL
-#define EFI_FV2_ALIGNMENT_256           0x0000000000080000ULL
-#define EFI_FV2_ALIGNMENT_512           0x0000000000090000ULL
-#define EFI_FV2_ALIGNMENT_1K            0x00000000000A0000ULL
-#define EFI_FV2_ALIGNMENT_2K            0x00000000000B0000ULL
-#define EFI_FV2_ALIGNMENT_4K            0x00000000000C0000ULL
-#define EFI_FV2_ALIGNMENT_8K            0x00000000000D0000ULL
-#define EFI_FV2_ALIGNMENT_16K           0x00000000000E0000ULL
-#define EFI_FV2_ALIGNMENT_32K           0x00000000000F0000ULL
-#define EFI_FV2_ALIGNMENT_64K           0x0000000000100000ULL
-#define EFI_FV2_ALIGNMENT_128K          0x0000000000110000ULL
-#define EFI_FV2_ALIGNMENT_256K          0x0000000000120000ULL
-#define EFI_FV2_ALIGNMENT_512K          0x0000000000130000ULL
-#define EFI_FV2_ALIGNMENT_1M            0x0000000000140000ULL
-#define EFI_FV2_ALIGNMENT_2M            0x0000000000150000ULL
-#define EFI_FV2_ALIGNMENT_4M            0x0000000000160000ULL
-#define EFI_FV2_ALIGNMENT_8M            0x0000000000170000ULL
-#define EFI_FV2_ALIGNMENT_16M           0x0000000000180000ULL
-#define EFI_FV2_ALIGNMENT_32M           0x0000000000190000ULL
-#define EFI_FV2_ALIGNMENT_64M           0x00000000001A0000ULL
-#define EFI_FV2_ALIGNMENT_128M          0x00000000001B0000ULL
-#define EFI_FV2_ALIGNMENT_256M          0x00000000001C0000ULL
-#define EFI_FV2_ALIGNMENT_512M          0x00000000001D0000ULL
-#define EFI_FV2_ALIGNMENT_1G            0x00000000001E0000ULL
-#define EFI_FV2_ALIGNMENT_2G            0x00000000001F0000ULL
+#define EFI_FV2_READ_DISABLE_CAP       0x0000000000000001ULL
+#define EFI_FV2_READ_ENABLE_CAP        0x0000000000000002ULL
+#define EFI_FV2_READ_STATUS            0x0000000000000004ULL
+#define EFI_FV2_WRITE_DISABLE_CAP      0x0000000000000008ULL
+#define EFI_FV2_WRITE_ENABLE_CAP       0x0000000000000010ULL
+#define EFI_FV2_WRITE_STATUS           0x0000000000000020ULL
+#define EFI_FV2_LOCK_CAP               0x0000000000000040ULL
+#define EFI_FV2_LOCK_STATUS            0x0000000000000080ULL
+#define EFI_FV2_WRITE_POLICY_RELIABLE  0x0000000000000100ULL
+#define EFI_FV2_READ_LOCK_CAP          0x0000000000001000ULL
+#define EFI_FV2_READ_LOCK_STATUS       0x0000000000002000ULL
+#define EFI_FV2_WRITE_LOCK_CAP         0x0000000000004000ULL
+#define EFI_FV2_WRITE_LOCK_STATUS      0x0000000000008000ULL
+#define EFI_FV2_ALIGNMENT              0x00000000001F0000ULL
+#define EFI_FV2_ALIGNMENT_1            0x0000000000000000ULL
+#define EFI_FV2_ALIGNMENT_2            0x0000000000010000ULL
+#define EFI_FV2_ALIGNMENT_4            0x0000000000020000ULL
+#define EFI_FV2_ALIGNMENT_8            0x0000000000030000ULL
+#define EFI_FV2_ALIGNMENT_16           0x0000000000040000ULL
+#define EFI_FV2_ALIGNMENT_32           0x0000000000050000ULL
+#define EFI_FV2_ALIGNMENT_64           0x0000000000060000ULL
+#define EFI_FV2_ALIGNMENT_128          0x0000000000070000ULL
+#define EFI_FV2_ALIGNMENT_256          0x0000000000080000ULL
+#define EFI_FV2_ALIGNMENT_512          0x0000000000090000ULL
+#define EFI_FV2_ALIGNMENT_1K           0x00000000000A0000ULL
+#define EFI_FV2_ALIGNMENT_2K           0x00000000000B0000ULL
+#define EFI_FV2_ALIGNMENT_4K           0x00000000000C0000ULL
+#define EFI_FV2_ALIGNMENT_8K           0x00000000000D0000ULL
+#define EFI_FV2_ALIGNMENT_16K          0x00000000000E0000ULL
+#define EFI_FV2_ALIGNMENT_32K          0x00000000000F0000ULL
+#define EFI_FV2_ALIGNMENT_64K          0x0000000000100000ULL
+#define EFI_FV2_ALIGNMENT_128K         0x0000000000110000ULL
+#define EFI_FV2_ALIGNMENT_256K         0x0000000000120000ULL
+#define EFI_FV2_ALIGNMENT_512K         0x0000000000130000ULL
+#define EFI_FV2_ALIGNMENT_1M           0x0000000000140000ULL
+#define EFI_FV2_ALIGNMENT_2M           0x0000000000150000ULL
+#define EFI_FV2_ALIGNMENT_4M           0x0000000000160000ULL
+#define EFI_FV2_ALIGNMENT_8M           0x0000000000170000ULL
+#define EFI_FV2_ALIGNMENT_16M          0x0000000000180000ULL
+#define EFI_FV2_ALIGNMENT_32M          0x0000000000190000ULL
+#define EFI_FV2_ALIGNMENT_64M          0x00000000001A0000ULL
+#define EFI_FV2_ALIGNMENT_128M         0x00000000001B0000ULL
+#define EFI_FV2_ALIGNMENT_256M         0x00000000001C0000ULL
+#define EFI_FV2_ALIGNMENT_512M         0x00000000001D0000ULL
+#define EFI_FV2_ALIGNMENT_1G           0x00000000001E0000ULL
+#define EFI_FV2_ALIGNMENT_2G           0x00000000001F0000ULL
 
 /**
   Returns the attributes and current settings of the firmware volume.
@@ -98,7 +91,7 @@ typedef UINT64  EFI_FV_ATTRIBUTES;
   undefined.
 
   @param  This          Indicates the EFI_FIRMWARE_VOLUME2_PROTOCOL instance.
-  
+
   @param  FvAttributes  Pointer to an EFI_FV_ATTRIBUTES in which
                         the attributes and current settings are
                         returned.
@@ -110,15 +103,14 @@ typedef UINT64  EFI_FV_ATTRIBUTES;
 **/
 typedef
 EFI_STATUS
-(EFIAPI * EFI_FV_GET_ATTRIBUTES)(
+(EFIAPI *EFI_FV_GET_ATTRIBUTES)(
   IN CONST  EFI_FIRMWARE_VOLUME2_PROTOCOL *This,
   OUT       EFI_FV_ATTRIBUTES             *FvAttributes
-);
-
+  );
 
 /**
   Modifies the current settings of the firmware volume according to the input parameter.
-  
+
   The SetVolumeAttributes() function is used to set configurable
   firmware volume attributes. Only EFI_FV_READ_STATUS,
   EFI_FV_WRITE_STATUS, and EFI_FV_LOCK_STATUS may be modified, and
@@ -136,7 +128,7 @@ EFI_STATUS
   TPL_NOTIFY is undefined.
 
   @param  This          Indicates the EFI_FIRMWARE_VOLUME2_PROTOCOL instance.
-  
+
   @param  FvAttributes  On input, FvAttributes is a pointer to
                         an EFI_FV_ATTRIBUTES containing the
                         desired firmware volume settings. On
@@ -145,7 +137,7 @@ EFI_STATUS
                         unsuccessful return, FvAttributes is not
                         modified and the firmware volume
                         settings are not changed.
-  
+
   @retval EFI_SUCCESS           The requested firmware volume attributes
                                 were set and the resulting
                                 EFI_FV_ATTRIBUTES is returned in
@@ -205,11 +197,10 @@ EFI_STATUS
 **/
 typedef
 EFI_STATUS
-(EFIAPI * EFI_FV_SET_ATTRIBUTES)(
+(EFIAPI *EFI_FV_SET_ATTRIBUTES)(
   IN CONST  EFI_FIRMWARE_VOLUME2_PROTOCOL *This,
   IN OUT    EFI_FV_ATTRIBUTES             *FvAttributes
-);
-
+  );
 
 /**
   Retrieves a file and/or file information from the firmware volume.
@@ -254,13 +245,13 @@ EFI_STATUS
   undefined.
 
   @param  This                  Indicates the EFI_FIRMWARE_VOLUME2_PROTOCOL instance.
-  
+
   @param  NameGuid              Pointer to an EFI_GUID, which is the file
                                 name. All firmware file names are EFI_GUIDs.
                                 A single firmware volume must not have two
                                 valid files with the same file name
                                 EFI_GUID.
-  
+
   @param  Buffer                Pointer to a pointer to a buffer in which the
                                 file contents are returned, not including the
                                 file header.
@@ -268,19 +259,19 @@ EFI_STATUS
   @param  BufferSize            Pointer to a caller-allocated UINTN. It
                                 indicates the size of the memory
                                 represented by Buffer.
-  
+
   @param  FoundType             Pointer to a caller-allocated EFI_FV_FILETYPE.
-  
+
   @param  FileAttributes        Pointer to a  caller-allocated
                                 EFI_FV_FILE_ATTRIBUTES.
-  
+
   @param  AuthenticationStatus  Pointer to a caller-allocated
                                 UINT32 in which the
                                 authentication status is
                                 returned.
-  
+
   @retval EFI_SUCCESS                 The call completed successfully.
-  
+
   @retval EFI_WARN_BUFFER_TOO_SMALL   The buffer is too small to
                                       contain the requested
                                       output. The buffer is
@@ -300,7 +291,7 @@ EFI_STATUS
 **/
 typedef
 EFI_STATUS
-(EFIAPI * EFI_FV_READ_FILE)(
+(EFIAPI *EFI_FV_READ_FILE)(
   IN CONST  EFI_FIRMWARE_VOLUME2_PROTOCOL *This,
   IN CONST  EFI_GUID                      *NameGuid,
   IN OUT    VOID                          **Buffer,
@@ -308,9 +299,7 @@ EFI_STATUS
   OUT       EFI_FV_FILETYPE               *FoundType,
   OUT       EFI_FV_FILE_ATTRIBUTES        *FileAttributes,
   OUT       UINT32                        *AuthenticationStatus
-);
-
-
+  );
 
 /**
   Locates the requested section within a file and returns it in a buffer.
@@ -342,56 +331,56 @@ EFI_STATUS
   undefined.
 
   @param  This                Indicates the EFI_FIRMWARE_VOLUME2_PROTOCOL instance.
- 
+
   @param NameGuid             Pointer to an EFI_GUID, which indicates the
                               file name from which the requested section
                               will be read.
-  
+
   @param SectionType          Indicates the section type to return.
                               SectionType in conjunction with
                               SectionInstance indicates which section to
                               return.
-  
+
   @param SectionInstance      Indicates which instance of sections
                               with a type of SectionType to return.
                               SectionType in conjunction with
                               SectionInstance indicates which
                               section to return. SectionInstance is
                               zero based.
-  
+
   @param Buffer               Pointer to a pointer to a buffer in which the
                               section contents are returned, not including
                               the section header.
-  
+
   @param BufferSize           Pointer to a caller-allocated UINTN. It
                               indicates the size of the memory
                               represented by Buffer.
-  
+
   @param AuthenticationStatus Pointer to a caller-allocated
                               UINT32 in which the authentication
                               status is returned.
-  
-  
+
+
   @retval EFI_SUCCESS   The call completed successfully.
-  
+
   @retval EFI_WARN_BUFFER_TOO_SMALL   The caller-allocated
                                       buffer is too small to
                                       contain the requested
                                       output. The buffer is
                                       filled and the output is
                                       truncated.
-  
+
   @retval EFI_OUT_OF_RESOURCES  An allocation failure occurred.
-  
+
   @retval EFI_NOT_FOUND   The requested file was not found in
                           the firmware volume. EFI_NOT_FOUND The
                           requested section was not found in the
                           specified file.
-  
+
   @retval EFI_DEVICE_ERROR  A hardware error occurred when
                             attempting to access the firmware
                             volume.
-  
+
   @retval EFI_ACCESS_DENIED The firmware volume is configured to
                             disallow reads. EFI_PROTOCOL_ERROR
                             The requested section was not found,
@@ -408,7 +397,7 @@ EFI_STATUS
 **/
 typedef
 EFI_STATUS
-(EFIAPI * EFI_FV_READ_SECTION)(
+(EFIAPI *EFI_FV_READ_SECTION)(
   IN CONST  EFI_FIRMWARE_VOLUME2_PROTOCOL *This,
   IN CONST  EFI_GUID                      *NameGuid,
   IN        EFI_SECTION_TYPE              SectionType,
@@ -416,14 +405,14 @@ EFI_STATUS
   IN OUT    VOID                          **Buffer,
   IN OUT    UINTN                         *BufferSize,
   OUT       UINT32                        *AuthenticationStatus
-);
+  );
 
 ///
 /// EFI_FV_WRITE_POLICY, two policies (unreliable write and reliable write) are defined.
 ///
 typedef UINT32 EFI_FV_WRITE_POLICY;
-#define EFI_FV_UNRELIABLE_WRITE   0x00000000
-#define EFI_FV_RELIABLE_WRITE     0x00000001
+#define EFI_FV_UNRELIABLE_WRITE  0x00000000
+#define EFI_FV_RELIABLE_WRITE    0x00000001
 
 //
 // EFI_FV_WRITE_FILE_DATA
@@ -432,23 +421,23 @@ typedef struct {
   ///
   /// Pointer to a GUID, which is the file name to be written.
   ///
-  EFI_GUID                *NameGuid;
+  EFI_GUID                  *NameGuid;
   ///
   /// Indicates the type of file to be written.
   ///
-  EFI_FV_FILETYPE         Type;
+  EFI_FV_FILETYPE           Type;
   ///
   /// Indicates the attributes for the file to be written.
   ///
-  EFI_FV_FILE_ATTRIBUTES  FileAttributes;
+  EFI_FV_FILE_ATTRIBUTES    FileAttributes;
   ///
   /// Pointer to a buffer containing the file to be written.
   ///
-  VOID                    *Buffer;
+  VOID                      *Buffer;
   ///
   /// Indicates the size of the file image contained in Buffer.
   ///
-  UINT32                  BufferSize;
+  UINT32                    BufferSize;
 } EFI_FV_WRITE_FILE_DATA;
 
 /**
@@ -472,7 +461,7 @@ typedef struct {
   Architectural Elements 84 August 21, 2006 Version 1.0
   WriteFile() is callable only from TPL_NOTIFY and below.
   Behavior of WriteFile() at any EFI_TPL above TPL_NOTIFY is
-  undefined. 
+  undefined.
 
   @param This           Indicates the EFI_FIRMWARE_VOLUME2_PROTOCOL instance.
 
@@ -482,31 +471,31 @@ typedef struct {
                         write in the event of a power failure or
                         other system failure during the write
                         operation.
- 
+
   @param FileData       Pointer to an array of
                         EFI_FV_WRITE_FILE_DATA. Each element of
                         FileData[] represents a file to be written.
 
 
   @retval EFI_SUCCESS             The write completed successfully.
-  
+
   @retval EFI_OUT_OF_RESOURCES    The firmware volume does not
                                   have enough free space to
                                   storefile(s).
-  
+
   @retval EFI_DEVICE_ERROR        A hardware error occurred when
                                   attempting to access the firmware volume.
-  
+
   @retval EFI_WRITE_PROTECTED     The firmware volume is
                                   configured to disallow writes.
-  
+
   @retval EFI_NOT_FOUND           A delete was requested, but the
                                   requested file was not found in the
                                   firmware volume.
-  
+
   @retval EFI_INVALID_PARAMETER   A delete was requested with a
                                   multiple file write.
-  
+
   @retval EFI_INVALID_PARAMETER   An unsupported WritePolicy was
                                   requested.
 
@@ -515,20 +504,19 @@ typedef struct {
 
   @retval EFI_INVALID_PARAMETER   A file system specific error
                                   has occurred.
-  
+
 **/
 typedef
-EFI_STATUS 
-(EFIAPI * EFI_FV_WRITE_FILE)(
+EFI_STATUS
+(EFIAPI *EFI_FV_WRITE_FILE)(
   IN CONST  EFI_FIRMWARE_VOLUME2_PROTOCOL *This,
   IN        UINT32                        NumberOfFiles,
   IN        EFI_FV_WRITE_POLICY           WritePolicy,
   IN        EFI_FV_WRITE_FILE_DATA        *FileData
-);
-
+  );
 
 /**
-  Retrieves information about the next file in the firmware volume store 
+  Retrieves information about the next file in the firmware volume store
   that matches the search criteria.
 
   GetNextFile() is the interface that is used to search a firmware
@@ -547,7 +535,7 @@ EFI_STATUS
   implementation specific and no semantic content is implied.
   GetNextFile() is callable only from TPL_NOTIFY and below.
   Behavior of GetNextFile() at any EFI_TPL above TPL_NOTIFY is
-  undefined. 
+  undefined.
 
   @param This       Indicates the EFI_FIRMWARE_VOLUME2_PROTOCOL instance.
 
@@ -600,18 +588,18 @@ EFI_STATUS
   @retval EFI_ACCESS_DENIED The firmware volume is configured to
                             disallow reads.
 
-   
+
 **/
 typedef
 EFI_STATUS
-(EFIAPI * EFI_FV_GET_NEXT_FILE)(
+(EFIAPI *EFI_FV_GET_NEXT_FILE)(
   IN CONST  EFI_FIRMWARE_VOLUME2_PROTOCOL *This,
   IN OUT    VOID                          *Key,
   IN OUT    EFI_FV_FILETYPE               *FileType,
   OUT       EFI_GUID                      *NameGuid,
   OUT       EFI_FV_FILE_ATTRIBUTES        *Attributes,
   OUT       UINTN                         *Size
-);
+  );
 
 /**
   Return information about a firmware volume.
@@ -629,29 +617,29 @@ EFI_STATUS
   @param This             A pointer to the EFI_FIRMWARE_VOLUME2_PROTOCOL
                           instance that is the file handle the requested
                           information is for.
-  
+
   @param InformationType  The type identifier for the
                           information being requested.
-  
+
   @param BufferSize       On input, the size of Buffer. On output,
                           the amount of data returned in Buffer. In
                           both cases, the size is measured in bytes.
-  
+
   @param Buffer           A pointer to the data buffer to return. The
                           buffer's type is indicated by InformationType.
-  
-  
+
+
   @retval EFI_SUCCESS           The information was retrieved.
-  
+
   @retval EFI_UNSUPPORTED       The InformationType is not known.
-  
+
   @retval EFI_NO_MEDIA          The device has no medium.
-  
+
   @retval EFI_DEVICE_ERROR      The device reported an error.
-  
+
   @retval EFI_VOLUME_CORRUPTED  The file system structures are
                                 corrupted.
-  
+
   @retval EFI_BUFFER_TOO_SMALL  The BufferSize is too small to
                                 read the current directory
                                 entry. BufferSize has been
@@ -667,8 +655,7 @@ EFI_STATUS
   IN CONST  EFI_GUID                      *InformationType,
   IN OUT    UINTN                         *BufferSize,
   OUT       VOID                          *Buffer
-);
-
+  );
 
 /**
   Sets information about a firmware volume.
@@ -717,8 +704,7 @@ EFI_STATUS
   IN CONST  EFI_GUID                      *InformationType,
   IN        UINTN                         BufferSize,
   IN CONST  VOID                          *Buffer
-);
-
+  );
 
 ///
 /// The Firmware Volume Protocol contains the file-level
@@ -734,29 +720,28 @@ EFI_STATUS
 /// Protocol.
 ///
 struct _EFI_FIRMWARE_VOLUME2_PROTOCOL {
-  EFI_FV_GET_ATTRIBUTES   GetVolumeAttributes;
-  EFI_FV_SET_ATTRIBUTES   SetVolumeAttributes;
-  EFI_FV_READ_FILE        ReadFile;
-  EFI_FV_READ_SECTION     ReadSection;
-  EFI_FV_WRITE_FILE       WriteFile;
-  EFI_FV_GET_NEXT_FILE    GetNextFile;
-  
+  EFI_FV_GET_ATTRIBUTES    GetVolumeAttributes;
+  EFI_FV_SET_ATTRIBUTES    SetVolumeAttributes;
+  EFI_FV_READ_FILE         ReadFile;
+  EFI_FV_READ_SECTION      ReadSection;
+  EFI_FV_WRITE_FILE        WriteFile;
+  EFI_FV_GET_NEXT_FILE     GetNextFile;
+
   ///
   /// Data field that indicates the size in bytes
   /// of the Key input buffer for the
-  /// GetNextFile() API.  
+  /// GetNextFile() API.
   ///
-  UINT32                  KeySize;
-  
+  UINT32                   KeySize;
+
   ///
   /// Handle of the parent firmware volume.
   ///
-  EFI_HANDLE              ParentHandle;
-  EFI_FV_GET_INFO         GetInfo;
-  EFI_FV_SET_INFO         SetInfo;
+  EFI_HANDLE               ParentHandle;
+  EFI_FV_GET_INFO          GetInfo;
+  EFI_FV_SET_INFO          SetInfo;
 };
 
-
-extern EFI_GUID gEfiFirmwareVolume2ProtocolGuid;
+extern EFI_GUID  gEfiFirmwareVolume2ProtocolGuid;
 
 #endif

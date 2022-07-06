@@ -1,0 +1,35 @@
+## @file
+#  Stack Check Library
+#
+#  Stack Check Library
+#
+#  Copyright (c) 2014, ARM Ltd. All rights reserved.<BR>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = BaseStackCheckLibSec
+  MODULE_UNI_FILE                = BaseStackCheckLib.uni
+  FILE_GUID                      = 5f6579f7-FECD-CDEF-9f19-4c17e27e8eff
+  MODULE_TYPE                    = BASE
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = NULL|SEC
+
+
+#
+#  VALID_ARCHITECTURES           = IA32 X64 ARM AARCH64
+#
+
+[Sources]
+  BaseStackCheckMsSec.c | MSFT
+  BaseStackCheckGccSec.c | GCC
+
+[Packages]
+  MdePkg/MdePkg.dec
+
+[BuildOptions]
+GCC:*_*_*_CC_FLAGS = -fno-lto

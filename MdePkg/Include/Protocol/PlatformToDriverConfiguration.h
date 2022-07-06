@@ -1,18 +1,12 @@
 /** @file
   UEFI Platform to Driver Configuration Protocol is defined in UEFI specification.
-  
-  This is a protocol that is optionally produced by the platform and optionally consumed 
-  by a UEFI Driver in its Start() function. This protocol allows the driver to receive 
+
+  This is a protocol that is optionally produced by the platform and optionally consumed
+  by a UEFI Driver in its Start() function. This protocol allows the driver to receive
   configuration information as part of being started.
 
-  Copyright (c) 2006 - 2013, Intel Corporation. All rights reserved.<BR>
-  This program and the accompanying materials                          
-  are licensed and made available under the terms and conditions of the BSD License         
-  which accompanies this distribution.  The full text of the license may be found at        
-  http://opensource.org/licenses/bsd-license.php                                            
-
-  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,                     
-  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.             
+  Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
+  SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
 
@@ -22,9 +16,7 @@
 #define EFI_PLATFORM_TO_DRIVER_CONFIGURATION_PROTOCOL_GUID  \
   { 0x642cd590, 0x8059, 0x4c0a, { 0xa9, 0x58, 0xc5, 0xec, 0x7, 0xd2, 0x3c, 0x4b } }
 
-
 typedef struct _EFI_PLATFORM_TO_DRIVER_CONFIGURATION_PROTOCOL EFI_PLATFORM_TO_DRIVER_CONFIGURATION_PROTOCOL;
-
 
 /**
   The UEFI driver must call Query early in the Start() function
@@ -44,16 +36,24 @@ typedef struct _EFI_PLATFORM_TO_DRIVER_CONFIGURATION_PROTOCOL EFI_PLATFORM_TO_DR
   returned by the platform, and calls Response passing in the
   arguments returned from Query. The Instance value passed into
   Response must be the same value passed into the corresponding
-  call to Query.
+  call to Query. The UEFI driver must continuously call Query and
+  Response until EFI_NOT_FOUND is returned by Query.
+  If the UEFI driver does not recognize the ParameterTypeGuid, it
+  calls Response with a ConfigurationAction of
+  EfiPlatformConfigurationActionUnsupportedGuid. The UEFI driver
+  must then continue calling Query and Response until EFI_NOT_FOUND
+  is returned by Query. This gives the platform an opportunity to
+  pass additional configuration settings using a different
+  ParameterTypeGuid that may be supported by the driver.
   An Instance value of zero means return the first ParameterBlock
   in the set of unprocessed parameter blocks. The driver should
   increment the Instance value by one for each successive call to Query.
 
   @param This                 A pointer to the EFI_PLATFORM_TO_DRIVER_CONFIGURATION_PROTOCOL instance.
-  
+
   @param ControllerHandle     The handle the platform will return
                               configuration information about.
-  
+
   @param ChildHandle          The handle of the child controller to
                               return information on. This is an optional
                               parameter that may be NULL. It will be
@@ -62,8 +62,8 @@ typedef struct _EFI_PLATFORM_TO_DRIVER_CONFIGURATION_PROTOCOL EFI_PLATFORM_TO_DR
                               the bus controller. It will not be NULL
                               for a bus driver that attempts to get
                               options for one of its child controllers.
-  
-  
+
+
   @param Instance             Pointer to the Instance value. Zero means
                               return the first query data. The caller should
                               increment this value by one each time to retrieve
@@ -126,7 +126,7 @@ EFI_STATUS
   OUT       EFI_GUID    **ParameterTypeGuid,
   OUT       VOID        **ParameterBlock,
   OUT       UINTN       *ParameterBlockSize
-);
+  );
 
 typedef enum {
   ///
@@ -139,27 +139,27 @@ typedef enum {
   ///  this controller can be used again with the updated
   ///  configuration settings.
   ///
-  EfiPlatformConfigurationActionNone              = 0,
-  
+  EfiPlatformConfigurationActionNone = 0,
+
   ///
   ///  The driver has detected that the controller specified
-  ///  by ControllerHandle is not in a usable state and 
+  ///  by ControllerHandle is not in a usable state and
   ///  needs to be stopped. The calling agent can use the
   ///  DisconnectControservice to perform this operation, and
-  ///  it should be performed as soon as possible.  
+  ///  it should be performed as soon as possible.
   ///
-  EfiPlatformConfigurationActionStopController    = 1,
-  
+  EfiPlatformConfigurationActionStopController = 1,
+
   ///
   ///  This controller specified by ControllerHandle needs to
   ///  be stopped and restarted before it can be used again.
   ///  The calling agent can use the DisconnectController()
   ///  and ConnectController() services to perform this
   ///  operation. The restart operation can be delayed until
-  ///  all of the configuration options have been set.  
+  ///  all of the configuration options have been set.
   ///
   EfiPlatformConfigurationActionRestartController = 2,
-  
+
   ///
   ///  A configuration change has been made that requires the
   ///  platform to be restarted before the controller
@@ -167,9 +167,9 @@ typedef enum {
   ///  calling agent can use the ResetSystem() services to
   ///  perform this operation. The restart operation can be
   ///  delayed until all of the configuration options have
-  ///  been set.  
+  ///  been set.
   ///
-  EfiPlatformConfigurationActionRestartPlatform   = 3,
+  EfiPlatformConfigurationActionRestartPlatform = 3,
 
   ///
   ///  The controller specified by ControllerHandle is still
@@ -180,12 +180,25 @@ typedef enum {
   ///  are required before this controller can be used again
   ///  with the updated configuration settings, but these
   ///  configuration settings are not guaranteed to persist
-  ///  after ControllerHandle is stopped. 
-  /// 
-  EfiPlatformConfigurationActionNvramFailed       = 4,
+  ///  after ControllerHandle is stopped.
+  ///
+  EfiPlatformConfigurationActionNvramFailed = 4,
+
+  ///
+  /// The controller specified by ControllerHandle is still
+  /// in a usable state; its configuration has not been updated
+  /// via parsing the ParameterBlock. The driver did not support
+  /// the ParameterBlock format identified by ParameterTypeGuid.
+  /// No actions are required before this controller can be used
+  /// again. On additional Query calls from this ControllerHandle,
+  /// the platform should stop returning a ParameterBlock
+  /// qualified by this same ParameterTypeGuid. If no other
+  /// ParameterTypeGuid is supported by the platform, Query
+  /// should return EFI_NOT_FOUND.
+  ///
+  EfiPlatformConfigurationActionUnsupportedGuid = 5,
   EfiPlatformConfigurationActionMaximum
 } EFI_PLATFORM_CONFIGURATION_ACTION;
-
 
 /**
   The UEFI driver repeatedly calls Query, processes the
@@ -227,17 +240,17 @@ typedef enum {
   @param ConfigurationAction The driver tells the platform what
                              action is required for ParameterBlock to
                              take effect.
-  
-  
+
+
   @retval EFI_SUCCESS           The platform return parameter information
                                 for ControllerHandle.
-  
+
   @retval EFI_NOT_FOUND         Instance was not found.
-  
+
   @retval EFI_INVALID_PARAMETER ControllerHandle is NULL.
- 
+
   @retval EFI_INVALID_PARAMETER Instance is zero.
-  
+
 **/
 typedef
 EFI_STATUS
@@ -248,10 +261,9 @@ EFI_STATUS
   IN CONST  UINTN       *Instance,
   IN CONST  EFI_GUID    *ParameterTypeGuid,
   IN CONST  VOID        *ParameterBlock,
-  IN CONST  UINTN       ParameterBlockSize ,
+  IN CONST  UINTN       ParameterBlockSize,
   IN CONST  EFI_PLATFORM_CONFIGURATION_ACTION ConfigurationAction
-);
-
+  );
 
 ///
 /// The EFI_PLATFORM_TO_DRIVER_CONFIGURATION_PROTOCOL is used by the
@@ -266,17 +278,15 @@ EFI_STATUS
 /// taken.
 ///
 struct _EFI_PLATFORM_TO_DRIVER_CONFIGURATION_PROTOCOL {
-  EFI_PLATFORM_TO_DRIVER_CONFIGURATION_QUERY    Query;
-  EFI_PLATFORM_TO_DRIVER_CONFIGURATION_RESPONSE Response;
+  EFI_PLATFORM_TO_DRIVER_CONFIGURATION_QUERY       Query;
+  EFI_PLATFORM_TO_DRIVER_CONFIGURATION_RESPONSE    Response;
 };
-
-
 
 #define EFI_PLATFORM_TO_DRIVER_CONFIGURATION_CLP_GUID   \
   {0x345ecc0e, 0xcb6, 0x4b75, { 0xbb, 0x57, 0x1b, 0x12, 0x9c, 0x47, 0x33,0x3e } }
 
 /**
-   
+
   ParameterTypeGuid provides the support for parameters
   communicated through the DMTF SM CLP Specification 1.0 Final
   Standard to be used to configure the UEFI driver. In this
@@ -288,46 +298,43 @@ struct _EFI_PLATFORM_TO_DRIVER_CONFIGURATION_PROTOCOL {
   used.
 **/
 typedef struct {
-  CHAR8   *CLPCommand;        ///<  A pointer to the null-terminated UTF-8 string that specifies the DMTF SM CLP command
-                              ///<  line that the driver is required to parse and process when this function is called. 
-                              ///<  See the DMTF SM CLP Specification 1.0 Final Standard for details on the 
-                              ///<  format and syntax of the CLP command line string. CLPCommand buffer
-                              ///<  is allocated by the producer of the EFI_PLATFORM_TO_DRIVER_CONFIGURATION_PROTOOL.
-  UINT32  CLPCommandLength;   ///< The length of the CLP Command in bytes.
-  CHAR8   *CLPReturnString;   ///<  A pointer to the null-terminated UTF-8 string that indicates the CLP return status
-                              ///<  that the driver is required to provide to the calling agent.
-                              ///<  The calling agent may parse and/ or pass
-                              ///<  this for processing and user feedback. The SM CLP Command Response string
-                              ///<  buffer is filled in by the UEFI driver in the "keyword=value" format
-                              ///<  described in the SM CLP Specification, unless otherwise requested via the SM
-                              ///<  CLP Coutput option in the Command Line string buffer. UEFI driver's support
-                              ///<  for this default "keyword=value" output format is required if the UEFI
-                              ///<  driver supports this protocol, while support for other SM CLP output
-                              ///<  formats is optional (the UEFI Driver should return an EFI_UNSUPPORTED if
-                              ///<  the SM CLP Coutput option requested by the caller is not supported by the
-                              ///<  UEFI Driver). CLPReturnString buffer is allocated by the consumer of the
-                              ///<  EFI_PLATFORM_TO_DRIVER_CONFIGURATION_PROTOC OL and undefined prior to the call to
-                              ///<  Response().  
-  UINT32  CLPReturnStringLength; ///< The length of the CLP return status string in bytes.
-  UINT8   CLPCmdStatus;       ///<  SM CLP Command Status (see DMTF SM CLP Specification 1.0 Final Standard -
-                              ///<  Table 4) CLPErrorValue SM CLP Processing Error Value (see DMTF SM
-                              ///<  CLP Specification 1.0 Final Standard - Table 6). This field is filled in by
-                              ///<  the consumer of the EFI_PLATFORM_TO_DRIVER_CONFIGURATION_PROTOC 
-                              ///<  OL and undefined prior to the call to Response().  
-  UINT8   CLPErrorValue;      ///<  SM CLP Processing Error Value (see DMTF SM CLP Specification 1.0 Final Standard - Table 6).
-                              ///<  This field is filled in by the consumer of the EFI_PLATFORM_TO_DRIVER_CONFIGURATION_PROTOCOL and undefined prior to the call to Response().                              
-  UINT16  CLPMsgCode;         ///<  Bit 15: OEM Message Code Flag 0 = Message Code is an SM CLP Probable
-                              ///<  Cause Value. (see SM CLP Specification Table 11) 1 = Message Code is OEM
-                              ///<  Specific Bits 14-0: Message Code This field is filled in by the consumer of
-                              ///<  the EFI_PLATFORM_TO_DRIVER_CONFIGURATION_PROTOC OL and undefined prior to the call to
-                              ///<  Response(). 
-
+  CHAR8     *CLPCommand;           ///<  A pointer to the null-terminated UTF-8 string that specifies the DMTF SM CLP command
+                                   ///<  line that the driver is required to parse and process when this function is called.
+                                   ///<  See the DMTF SM CLP Specification 1.0 Final Standard for details on the
+                                   ///<  format and syntax of the CLP command line string. CLPCommand buffer
+                                   ///<  is allocated by the producer of the EFI_PLATFORM_TO_DRIVER_CONFIGURATION_PROTOOL.
+  UINT32    CLPCommandLength;      ///< The length of the CLP Command in bytes.
+  CHAR8     *CLPReturnString;      ///<  A pointer to the null-terminated UTF-8 string that indicates the CLP return status
+                                   ///<  that the driver is required to provide to the calling agent.
+                                   ///<  The calling agent may parse and/ or pass
+                                   ///<  this for processing and user feedback. The SM CLP Command Response string
+                                   ///<  buffer is filled in by the UEFI driver in the "keyword=value" format
+                                   ///<  described in the SM CLP Specification, unless otherwise requested via the SM
+                                   ///<  CLP Coutput option in the Command Line string buffer. UEFI driver's support
+                                   ///<  for this default "keyword=value" output format is required if the UEFI
+                                   ///<  driver supports this protocol, while support for other SM CLP output
+                                   ///<  formats is optional (the UEFI Driver should return an EFI_UNSUPPORTED if
+                                   ///<  the SM CLP Coutput option requested by the caller is not supported by the
+                                   ///<  UEFI Driver). CLPReturnString buffer is allocated by the consumer of the
+                                   ///<  EFI_PLATFORM_TO_DRIVER_CONFIGURATION_PROTOC OL and undefined prior to the call to
+                                   ///<  Response().
+  UINT32    CLPReturnStringLength; ///< The length of the CLP return status string in bytes.
+  UINT8     CLPCmdStatus;          ///<  SM CLP Command Status (see DMTF SM CLP Specification 1.0 Final Standard -
+                                   ///<  Table 4) CLPErrorValue SM CLP Processing Error Value (see DMTF SM
+                                   ///<  CLP Specification 1.0 Final Standard - Table 6). This field is filled in by
+                                   ///<  the consumer of the EFI_PLATFORM_TO_DRIVER_CONFIGURATION_PROTOC
+                                   ///<  OL and undefined prior to the call to Response().
+  UINT8     CLPErrorValue;         ///<  SM CLP Processing Error Value (see DMTF SM CLP Specification 1.0 Final Standard - Table 6).
+                                   ///<  This field is filled in by the consumer of the EFI_PLATFORM_TO_DRIVER_CONFIGURATION_PROTOCOL and undefined prior to the call to Response().
+  UINT16    CLPMsgCode;            ///<  Bit 15: OEM Message Code Flag 0 = Message Code is an SM CLP Probable
+                                   ///<  Cause Value. (see SM CLP Specification Table 11) 1 = Message Code is OEM
+                                   ///<  Specific Bits 14-0: Message Code This field is filled in by the consumer of
+                                   ///<  the EFI_PLATFORM_TO_DRIVER_CONFIGURATION_PROTOC OL and undefined prior to the call to
+                                   ///<  Response().
 } EFI_CONFIGURE_CLP_PARAMETER_BLK;
 
+extern EFI_GUID  gEfiPlatformToDriverConfigurationClpGuid;
 
-
-extern EFI_GUID gEfiPlatformToDriverConfigurationClpGuid;
-
-extern EFI_GUID gEfiPlatformToDriverConfigurationProtocolGuid;
+extern EFI_GUID  gEfiPlatformToDriverConfigurationProtocolGuid;
 
 #endif

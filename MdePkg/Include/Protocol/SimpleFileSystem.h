@@ -1,20 +1,14 @@
 /** @file
   SimpleFileSystem protocol as defined in the UEFI 2.0 specification.
 
-  The SimpleFileSystem protocol is the programmatic access to the FAT (12,16,32) 
-  file system specified in UEFI 2.0. It can also be used to abstract a file  
+  The SimpleFileSystem protocol is the programmatic access to the FAT (12,16,32)
+  file system specified in UEFI 2.0. It can also be used to abstract a file
   system other than FAT.
 
   UEFI 2.0 can boot from any valid EFI image contained in a SimpleFileSystem.
 
-Copyright (c) 2006 - 2014, Intel Corporation. All rights reserved.<BR>
-This program and the accompanying materials are licensed and made available under 
-the terms and conditions of the BSD License that accompanies this distribution.  
-The full text of the license may be found at
-http://opensource.org/licenses/bsd-license.php.                                          
-    
-THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,                     
-WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.             
+Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
+SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
 
@@ -26,21 +20,21 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
     0x964e5b22, 0x6459, 0x11d2, {0x8e, 0x39, 0x0, 0xa0, 0xc9, 0x69, 0x72, 0x3b } \
   }
 
-typedef struct _EFI_SIMPLE_FILE_SYSTEM_PROTOCOL  EFI_SIMPLE_FILE_SYSTEM_PROTOCOL;
+typedef struct _EFI_SIMPLE_FILE_SYSTEM_PROTOCOL EFI_SIMPLE_FILE_SYSTEM_PROTOCOL;
 
-typedef struct _EFI_FILE_PROTOCOL         EFI_FILE_PROTOCOL;
-typedef struct _EFI_FILE_PROTOCOL         *EFI_FILE_HANDLE;
+typedef struct _EFI_FILE_PROTOCOL EFI_FILE_PROTOCOL;
+typedef struct _EFI_FILE_PROTOCOL *EFI_FILE_HANDLE;
 
 ///
 /// Protocol GUID name defined in EFI1.1.
-/// 
-#define SIMPLE_FILE_SYSTEM_PROTOCOL       EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_GUID
+///
+#define SIMPLE_FILE_SYSTEM_PROTOCOL  EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_GUID
 
 ///
 /// Protocol name defined in EFI1.1.
-/// 
-typedef EFI_SIMPLE_FILE_SYSTEM_PROTOCOL   EFI_FILE_IO_INTERFACE;
-typedef EFI_FILE_PROTOCOL                 EFI_FILE;
+///
+typedef EFI_SIMPLE_FILE_SYSTEM_PROTOCOL EFI_FILE_IO_INTERFACE;
+typedef EFI_FILE_PROTOCOL               EFI_FILE;
 
 /**
   Open the root directory on a volume.
@@ -73,7 +67,7 @@ EFI_STATUS
 
 ///
 /// Revision defined in EFI1.1
-/// 
+///
 #define EFI_FILE_IO_INTERFACE_REVISION  EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_REVISION
 
 struct _EFI_SIMPLE_FILE_SYSTEM_PROTOCOL {
@@ -82,8 +76,8 @@ struct _EFI_SIMPLE_FILE_SYSTEM_PROTOCOL {
   /// specified by this specification is 0x00010000. All future revisions
   /// must be backwards compatible.
   ///
-  UINT64                                      Revision;
-  EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_OPEN_VOLUME OpenVolume;
+  UINT64                                         Revision;
+  EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_OPEN_VOLUME    OpenVolume;
 };
 
 /**
@@ -99,7 +93,7 @@ struct _EFI_SIMPLE_FILE_SYSTEM_PROTOCOL {
                      and "..".
   @param  OpenMode   The mode to open the file. The only valid combinations that the
                      file may be opened with are: Read, Read/Write, or Create/Read/Write.
-  @param  Attributes Only valid for EFI_FILE_MODE_CREATE, in which case these are the 
+  @param  Attributes Only valid for EFI_FILE_MODE_CREATE, in which case these are the
                      attribute bits for the newly created file.
 
   @retval EFI_SUCCESS          The file was opened.
@@ -136,18 +130,18 @@ EFI_STATUS
 //
 // File attributes
 //
-#define EFI_FILE_READ_ONLY  0x0000000000000001ULL
-#define EFI_FILE_HIDDEN     0x0000000000000002ULL
-#define EFI_FILE_SYSTEM     0x0000000000000004ULL
-#define EFI_FILE_RESERVED   0x0000000000000008ULL
-#define EFI_FILE_DIRECTORY  0x0000000000000010ULL
-#define EFI_FILE_ARCHIVE    0x0000000000000020ULL
-#define EFI_FILE_VALID_ATTR 0x0000000000000037ULL
+#define EFI_FILE_READ_ONLY   0x0000000000000001ULL
+#define EFI_FILE_HIDDEN      0x0000000000000002ULL
+#define EFI_FILE_SYSTEM      0x0000000000000004ULL
+#define EFI_FILE_RESERVED    0x0000000000000008ULL
+#define EFI_FILE_DIRECTORY   0x0000000000000010ULL
+#define EFI_FILE_ARCHIVE     0x0000000000000020ULL
+#define EFI_FILE_VALID_ATTR  0x0000000000000037ULL
 
 /**
   Closes a specified file handle.
 
-  @param  This          A pointer to the EFI_FILE_PROTOCOL instance that is the file 
+  @param  This          A pointer to the EFI_FILE_PROTOCOL instance that is the file
                         handle to close.
 
   @retval EFI_SUCCESS   The file was closed.
@@ -345,7 +339,7 @@ EFI_STATUS
 /**
   Flushes all modified data associated with a file to a device.
 
-  @param  This A pointer to the EFI_FILE_PROTOCOL instance that is the file 
+  @param  This A pointer to the EFI_FILE_PROTOCOL instance that is the file
                handle to flush.
 
   @retval EFI_SUCCESS          The data was flushed.
@@ -371,12 +365,12 @@ typedef struct {
   // The caller must be prepared to handle the case where the callback associated with Event
   // occurs before the original asynchronous I/O request call returns.
   //
-  EFI_EVENT                   Event;
+  EFI_EVENT     Event;
 
   //
   // Defines whether or not the signaled event encountered an error.
   //
-  EFI_STATUS                  Status;
+  EFI_STATUS    Status;
 
   //
   // For OpenEx():  Not Used, ignored.
@@ -386,7 +380,7 @@ typedef struct {
   //                In both cases, the size is measured in bytes.
   // For FlushEx(): Not used, ignored.
   //
-  UINTN                       BufferSize;
+  UINTN    BufferSize;
 
   //
   // For OpenEx():  Not Used, ignored.
@@ -394,7 +388,7 @@ typedef struct {
   // For WriteEx(): The buffer of data to write.
   // For FlushEx(): Not Used, ignored.
   //
-  VOID                        *Buffer;
+  VOID     *Buffer;
 } EFI_FILE_IO_TOKEN;
 
 /**
@@ -409,7 +403,7 @@ typedef struct {
                      and "..".
   @param  OpenMode   The mode to open the file. The only valid combinations that the
                      file may be opened with are: Read, Read/Write, or Create/Read/Write.
-  @param  Attributes Only valid for EFI_FILE_MODE_CREATE, in which case these are the 
+  @param  Attributes Only valid for EFI_FILE_MODE_CREATE, in which case these are the
                      attribute bits for the newly created file.
   @param  Token      A pointer to the token associated with the transaction.
 
@@ -440,7 +434,6 @@ EFI_STATUS
   IN OUT EFI_FILE_IO_TOKEN    *Token
   );
 
-
 /**
   Reads data from a file.
 
@@ -459,11 +452,10 @@ EFI_STATUS
 **/
 typedef
 EFI_STATUS
-(EFIAPI *EFI_FILE_READ_EX) (
+(EFIAPI *EFI_FILE_READ_EX)(
   IN EFI_FILE_PROTOCOL        *This,
   IN OUT EFI_FILE_IO_TOKEN    *Token
-);
-
+  );
 
 /**
   Writes data to a file.
@@ -486,15 +478,15 @@ EFI_STATUS
 **/
 typedef
 EFI_STATUS
-(EFIAPI *EFI_FILE_WRITE_EX) (
+(EFIAPI *EFI_FILE_WRITE_EX)(
   IN EFI_FILE_PROTOCOL        *This,
-  IN OUT EFI_FILE_IO_TOKEN    *Token 
-);
+  IN OUT EFI_FILE_IO_TOKEN    *Token
+  );
 
 /**
   Flushes all modified data associated with a file to a device.
 
-  @param  This  A pointer to the EFI_FILE_PROTOCOL instance that is the file 
+  @param  This  A pointer to the EFI_FILE_PROTOCOL instance that is the file
                 handle to flush.
   @param  Token A pointer to the token associated with the transaction.
 
@@ -512,51 +504,50 @@ EFI_STATUS
 **/
 typedef
 EFI_STATUS
-(EFIAPI *EFI_FILE_FLUSH_EX) (
+(EFIAPI *EFI_FILE_FLUSH_EX)(
   IN EFI_FILE_PROTOCOL        *This,
   IN OUT EFI_FILE_IO_TOKEN    *Token
   );
 
-#define EFI_FILE_PROTOCOL_REVISION        0x00010000
-#define EFI_FILE_PROTOCOL_REVISION2       0x00020000
-#define EFI_FILE_PROTOCOL_LATEST_REVISION EFI_FILE_PROTOCOL_REVISION2
+#define EFI_FILE_PROTOCOL_REVISION         0x00010000
+#define EFI_FILE_PROTOCOL_REVISION2        0x00020000
+#define EFI_FILE_PROTOCOL_LATEST_REVISION  EFI_FILE_PROTOCOL_REVISION2
 
 //
 // Revision defined in EFI1.1.
-// 
-#define EFI_FILE_REVISION   EFI_FILE_PROTOCOL_REVISION
+//
+#define EFI_FILE_REVISION  EFI_FILE_PROTOCOL_REVISION
 
 ///
 /// The EFI_FILE_PROTOCOL provides file IO access to supported file systems.
-/// An EFI_FILE_PROTOCOL provides access to a file's or directory's contents, 
-/// and is also a reference to a location in the directory tree of the file system 
-/// in which the file resides. With any given file handle, other files may be opened 
+/// An EFI_FILE_PROTOCOL provides access to a file's or directory's contents,
+/// and is also a reference to a location in the directory tree of the file system
+/// in which the file resides. With any given file handle, other files may be opened
 /// relative to this file's location, yielding new file handles.
 ///
 struct _EFI_FILE_PROTOCOL {
   ///
-  /// The version of the EFI_FILE_PROTOCOL interface. The version specified 
+  /// The version of the EFI_FILE_PROTOCOL interface. The version specified
   /// by this specification is EFI_FILE_PROTOCOL_LATEST_REVISION.
   /// Future versions are required to be backward compatible to version 1.0.
   ///
-  UINT64                Revision;
-  EFI_FILE_OPEN         Open;
-  EFI_FILE_CLOSE        Close;
-  EFI_FILE_DELETE       Delete;
-  EFI_FILE_READ         Read;
-  EFI_FILE_WRITE        Write;
-  EFI_FILE_GET_POSITION GetPosition;
-  EFI_FILE_SET_POSITION SetPosition;
-  EFI_FILE_GET_INFO     GetInfo;
-  EFI_FILE_SET_INFO     SetInfo;
-  EFI_FILE_FLUSH        Flush;
-  EFI_FILE_OPEN_EX      OpenEx;
-  EFI_FILE_READ_EX      ReadEx;
-  EFI_FILE_WRITE_EX     WriteEx;
-  EFI_FILE_FLUSH_EX     FlushEx;
+  UINT64                   Revision;
+  EFI_FILE_OPEN            Open;
+  EFI_FILE_CLOSE           Close;
+  EFI_FILE_DELETE          Delete;
+  EFI_FILE_READ            Read;
+  EFI_FILE_WRITE           Write;
+  EFI_FILE_GET_POSITION    GetPosition;
+  EFI_FILE_SET_POSITION    SetPosition;
+  EFI_FILE_GET_INFO        GetInfo;
+  EFI_FILE_SET_INFO        SetInfo;
+  EFI_FILE_FLUSH           Flush;
+  EFI_FILE_OPEN_EX         OpenEx;
+  EFI_FILE_READ_EX         ReadEx;
+  EFI_FILE_WRITE_EX        WriteEx;
+  EFI_FILE_FLUSH_EX        FlushEx;
 };
 
-
-extern EFI_GUID gEfiSimpleFileSystemProtocolGuid;
+extern EFI_GUID  gEfiSimpleFileSystemProtocolGuid;
 
 #endif

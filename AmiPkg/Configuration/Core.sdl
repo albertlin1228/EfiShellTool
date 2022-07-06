@@ -1,8 +1,7 @@
 TOKEN
 	Name  = "CORE_BUILD_NUMBER"
-	Value  = "10"
+	Value  = "27"
 	TokenType = Integer
-	TargetEQU = Yes
 	TargetMAK = Yes
 	TargetH = Yes
 	Lock = Yes	

@@ -1,14 +1,8 @@
 /** @file
   Provides synchronization functions.
 
-Copyright (c) 2006 - 2012, Intel Corporation. All rights reserved.<BR>
-This program and the accompanying materials
-are licensed and made available under the terms and conditions of the BSD License
-which accompanies this distribution.  The full text of the license may be found at
-http://opensource.org/licenses/bsd-license.php
-
-THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
-WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
+SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
 
@@ -18,15 +12,14 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 ///
 /// Definitions for SPIN_LOCK
 ///
-typedef volatile UINTN              SPIN_LOCK;
-
+typedef volatile UINTN SPIN_LOCK;
 
 /**
   Retrieves the architecture-specific spin lock alignment requirements for
   optimal spin lock performance.
 
   This function retrieves the spin lock alignment requirements for optimal
-  performance on a given CPU architecture. The spin lock alignment is byte alignment. 
+  performance on a given CPU architecture. The spin lock alignment is byte alignment.
   It must be a power of two and is returned by this function. If there are no alignment
   requirements, then 1 must be returned. The spin lock synchronization
   functions must function correctly if the spin lock size and alignment values
@@ -42,7 +35,6 @@ EFIAPI
 GetSpinLockProperties (
   VOID
   );
-
 
 /**
   Initializes a spin lock to the released state and returns the spin lock.
@@ -63,9 +55,8 @@ GetSpinLockProperties (
 SPIN_LOCK *
 EFIAPI
 InitializeSpinLock (
-  OUT      SPIN_LOCK                 *SpinLock
+  OUT      SPIN_LOCK  *SpinLock
   );
-
 
 /**
   Waits until a spin lock can be placed in the acquired state.
@@ -90,9 +81,8 @@ InitializeSpinLock (
 SPIN_LOCK *
 EFIAPI
 AcquireSpinLock (
-  IN OUT  SPIN_LOCK                 *SpinLock
+  IN OUT  SPIN_LOCK  *SpinLock
   );
-
 
 /**
   Attempts to place a spin lock in the acquired state.
@@ -114,9 +104,8 @@ AcquireSpinLock (
 BOOLEAN
 EFIAPI
 AcquireSpinLockOrFail (
-  IN OUT  SPIN_LOCK                 *SpinLock
+  IN OUT  SPIN_LOCK  *SpinLock
   );
-
 
 /**
   Releases a spin lock.
@@ -135,17 +124,15 @@ AcquireSpinLockOrFail (
 SPIN_LOCK *
 EFIAPI
 ReleaseSpinLock (
-  IN OUT  SPIN_LOCK                 *SpinLock
+  IN OUT  SPIN_LOCK  *SpinLock
   );
-
 
 /**
   Performs an atomic increment of a 32-bit unsigned integer.
 
   Performs an atomic increment of the 32-bit unsigned integer specified by
   Value and returns the incremented value. The increment operation must be
-  performed using MP safe mechanisms. The state of the return value is not
-  guaranteed to be MP safe.
+  performed using MP safe mechanisms.
 
   If Value is NULL, then ASSERT().
 
@@ -157,17 +144,15 @@ ReleaseSpinLock (
 UINT32
 EFIAPI
 InterlockedIncrement (
-  IN      UINT32                    *Value
+  IN      volatile UINT32  *Value
   );
-
 
 /**
   Performs an atomic decrement of a 32-bit unsigned integer.
 
   Performs an atomic decrement of the 32-bit unsigned integer specified by
   Value and returns the decremented value. The decrement operation must be
-  performed using MP safe mechanisms. The state of the return value is not
-  guaranteed to be MP safe.
+  performed using MP safe mechanisms.
 
   If Value is NULL, then ASSERT().
 
@@ -179,9 +164,34 @@ InterlockedIncrement (
 UINT32
 EFIAPI
 InterlockedDecrement (
-  IN      UINT32                    *Value
+  IN      volatile UINT32  *Value
   );
 
+/**
+  Performs an atomic compare exchange operation on a 16-bit unsigned integer.
+
+  Performs an atomic compare exchange operation on the 16-bit unsigned integer
+  specified by Value.  If Value is equal to CompareValue, then Value is set to
+  ExchangeValue and CompareValue is returned.  If Value is not equal to CompareValue,
+  then Value is returned.  The compare exchange operation must be performed using
+  MP safe mechanisms.
+
+  If Value is NULL, then ASSERT().
+
+  @param  Value         A pointer to the 16-bit value for the compare exchange
+                        operation.
+  @param  CompareValue  16-bit value used in compare operation.
+  @param  ExchangeValue 16-bit value used in exchange operation.
+
+  @return The original *Value before exchange.
+**/
+UINT16
+EFIAPI
+InterlockedCompareExchange16 (
+  IN OUT  volatile UINT16  *Value,
+  IN      UINT16           CompareValue,
+  IN      UINT16           ExchangeValue
+  );
 
 /**
   Performs an atomic compare exchange operation on a 32-bit unsigned integer.
@@ -205,11 +215,10 @@ InterlockedDecrement (
 UINT32
 EFIAPI
 InterlockedCompareExchange32 (
-  IN OUT  UINT32                    *Value,
-  IN      UINT32                    CompareValue,
-  IN      UINT32                    ExchangeValue
+  IN OUT  volatile UINT32  *Value,
+  IN      UINT32           CompareValue,
+  IN      UINT32           ExchangeValue
   );
-
 
 /**
   Performs an atomic compare exchange operation on a 64-bit unsigned integer.
@@ -232,11 +241,10 @@ InterlockedCompareExchange32 (
 UINT64
 EFIAPI
 InterlockedCompareExchange64 (
-  IN OUT  UINT64                    *Value,
-  IN      UINT64                    CompareValue,
-  IN      UINT64                    ExchangeValue
+  IN OUT  volatile UINT64  *Value,
+  IN      UINT64           CompareValue,
+  IN      UINT64           ExchangeValue
   );
-
 
 /**
   Performs an atomic compare exchange operation on a pointer value.
@@ -259,11 +267,9 @@ InterlockedCompareExchange64 (
 VOID *
 EFIAPI
 InterlockedCompareExchangePointer (
-  IN OUT  VOID                      **Value,
-  IN      VOID                      *CompareValue,
-  IN      VOID                      *ExchangeValue
+  IN OUT  VOID                      *volatile  *Value,
+  IN      VOID                                 *CompareValue,
+  IN      VOID                                 *ExchangeValue
   );
 
 #endif
-
-

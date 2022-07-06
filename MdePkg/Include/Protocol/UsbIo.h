@@ -1,18 +1,12 @@
 /** @file
   EFI Usb I/O Protocol as defined in UEFI specification.
-  This protocol is used by code, typically drivers, running in the EFI 
-  boot services environment to access USB devices like USB keyboards, 
-  mice and mass storage devices. In particular, functions for managing devices 
+  This protocol is used by code, typically drivers, running in the EFI
+  boot services environment to access USB devices like USB keyboards,
+  mice and mass storage devices. In particular, functions for managing devices
   on USB buses are defined here.
-  
-  Copyright (c) 2006 - 2008, Intel Corporation. All rights reserved.<BR>
-  This program and the accompanying materials
-  are licensed and made available under the terms and conditions of the BSD License
-  which accompanies this distribution.  The full text of the license may be found at
-  http://opensource.org/licenses/bsd-license.php
 
-  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
-  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+  Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
+  SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
 
@@ -29,7 +23,7 @@
     0x2B2F68D6, 0x0CD2, 0x44cf, {0x8E, 0x8B, 0xBB, 0xA2, 0x0B, 0x1B, 0x5B, 0x75 } \
   }
 
-typedef struct _EFI_USB_IO_PROTOCOL   EFI_USB_IO_PROTOCOL;
+typedef struct _EFI_USB_IO_PROTOCOL EFI_USB_IO_PROTOCOL;
 
 //
 // Related Definition for EFI USB I/O protocol
@@ -38,11 +32,11 @@ typedef struct _EFI_USB_IO_PROTOCOL   EFI_USB_IO_PROTOCOL;
 //
 // USB standard descriptors and reqeust
 //
-typedef USB_DEVICE_REQUEST        EFI_USB_DEVICE_REQUEST;
-typedef USB_DEVICE_DESCRIPTOR     EFI_USB_DEVICE_DESCRIPTOR;
-typedef USB_CONFIG_DESCRIPTOR     EFI_USB_CONFIG_DESCRIPTOR;
-typedef USB_INTERFACE_DESCRIPTOR  EFI_USB_INTERFACE_DESCRIPTOR;
-typedef USB_ENDPOINT_DESCRIPTOR   EFI_USB_ENDPOINT_DESCRIPTOR;
+typedef USB_DEVICE_REQUEST       EFI_USB_DEVICE_REQUEST;
+typedef USB_DEVICE_DESCRIPTOR    EFI_USB_DEVICE_DESCRIPTOR;
+typedef USB_CONFIG_DESCRIPTOR    EFI_USB_CONFIG_DESCRIPTOR;
+typedef USB_INTERFACE_DESCRIPTOR EFI_USB_INTERFACE_DESCRIPTOR;
+typedef USB_ENDPOINT_DESCRIPTOR  EFI_USB_ENDPOINT_DESCRIPTOR;
 
 ///
 /// USB data transfer direction
@@ -56,16 +50,16 @@ typedef enum {
 //
 // USB Transfer Results
 //
-#define EFI_USB_NOERROR             0x00
-#define EFI_USB_ERR_NOTEXECUTE      0x01
-#define EFI_USB_ERR_STALL           0x02
-#define EFI_USB_ERR_BUFFER          0x04
-#define EFI_USB_ERR_BABBLE          0x08
-#define EFI_USB_ERR_NAK             0x10
-#define EFI_USB_ERR_CRC             0x20
-#define EFI_USB_ERR_TIMEOUT         0x40
-#define EFI_USB_ERR_BITSTUFF        0x80
-#define EFI_USB_ERR_SYSTEM          0x100
+#define EFI_USB_NOERROR         0x00
+#define EFI_USB_ERR_NOTEXECUTE  0x01
+#define EFI_USB_ERR_STALL       0x02
+#define EFI_USB_ERR_BUFFER      0x04
+#define EFI_USB_ERR_BABBLE      0x08
+#define EFI_USB_ERR_NAK         0x10
+#define EFI_USB_ERR_CRC         0x20
+#define EFI_USB_ERR_TIMEOUT     0x40
+#define EFI_USB_ERR_BITSTUFF    0x80
+#define EFI_USB_ERR_SYSTEM      0x100
 
 /**
   Async USB transfer callback routine.
@@ -93,7 +87,6 @@ EFI_STATUS
 //
 // Prototype for EFI USB I/O protocol
 //
-
 
 /**
   This function is used to manage a USB device with a control transfer pipe. A control transfer is
@@ -134,13 +127,13 @@ EFI_STATUS
   typically used to transfer large amounts of data to/from USB devices.
 
   @param  This                  A pointer to the EFI_USB_IO_PROTOCOL instance.
-  @param  DeviceEndpoint        The destination USB device endpoint to which the 
-                                device request is being sent. DeviceEndpoint must 
-                                be between 0x01 and 0x0F or between 0x81 and 0x8F, 
-                                otherwise EFI_INVALID_PARAMETER is returned. If 
-                                the endpoint is not a BULK endpoint, EFI_INVALID_PARAMETER 
-                                is returned. The MSB of this parameter indicates 
-                                the endpoint direction. The number "1" stands for 
+  @param  DeviceEndpoint        The destination USB device endpoint to which the
+                                device request is being sent. DeviceEndpoint must
+                                be between 0x01 and 0x0F or between 0x81 and 0x8F,
+                                otherwise EFI_INVALID_PARAMETER is returned. If
+                                the endpoint is not a BULK endpoint, EFI_INVALID_PARAMETER
+                                is returned. The MSB of this parameter indicates
+                                the endpoint direction. The number "1" stands for
                                 an IN endpoint, and "0" stands for an OUT endpoint.
   @param  Data                  A pointer to the buffer of data that will be transmitted to USB
                                 device or received from USB device.
@@ -148,8 +141,8 @@ EFI_STATUS
                                 On input, the size, in bytes, of the data buffer specified by Data.
                                 On output, the number of bytes that were actually transferred.
   @param  Timeout               Indicating the transfer should be completed within this time frame.
-                                The units are in milliseconds. If Timeout is 0, then the 
-                                caller must wait for the function to be completed until 
+                                The units are in milliseconds. If Timeout is 0, then the
+                                caller must wait for the function to be completed until
                                 EFI_SUCCESS or EFI_DEVICE_ERROR is returned.
   @param  Status                This parameter indicates the USB transfer status.
 
@@ -178,27 +171,27 @@ EFI_STATUS
   a fixed rate.
 
   @param  This                  A pointer to the EFI_USB_IO_PROTOCOL instance.
-  @param  DeviceEndpoint        The destination USB device endpoint to which the 
-                                device request is being sent. DeviceEndpoint must 
-                                be between 0x01 and 0x0F or between 0x81 and 0x8F, 
-                                otherwise EFI_INVALID_PARAMETER is returned. If 
-                                the endpoint is not a BULK endpoint, EFI_INVALID_PARAMETER 
-                                is returned. The MSB of this parameter indicates 
-                                the endpoint direction. The number "1" stands for 
+  @param  DeviceEndpoint        The destination USB device endpoint to which the
+                                device request is being sent. DeviceEndpoint must
+                                be between 0x01 and 0x0F or between 0x81 and 0x8F,
+                                otherwise EFI_INVALID_PARAMETER is returned. If
+                                the endpoint is not a BULK endpoint, EFI_INVALID_PARAMETER
+                                is returned. The MSB of this parameter indicates
+                                the endpoint direction. The number "1" stands for
                                 an IN endpoint, and "0" stands for an OUT endpoint.
   @param  IsNewTransfer         If TRUE, a new transfer will be submitted to USB controller. If
                                 FALSE, the interrupt transfer is deleted from the device's interrupt
                                 transfer queue.
   @param  PollingInterval       Indicates the periodic rate, in milliseconds, that the transfer is to be
-                                executed.This parameter is required when IsNewTransfer is TRUE. The 
-                                value must be between 1 to 255, otherwise EFI_INVALID_PARAMETER is returned. 
+                                executed.This parameter is required when IsNewTransfer is TRUE. The
+                                value must be between 1 to 255, otherwise EFI_INVALID_PARAMETER is returned.
                                 The units are in milliseconds.
   @param  DataLength            Specifies the length, in bytes, of the data to be received from the
                                 USB device. This parameter is only required when IsNewTransfer is TRUE.
   @param  InterruptCallback     The Callback function. This function is called if the asynchronous
-                                interrupt transfer is completed. This parameter is required 
+                                interrupt transfer is completed. This parameter is required
                                 when IsNewTransfer is TRUE.
-  @param  Context               Data passed to the InterruptCallback function. This is an optional 
+  @param  Context               Data passed to the InterruptCallback function. This is an optional
                                 parameter and may be NULL.
 
   @retval EFI_SUCCESS           The asynchronous USB transfer request transfer has been successfully executed.
@@ -221,21 +214,21 @@ EFI_STATUS
   This function is used to manage a USB device with an interrupt transfer pipe.
 
   @param  This                  A pointer to the EFI_USB_IO_PROTOCOL instance.
-  @param  DeviceEndpoint        The destination USB device endpoint to which the 
-                                device request is being sent. DeviceEndpoint must 
-                                be between 0x01 and 0x0F or between 0x81 and 0x8F, 
-                                otherwise EFI_INVALID_PARAMETER is returned. If 
-                                the endpoint is not a BULK endpoint, EFI_INVALID_PARAMETER 
-                                is returned. The MSB of this parameter indicates 
-                                the endpoint direction. The number "1" stands for 
+  @param  DeviceEndpoint        The destination USB device endpoint to which the
+                                device request is being sent. DeviceEndpoint must
+                                be between 0x01 and 0x0F or between 0x81 and 0x8F,
+                                otherwise EFI_INVALID_PARAMETER is returned. If
+                                the endpoint is not a BULK endpoint, EFI_INVALID_PARAMETER
+                                is returned. The MSB of this parameter indicates
+                                the endpoint direction. The number "1" stands for
                                 an IN endpoint, and "0" stands for an OUT endpoint.
   @param  Data                  A pointer to the buffer of data that will be transmitted to USB
                                 device or received from USB device.
   @param  DataLength            On input, then size, in bytes, of the buffer Data. On output, the
                                 amount of data actually transferred.
-  @param  Timeout               The time out, in seconds, for this transfer. If Timeout is 0, 
-                                then the caller must wait for the function to be completed 
-                                until EFI_SUCCESS or EFI_DEVICE_ERROR is returned. If the 
+  @param  Timeout               The time out, in seconds, for this transfer. If Timeout is 0,
+                                then the caller must wait for the function to be completed
+                                until EFI_SUCCESS or EFI_DEVICE_ERROR is returned. If the
                                 transfer is not completed in this time frame, then EFI_TIMEOUT is returned.
   @param  Status                This parameter indicates the USB transfer status.
 
@@ -261,13 +254,13 @@ EFI_STATUS
   transfer is typically used to transfer streaming data.
 
   @param  This                  A pointer to the EFI_USB_IO_PROTOCOL instance.
-  @param  DeviceEndpoint        The destination USB device endpoint to which the 
-                                device request is being sent. DeviceEndpoint must 
-                                be between 0x01 and 0x0F or between 0x81 and 0x8F, 
-                                otherwise EFI_INVALID_PARAMETER is returned. If 
-                                the endpoint is not a BULK endpoint, EFI_INVALID_PARAMETER 
-                                is returned. The MSB of this parameter indicates 
-                                the endpoint direction. The number "1" stands for 
+  @param  DeviceEndpoint        The destination USB device endpoint to which the
+                                device request is being sent. DeviceEndpoint must
+                                be between 0x01 and 0x0F or between 0x81 and 0x8F,
+                                otherwise EFI_INVALID_PARAMETER is returned. If
+                                the endpoint is not a BULK endpoint, EFI_INVALID_PARAMETER
+                                is returned. The MSB of this parameter indicates
+                                the endpoint direction. The number "1" stands for
                                 an IN endpoint, and "0" stands for an OUT endpoint.
   @param  Data                  A pointer to the buffer of data that will be transmitted to USB
                                 device or received from USB device.
@@ -296,19 +289,19 @@ EFI_STATUS
   transfer is typically used to transfer streaming data.
 
   @param  This                  A pointer to the EFI_USB_IO_PROTOCOL instance.
-  @param  DeviceEndpoint        The destination USB device endpoint to which the 
-                                device request is being sent. DeviceEndpoint must 
-                                be between 0x01 and 0x0F or between 0x81 and 0x8F, 
-                                otherwise EFI_INVALID_PARAMETER is returned. If 
-                                the endpoint is not a BULK endpoint, EFI_INVALID_PARAMETER 
-                                is returned. The MSB of this parameter indicates 
-                                the endpoint direction. The number "1" stands for 
+  @param  DeviceEndpoint        The destination USB device endpoint to which the
+                                device request is being sent. DeviceEndpoint must
+                                be between 0x01 and 0x0F or between 0x81 and 0x8F,
+                                otherwise EFI_INVALID_PARAMETER is returned. If
+                                the endpoint is not a BULK endpoint, EFI_INVALID_PARAMETER
+                                is returned. The MSB of this parameter indicates
+                                the endpoint direction. The number "1" stands for
                                 an IN endpoint, and "0" stands for an OUT endpoint.
   @param  Data                  A pointer to the buffer of data that will be transmitted to USB
                                 device or received from USB device.
   @param  DataLength            The size, in bytes, of the data buffer specified by Data.
                                 This is an optional parameter and may be NULL.
-  @param  IsochronousCallback   The IsochronousCallback() function.This function is 
+  @param  IsochronousCallback   The IsochronousCallback() function.This function is
                                 called if the requested isochronous transfer is completed.
   @param  Context               Data passed to the IsochronousCallback() function.
 
@@ -432,9 +425,9 @@ EFI_STATUS
   @param  LangID                  The Language ID for the string being retrieved.
   @param  StringID                The ID of the string being retrieved.
   @param  String                  A pointer to a buffer allocated by this function with
-                                  AllocatePool() to store the string.If this function 
-                                  returns EFI_SUCCESS, it stores the string the caller 
-                                  wants to get. The caller should release the string 
+                                  AllocatePool() to store the string.If this function
+                                  returns EFI_SUCCESS, it stores the string the caller
+                                  wants to get. The caller should release the string
                                   buffer with FreePool() after the string is not used any more.
 
   @retval EFI_SUCCESS             The string was retrieved successfully.
@@ -456,9 +449,9 @@ EFI_STATUS
 
   @param  This                    A pointer to the EFI_USB_IO_PROTOCOL instance.
   @param  LangIDTable             Language ID for the string the caller wants to get.
-                                  This is a 16-bit ID defined by Microsoft. This 
-                                  buffer pointer is allocated and maintained by 
-                                  the USB Bus Driver, the caller should not modify 
+                                  This is a 16-bit ID defined by Microsoft. This
+                                  buffer pointer is allocated and maintained by
+                                  the USB Bus Driver, the caller should not modify
                                   its contents.
   @param  TableSize               The size, in bytes, of the table LangIDTable.
 
@@ -474,39 +467,39 @@ EFI_STATUS
   );
 
 ///
-/// The EFI_USB_IO_PROTOCOL provides four basic transfers types described 
-/// in the USB 1.1 Specification. These include control transfer, interrupt 
-/// transfer, bulk transfer and isochronous transfer. The EFI_USB_IO_PROTOCOL 
-/// also provides some basic USB device/controller management and configuration 
-/// interfaces. A USB device driver uses the services of this protocol to manage USB devices.  
+/// The EFI_USB_IO_PROTOCOL provides four basic transfers types described
+/// in the USB 1.1 Specification. These include control transfer, interrupt
+/// transfer, bulk transfer and isochronous transfer. The EFI_USB_IO_PROTOCOL
+/// also provides some basic USB device/controller management and configuration
+/// interfaces. A USB device driver uses the services of this protocol to manage USB devices.
 ///
 struct _EFI_USB_IO_PROTOCOL {
   //
   // IO transfer
   //
-  EFI_USB_IO_CONTROL_TRANSFER           UsbControlTransfer;
-  EFI_USB_IO_BULK_TRANSFER              UsbBulkTransfer;
-  EFI_USB_IO_ASYNC_INTERRUPT_TRANSFER   UsbAsyncInterruptTransfer;
-  EFI_USB_IO_SYNC_INTERRUPT_TRANSFER    UsbSyncInterruptTransfer;
-  EFI_USB_IO_ISOCHRONOUS_TRANSFER       UsbIsochronousTransfer;
-  EFI_USB_IO_ASYNC_ISOCHRONOUS_TRANSFER UsbAsyncIsochronousTransfer;
+  EFI_USB_IO_CONTROL_TRANSFER              UsbControlTransfer;
+  EFI_USB_IO_BULK_TRANSFER                 UsbBulkTransfer;
+  EFI_USB_IO_ASYNC_INTERRUPT_TRANSFER      UsbAsyncInterruptTransfer;
+  EFI_USB_IO_SYNC_INTERRUPT_TRANSFER       UsbSyncInterruptTransfer;
+  EFI_USB_IO_ISOCHRONOUS_TRANSFER          UsbIsochronousTransfer;
+  EFI_USB_IO_ASYNC_ISOCHRONOUS_TRANSFER    UsbAsyncIsochronousTransfer;
 
   //
   // Common device request
   //
-  EFI_USB_IO_GET_DEVICE_DESCRIPTOR      UsbGetDeviceDescriptor;
-  EFI_USB_IO_GET_CONFIG_DESCRIPTOR      UsbGetConfigDescriptor;
-  EFI_USB_IO_GET_INTERFACE_DESCRIPTOR   UsbGetInterfaceDescriptor;
-  EFI_USB_IO_GET_ENDPOINT_DESCRIPTOR    UsbGetEndpointDescriptor;
-  EFI_USB_IO_GET_STRING_DESCRIPTOR      UsbGetStringDescriptor;
-  EFI_USB_IO_GET_SUPPORTED_LANGUAGE     UsbGetSupportedLanguages;
+  EFI_USB_IO_GET_DEVICE_DESCRIPTOR         UsbGetDeviceDescriptor;
+  EFI_USB_IO_GET_CONFIG_DESCRIPTOR         UsbGetConfigDescriptor;
+  EFI_USB_IO_GET_INTERFACE_DESCRIPTOR      UsbGetInterfaceDescriptor;
+  EFI_USB_IO_GET_ENDPOINT_DESCRIPTOR       UsbGetEndpointDescriptor;
+  EFI_USB_IO_GET_STRING_DESCRIPTOR         UsbGetStringDescriptor;
+  EFI_USB_IO_GET_SUPPORTED_LANGUAGE        UsbGetSupportedLanguages;
 
   //
   // Reset controller's parent port
   //
-  EFI_USB_IO_PORT_RESET                 UsbPortReset;
+  EFI_USB_IO_PORT_RESET                    UsbPortReset;
 };
 
-extern EFI_GUID gEfiUsbIoProtocolGuid;
+extern EFI_GUID  gEfiUsbIoProtocolGuid;
 
 #endif

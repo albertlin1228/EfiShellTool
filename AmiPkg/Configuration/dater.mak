@@ -1,7 +1,7 @@
 #**********************************************************************
 #**********************************************************************
 #**                                                                  **
-#**        (C)Copyright 1985-2012, American Megatrends, Inc.         **
+#**        (C)Copyright 1985-2018, American Megatrends, Inc.         **
 #**                                                                  **
 #**                       All Rights Reserved.                       **
 #**                                                                  **
@@ -13,20 +13,33 @@
 #**********************************************************************
 
 #**********************************************************************
-#<AMI_FHDR_START>
-#
-# Name:	build.mak
-#
-# Description:	Generates time stamps.
+## @file
+# Generates time stamps.
 #   Required parameters: TODAY - build date; NOW - build time
 #    TODAY format: mm/dd/yyyy 
 #    NOW format: hh:mm:ss
-#<AMI_FHDR_END>
 #**********************************************************************
 include $(UTILITIES_MAK)
 
-TIMESTAMPEQU="./$(BUILD_DIR)/TimeStamp.equ"
-TIMESTAMPH="./$(BUILD_DIR)/TimeStamp.h"
+.PHONY : all
+
+TIMESTAMPEQU=$(BUILD_DIR)/TimeStamp.equ
+TIMESTAMPH=$(BUILD_DIR)/TimeStamp.h
+LASTBUILDDATEMAK=$(BUILD_DIR)/LastBuildDate.mak
+
+# Do not regenerate build time stamp headers if build time has not changed.
+# Build time can be fixed by setting TODAY and NOW variables.
+# If these variables are set to the same values that were used during last build,
+# skip time stamp header files generation to speed up incremental builds. 
+ifeq ($(call _exist, $(LASTBUILDDATEMAK)),yes)
+  include $(LASTBUILDDATEMAK)
+  ifneq ($(LAST_BUILD_DATE_TIME),$(TODAY).$(NOW))
+    .PHONY : UpdateLastBuildDateMak
+    UpdateLastBuildDateMak:
+    # Dependency from phony target forces re-build of the $(LASTBUILDDATEMAK) target
+    $(LASTBUILDDATEMAK) : UpdateLastBuildDateMak
+  endif
+endif
 
 TODAY_TWO_DIGIT_LIST := $(subst /, ,$(TODAY))
 NOW_TWO_DIGIT_LIST := $(subst :, ,$(NOW))
@@ -46,9 +59,9 @@ HOUR := $(word 1,$(NOW_LIST))
 MINUTE := $(word 2,$(NOW_LIST))
 SECOND := $(word 3,$(NOW_LIST))
 
-all: timeequ timeh 
+all: $(TIMESTAMPEQU) $(TIMESTAMPH)
 
-timeequ:
+$(TIMESTAMPEQU): $(LASTBUILDDATEMAK)
 	@$(ECHO) "\
 TODAY TEXTEQU <$(TODAY)> $(EOL)\
 NOW TEXTEQU <$(NOW)> $(EOL)\
@@ -60,7 +73,7 @@ TWO_DIGIT_MINUTE TEXTEQU <$(TWO_DIGIT_MINUTE)> $(EOL)\
 TWO_DIGIT_SECOND TEXTEQU <$(TWO_DIGIT_SECOND)> $(EOL)\
 " > $(TIMESTAMPEQU)
 
-timeh:
+$(TIMESTAMPH): $(LASTBUILDDATEMAK)
 	@$(ECHO) "\
 #ifndef __TIMESTAMP_H__ $(EOL)\
 #define __TIMESTAMP_H__ $(EOL)\
@@ -98,10 +111,13 @@ $(EOL)\
 #endif $(EOL)\
 " > $(TIMESTAMPH)
 
+$(LASTBUILDDATEMAK):
+	@$(ECHO) "LAST_BUILD_DATE_TIME=$(TODAY).$(NOW)" > $(LASTBUILDDATEMAK)
+
 #**********************************************************************
 #**********************************************************************
 #**                                                                  **
-#**        (C)Copyright 1985-2012, American Megatrends, Inc.         **
+#**        (C)Copyright 1985-2018, American Megatrends, Inc.         **
 #**                                                                  **
 #**                       All Rights Reserved.                       **
 #**                                                                  **

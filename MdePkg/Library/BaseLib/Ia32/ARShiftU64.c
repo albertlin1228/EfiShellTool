@@ -1,19 +1,10 @@
 /** @file
   64-bit arithmetic right shift function for IA-32.
 
-  Copyright (c) 2006 - 2008, Intel Corporation. All rights reserved.<BR>
-  This program and the accompanying materials
-  are licensed and made available under the terms and conditions of the BSD License
-  which accompanies this distribution.  The full text of the license may be found at
-  http://opensource.org/licenses/bsd-license.php.
-
-  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
-  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+  Copyright (c) 2006 - 2015, Intel Corporation. All rights reserved.<BR>
+  SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
-
-
-
 
 /**
   Shifts a 64-bit integer right between 0 and 63 bits. The high bits
@@ -31,8 +22,8 @@
 UINT64
 EFIAPI
 InternalMathARShiftU64 (
-  IN      UINT64                    Operand,
-  IN      UINTN                     Count
+  IN      UINT64  Operand,
+  IN      UINTN   Count
   )
 {
   _asm {
@@ -40,10 +31,11 @@ InternalMathARShiftU64 (
     mov     eax, dword ptr [Operand + 4]
     cdq
     test    cl, 32
-    cmovz   edx, eax
-    cmovz   eax, dword ptr [Operand + 0]
+    jnz     L0
+    mov     edx, eax
+    mov     eax, dword ptr [Operand + 0]
+L0:
     shrd    eax, edx, cl
     sar     edx, cl
   }
 }
-

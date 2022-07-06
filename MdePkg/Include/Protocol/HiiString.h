@@ -1,14 +1,11 @@
 /** @file
   The file provides services to manipulate string data.
-  
-Copyright (c) 2006 - 2011, Intel Corporation. All rights reserved.<BR>
-This program and the accompanying materials are licensed and made available under 
-the terms and conditions of the BSD License that accompanies this distribution.  
-The full text of the license may be found at
-http://opensource.org/licenses/bsd-license.php.                                          
-    
-THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,                     
-WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.             
+
+Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
+SPDX-License-Identifier: BSD-2-Clause-Patent
+
+  @par Revision Reference:
+  This Protocol was introduced in UEFI Specification 2.1.
 
 **/
 
@@ -25,8 +22,8 @@ typedef struct _EFI_HII_STRING_PROTOCOL EFI_HII_STRING_PROTOCOL;
 /**
   This function adds the string String to the group of strings owned by PackageList, with the
   specified font information StringFontInfo, and returns a new string id.
-  The new string identifier is guaranteed to be unique within the package list. 
-  That new string identifier is reserved for all languages in the package list. 
+  The new string identifier is guaranteed to be unique within the package list.
+  That new string identifier is reserved for all languages in the package list.
 
   @param  This                   A pointer to the EFI_HII_STRING_PROTOCOL instance.
   @param  PackageList            The handle of the package list where this string will
@@ -61,11 +58,10 @@ EFI_STATUS
   IN        EFI_HII_HANDLE            PackageList,
   OUT       EFI_STRING_ID             *StringId,
   IN CONST  CHAR8                     *Language,
-  IN  CONST CHAR16                    *LanguageName, OPTIONAL  
+  IN  CONST CHAR16                    *LanguageName  OPTIONAL,
   IN CONST  EFI_STRING                String,
   IN CONST  EFI_FONT_INFO             *StringFontInfo OPTIONAL
-);
-
+  );
 
 /**
   This function retrieves the string specified by StringId which is associated
@@ -89,7 +85,7 @@ EFI_STATUS
   @retval EFI_SUCCESS            The string was returned successfully.
   @retval EFI_NOT_FOUND          The string specified by StringId is not available.
                                  The specified PackageList is not in the database.
-  @retval EFI_INVALID_LANGUAGE    The string specified by StringId is available but 
+  @retval EFI_INVALID_LANGUAGE    The string specified by StringId is available but
                                   not in the specified language.
   @retval EFI_BUFFER_TOO_SMALL   The buffer specified by StringSize is too small to
                                  hold the string.
@@ -110,7 +106,7 @@ EFI_STATUS
   OUT       EFI_STRING              String,
   IN OUT    UINTN                   *StringSize,
   OUT       EFI_FONT_INFO           **StringFontInfo OPTIONAL
-);
+  );
 
 /**
   This function updates the string specified by StringId in the specified PackageList to the text
@@ -144,8 +140,7 @@ EFI_STATUS
   IN CONST  CHAR8                   *Language,
   IN        EFI_STRING              String,
   IN CONST  EFI_FONT_INFO           *StringFontInfo OPTIONAL
-);
-
+  );
 
 /**
   This function returns the list of supported languages.
@@ -176,8 +171,7 @@ EFI_STATUS
   IN        EFI_HII_HANDLE            PackageList,
   IN OUT    CHAR8                     *Languages,
   IN OUT    UINTN                     *LanguagesSize
-);
-
+  );
 
 /**
   Each string package has associated with it a single primary language and zero
@@ -220,22 +214,19 @@ EFI_STATUS
   IN CONST  CHAR8                     *PrimaryLanguage,
   IN OUT    CHAR8                     *SecondaryLanguages,
   IN OUT    UINTN                     *SecondaryLanguagesSize
-);
-
+  );
 
 ///
 /// Services to manipulate the string.
 ///
 struct _EFI_HII_STRING_PROTOCOL {
-  EFI_HII_NEW_STRING        NewString;
-  EFI_HII_GET_STRING        GetString;
-  EFI_HII_SET_STRING        SetString;
-  EFI_HII_GET_LANGUAGES     GetLanguages;
-  EFI_HII_GET_2ND_LANGUAGES GetSecondaryLanguages;
+  EFI_HII_NEW_STRING           NewString;
+  EFI_HII_GET_STRING           GetString;
+  EFI_HII_SET_STRING           SetString;
+  EFI_HII_GET_LANGUAGES        GetLanguages;
+  EFI_HII_GET_2ND_LANGUAGES    GetSecondaryLanguages;
 };
 
-
-extern EFI_GUID gEfiHiiStringProtocolGuid;
+extern EFI_GUID  gEfiHiiStringProtocolGuid;
 
 #endif
-

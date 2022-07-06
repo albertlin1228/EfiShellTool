@@ -3,14 +3,8 @@
   The EFI Adapter Information Protocol is used to dynamically and quickly discover
   or set device information for an adapter.
 
-  Copyright (c) 2014, Intel Corporation. All rights reserved.<BR>
-  This program and the accompanying materials
-  are licensed and made available under the terms and conditions of the BSD License
-  which accompanies this distribution. The full text of the license may be found at
-  http://opensource.org/licenses/bsd-license.php
-
-  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
-  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+  Copyright (c) 2014 - 2018, Intel Corporation. All rights reserved.<BR>
+  SPDX-License-Identifier: BSD-2-Clause-Patent
 
   @par Revision Reference:
   This Protocol is introduced in UEFI Specification 2.4
@@ -19,7 +13,6 @@
 
 #ifndef __EFI_ADAPTER_INFORMATION_PROTOCOL_H__
 #define __EFI_ADAPTER_INFORMATION_PROTOCOL_H__
-
 
 #define EFI_ADAPTER_INFORMATION_PROTOCOL_GUID \
   { \
@@ -41,6 +34,16 @@
     0x114da5ef, 0x2cf1, 0x4e12, {0x9b, 0xbb, 0xc4, 0x70, 0xb5, 0x52, 0x5, 0xd9 } \
   }
 
+#define EFI_ADAPTER_INFO_UNDI_IPV6_SUPPORT_GUID \
+  { \
+    0x4bd56be3, 0x4975, 0x4d8a, {0xa0, 0xad, 0xc4, 0x91, 0x20, 0x4b, 0x5d, 0x4d} \
+  }
+
+#define EFI_ADAPTER_INFO_MEDIA_TYPE_GUID \
+  { \
+    0x8484472f, 0x71ec, 0x411a, { 0xb3, 0x9c, 0x62, 0xcd, 0x94, 0xd9, 0x91, 0x6e } \
+  }
+
 typedef struct _EFI_ADAPTER_INFORMATION_PROTOCOL EFI_ADAPTER_INFORMATION_PROTOCOL;
 
 ///
@@ -48,13 +51,26 @@ typedef struct _EFI_ADAPTER_INFORMATION_PROTOCOL EFI_ADAPTER_INFORMATION_PROTOCO
 ///
 typedef struct {
   ///
-  /// Returns the current media state status. MediaState can have any of the following values: 
-  /// EFI_SUCCESS: There is media attached to the network adapter. EFI_NOT_READY: This detects a bounced state. 
-  /// There was media attached to the network adapter, but it was removed and reattached. EFI_NO_MEDIA: There is 
+  /// Returns the current media state status. MediaState can have any of the following values:
+  /// EFI_SUCCESS: There is media attached to the network adapter. EFI_NOT_READY: This detects a bounced state.
+  /// There was media attached to the network adapter, but it was removed and reattached. EFI_NO_MEDIA: There is
   /// not any media attached to the network.
   ///
-  EFI_STATUS                    MediaState;
-}EFI_ADAPTER_INFO_MEDIA_STATE;
+  EFI_STATUS    MediaState;
+} EFI_ADAPTER_INFO_MEDIA_STATE;
+
+///
+/// EFI_ADAPTER_INFO_MEDIA_TYPE
+///
+typedef struct {
+  ///
+  /// Indicates the current media type. MediaType can have any of the following values:
+  /// 1: Ethernet Network Adapter
+  /// 2: Ethernet Wireless Network Adapter
+  /// 3~255: Reserved
+  ///
+  UINT8    MediaType;
+} EFI_ADAPTER_INFO_MEDIA_TYPE;
 
 ///
 /// EFI_ADAPTER_INFO_NETWORK_BOOT
@@ -63,40 +79,40 @@ typedef struct {
   ///
   /// TRUE if the adapter supports booting from iSCSI IPv4 targets.
   ///
-  BOOLEAN                       iScsiIpv4BootCapablity;
+  BOOLEAN    iScsiIpv4BootCapablity;
   ///
   /// TRUE if the adapter supports booting from iSCSI IPv6 targets.
   ///
-  BOOLEAN                       iScsiIpv6BootCapablity;
+  BOOLEAN    iScsiIpv6BootCapablity;
   ///
   /// TRUE if the adapter supports booting from FCoE targets.
   ///
-  BOOLEAN                       FCoeBootCapablity;
+  BOOLEAN    FCoeBootCapablity;
   ///
   /// TRUE if the adapter supports an offload engine (such as TCP
   /// Offload Engine (TOE)) for its iSCSI or FCoE boot operations.
   ///
-  BOOLEAN                       OffloadCapability;
+  BOOLEAN    OffloadCapability;
   ///
   /// TRUE if the adapter supports multipath I/O (MPIO) for its iSCSI
   /// boot operations.
   ///
-  BOOLEAN                       iScsiMpioCapability;
+  BOOLEAN    iScsiMpioCapability;
   ///
   /// TRUE if the adapter is currently configured to boot from iSCSI
   /// IPv4 targets.
   ///
-  BOOLEAN                       iScsiIpv4Boot;
+  BOOLEAN    iScsiIpv4Boot;
   ///
   /// TRUE if the adapter is currently configured to boot from iSCSI
   /// IPv6 targets.
   ///
-  BOOLEAN                       iScsiIpv6Boot;
+  BOOLEAN    iScsiIpv6Boot;
   ///
   /// TRUE if the adapter is currently configured to boot from FCoE targets.
   ///
-  BOOLEAN                       FCoeBoot;
-}EFI_ADAPTER_INFO_NETWORK_BOOT;
+  BOOLEAN    FCoeBoot;
+} EFI_ADAPTER_INFO_NETWORK_BOOT;
 
 ///
 /// EFI_ADAPTER_INFO_SAN_MAC_ADDRESS
@@ -106,15 +122,25 @@ typedef struct {
   /// Returns the SAN MAC address for the adapter.For adapters that support today's 802.3 ethernet
   /// networking and Fibre-Channel Over Ethernet (FCOE), this conveys the FCOE SAN MAC address from the adapter.
   ///
-  EFI_MAC_ADDRESS                    SanMacAddress;
-}EFI_ADAPTER_INFO_SAN_MAC_ADDRESS;
+  EFI_MAC_ADDRESS    SanMacAddress;
+} EFI_ADAPTER_INFO_SAN_MAC_ADDRESS;
+
+///
+/// EFI_ADAPTER_INFO_UNDI_IPV6_SUPPORT
+///
+typedef struct {
+  ///
+  /// Returns capability of UNDI to support IPv6 traffic.
+  ///
+  BOOLEAN    Ipv6Support;
+} EFI_ADAPTER_INFO_UNDI_IPV6_SUPPORT;
 
 /**
   Returns the current state information for the adapter.
 
   This function returns information of type InformationType from the adapter.
   If an adapter does not support the requested informational type, then
-  EFI_UNSUPPORTED is returned. 
+  EFI_UNSUPPORTED is returned.
 
   @param[in]  This                   A pointer to the EFI_ADAPTER_INFORMATION_PROTOCOL instance.
   @param[in]  InformationType        A pointer to an EFI_GUID that defines the contents of InformationBlock.
@@ -126,8 +152,8 @@ typedef struct {
   @retval EFI_UNSUPPORTED            The InformationType is not known.
   @retval EFI_DEVICE_ERROR           The device reported an error.
   @retval EFI_OUT_OF_RESOURCES       The request could not be completed due to a lack of resources.
-  @retval EFI_INVALID_PARAMETER      This is NULL. 
-  @retval EFI_INVALID_PARAMETER      InformationBlock is NULL. 
+  @retval EFI_INVALID_PARAMETER      This is NULL.
+  @retval EFI_INVALID_PARAMETER      InformationBlock is NULL.
   @retval EFI_INVALID_PARAMETER      InformationBlockSize is NULL.
 
 **/
@@ -179,9 +205,9 @@ EFI_STATUS
   InfoTypesBufferCount.
 
   @param[in]  This                  A pointer to the EFI_ADAPTER_INFORMATION_PROTOCOL instance.
-  @param[out] InfoTypesBuffer       A pointer to the list of InformationType GUID pointers that are supported
+  @param[out] InfoTypesBuffer       A pointer to the array of InformationType GUIDs that are supported
                                     by This.
-  @param[out] InfoTypesBufferCount  A pointer to the number of GUID pointers present in InfoTypesBuffer.
+  @param[out] InfoTypesBufferCount  A pointer to the number of GUIDs present in InfoTypesBuffer.
 
   @retval EFI_SUCCESS               The list of information type GUIDs that are supported on this adapter was
                                     returned in InfoTypesBuffer. The number of information type GUIDs was
@@ -208,17 +234,19 @@ EFI_STATUS
 /// - Gets a list of supported information types for this instance of the protocol.
 ///
 struct _EFI_ADAPTER_INFORMATION_PROTOCOL {
-  EFI_ADAPTER_INFO_GET_INFO              GetInformation;
-  EFI_ADAPTER_INFO_SET_INFO              SetInformation;
-  EFI_ADAPTER_INFO_GET_SUPPORTED_TYPES   GetSupportedTypes;
+  EFI_ADAPTER_INFO_GET_INFO               GetInformation;
+  EFI_ADAPTER_INFO_SET_INFO               SetInformation;
+  EFI_ADAPTER_INFO_GET_SUPPORTED_TYPES    GetSupportedTypes;
 };
 
-extern EFI_GUID gEfiAdapterInformationProtocolGuid;
+extern EFI_GUID  gEfiAdapterInformationProtocolGuid;
 
-extern EFI_GUID gEfiAdapterInfoMediaStateGuid;
+extern EFI_GUID  gEfiAdapterInfoMediaStateGuid;
 
-extern EFI_GUID gEfiAdapterInfoNetworkBootGuid;
+extern EFI_GUID  gEfiAdapterInfoNetworkBootGuid;
 
-extern EFI_GUID gEfiAdapterInfoSanMacAddressGuid;
+extern EFI_GUID  gEfiAdapterInfoSanMacAddressGuid;
+
+extern EFI_GUID  gEfiAdapterInfoUndiIpv6SupportGuid;
 
 #endif

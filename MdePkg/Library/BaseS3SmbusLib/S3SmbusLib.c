@@ -1,21 +1,13 @@
 /** @file
   Smbus Library Services that do SMBus transactions and also enable the operatation
   to be replayed during an S3 resume. This library class maps directly on top
-  of the SmbusLib class. 
+  of the SmbusLib class.
 
-  Copyright (c) 2007, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2007 - 2018, Intel Corporation. All rights reserved.<BR>
 
-  This program and the accompanying materials
-  are licensed and made available under the terms and conditions
-  of the BSD License which accompanies this distribution.  The
-  full text of the license may be found at
-  http://opensource.org/licenses/bsd-license.php
-
-  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
-  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+  SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
-
 
 #include <Base.h>
 
@@ -25,7 +17,7 @@
 #include <Library/S3SmbusLib.h>
 
 /**
-  Saves an SMBus operation to S3 script to be replayed on S3 resume. 
+  Saves an SMBus operation to S3 script to be replayed on S3 resume.
 
   This function provides a standard way to save SMBus operation to S3 boot Script.
   The data can either be of the Length byte, word, or a block of data.
@@ -43,18 +35,18 @@
 **/
 VOID
 InternalSaveSmBusExecToBootScript (
-  IN     EFI_SMBUS_OPERATION        SmbusOperation,
-  IN     UINTN                      SmBusAddress,
-  IN     UINTN                      Length,
-  IN OUT VOID                       *Buffer
+  IN     EFI_SMBUS_OPERATION  SmbusOperation,
+  IN     UINTN                SmBusAddress,
+  IN     UINTN                Length,
+  IN OUT VOID                 *Buffer
   )
 {
-  RETURN_STATUS                Status;
+  RETURN_STATUS  Status;
 
   Status = S3BootScriptSaveSmbusExecute (
              SmBusAddress,
              SmbusOperation,
-            &Length,
+             &Length,
              Buffer
              );
   ASSERT (Status == RETURN_SUCCESS);
@@ -81,12 +73,12 @@ InternalSaveSmBusExecToBootScript (
 VOID
 EFIAPI
 S3SmBusQuickRead (
-  IN  UINTN                     SmBusAddress,
-  OUT RETURN_STATUS             *Status       OPTIONAL
+  IN  UINTN          SmBusAddress,
+  OUT RETURN_STATUS  *Status       OPTIONAL
   )
 {
   SmBusQuickRead (SmBusAddress, Status);
-  
+
   InternalSaveSmBusExecToBootScript (EfiSmbusQuickRead, SmBusAddress, 0, NULL);
 }
 
@@ -111,15 +103,15 @@ S3SmBusQuickRead (
 VOID
 EFIAPI
 S3SmBusQuickWrite (
-  IN  UINTN                     SmBusAddress,
-  OUT RETURN_STATUS             *Status       OPTIONAL
+  IN  UINTN          SmBusAddress,
+  OUT RETURN_STATUS  *Status       OPTIONAL
   )
 {
   SmBusQuickWrite (SmBusAddress, Status);
 
   InternalSaveSmBusExecToBootScript (EfiSmbusQuickWrite, SmBusAddress, 0, NULL);
 }
-  
+
 /**
   Executes an SMBUS receive byte command and saves the value in the S3 script to be replayed
   on S3 resume.
@@ -147,7 +139,7 @@ S3SmBusReceiveByte (
   OUT RETURN_STATUS  *Status        OPTIONAL
   )
 {
-  UINT8   Byte;
+  UINT8  Byte;
 
   Byte = SmBusReceiveByte (SmBusAddress, Status);
 
@@ -185,7 +177,7 @@ S3SmBusSendByte (
   OUT RETURN_STATUS  *Status        OPTIONAL
   )
 {
-  UINT8   Byte;
+  UINT8  Byte;
 
   Byte = SmBusSendByte (SmBusAddress, Value, Status);
 
@@ -220,7 +212,7 @@ S3SmBusReadDataByte (
   OUT RETURN_STATUS  *Status        OPTIONAL
   )
 {
-  UINT8   Byte;
+  UINT8  Byte;
 
   Byte = SmBusReadDataByte (SmBusAddress, Status);
 
@@ -258,7 +250,7 @@ S3SmBusWriteDataByte (
   OUT RETURN_STATUS  *Status        OPTIONAL
   )
 {
-  UINT8   Byte;
+  UINT8  Byte;
 
   Byte = SmBusWriteDataByte (SmBusAddress, Value, Status);
 
@@ -277,7 +269,7 @@ S3SmBusWriteDataByte (
   If Status is not NULL, then the status of the executed command is returned in Status.
   If Length in SmBusAddress is not zero, then ASSERT().
   If any reserved bits of SmBusAddress are set, then ASSERT().
-  
+
   @param  SmBusAddress    Address that encodes the SMBUS Slave Address,
                           SMBUS Command, SMBUS Data Length, and PEC.
   @param  Status          Return status for the executed command.
@@ -294,7 +286,7 @@ S3SmBusReadDataWord (
   )
 {
   UINT16  Word;
-  
+
   Word = SmBusReadDataWord (SmBusAddress, Status);
 
   InternalSaveSmBusExecToBootScript (EfiSmbusReadWord, SmBusAddress, 2, &Word);
@@ -375,7 +367,7 @@ S3SmBusProcessCall (
 
   InternalSaveSmBusExecToBootScript (EfiSmbusProcessCall, SmBusAddress, 2, &Value);
 
-  return Word; 
+  return Word;
 }
 
 /**
@@ -410,7 +402,7 @@ S3SmBusReadBlock (
   OUT RETURN_STATUS  *Status        OPTIONAL
   )
 {
-  UINTN   Length;
+  UINTN  Length;
 
   Length = SmBusReadBlock (SmBusAddress, Buffer, Status);
 
@@ -427,7 +419,7 @@ S3SmBusReadBlock (
   The SMBUS slave address, SMBUS command, and SMBUS length fields of SmBusAddress are required.
   Bytes are written to the SMBUS from Buffer.
   The number of bytes written is returned, and will never return a value larger than 32-bytes.
-  If Status is not NULL, then the status of the executed command is returned in Status.  
+  If Status is not NULL, then the status of the executed command is returned in Status.
   If Length in SmBusAddress is zero or greater than 32, then ASSERT().
   If Buffer is NULL, then ASSERT().
   If any reserved bits of SmBusAddress are set, then ASSERT().
@@ -454,7 +446,7 @@ S3SmBusWriteBlock (
   Length = SmBusWriteBlock (SmBusAddress, Buffer, Status);
 
   InternalSaveSmBusExecToBootScript (EfiSmbusWriteBlock, SmBusAddress, SMBUS_LIB_LENGTH (SmBusAddress), Buffer);
-  
+
   return Length;
 }
 
@@ -492,10 +484,10 @@ S3SmBusBlockProcessCall (
   OUT RETURN_STATUS  *Status        OPTIONAL
   )
 {
-  UINTN   Length;
-  
+  UINTN  Length;
+
   Length = SmBusBlockProcessCall (SmBusAddress, WriteBuffer, ReadBuffer, Status);
-  
+
   InternalSaveSmBusExecToBootScript (EfiSmbusBWBRProcessCall, SmBusAddress, SMBUS_LIB_LENGTH (SmBusAddress), ReadBuffer);
 
   return Length;

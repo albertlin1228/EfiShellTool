@@ -1,14 +1,8 @@
 /** @file
   Timer Library functions built upon local APIC on IA32/x64.
 
-  Copyright (c) 2006 - 2013, Intel Corporation. All rights reserved.<BR>
-  This program and the accompanying materials
-  are licensed and made available under the terms and conditions of the BSD License
-  which accompanies this distribution.  The full text of the license may be found at
-  http://opensource.org/licenses/bsd-license.php.
-
-  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
-  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+  Copyright (c) 2006 - 2015, Intel Corporation. All rights reserved.<BR>
+  SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
 
@@ -19,17 +13,18 @@
 #include <Library/PcdLib.h>
 #include <Library/DebugLib.h>
 
-#define APIC_LVTERR     0x370
-#define APIC_TMICT      0x380
-#define APIC_TMCCT      0x390
-#define APIC_TDCR       0x3e0
+#define APIC_SVR     0x0f0
+#define APIC_LVTERR  0x370
+#define APIC_TMICT   0x380
+#define APIC_TMCCT   0x390
+#define APIC_TDCR    0x3e0
 
 //
 // The following array is used in calculating the frequency of local APIC
 // timer. Refer to IA-32 developers' manual for more details.
 //
 GLOBAL_REMOVE_IF_UNREFERENCED
-CONST UINT8                           mTimerLibLocalApicDivisor[] = {
+CONST UINT8  mTimerLibLocalApicDivisor[] = {
   0x02, 0x04, 0x08, 0x10,
   0x02, 0x04, 0x08, 0x10,
   0x20, 0x40, 0x80, 0x01,
@@ -38,6 +33,11 @@ CONST UINT8                           mTimerLibLocalApicDivisor[] = {
 
 /**
   Internal function to retrieve the base address of local APIC.
+
+  This function will ASSERT if:
+  The local APIC is not globally enabled.
+  The local APIC is not working under XAPIC mode.
+  The local APIC is not software enabled.
 
   @return The base address of local APIC
 
@@ -48,7 +48,32 @@ InternalX86GetApicBase (
   VOID
   )
 {
-  return (UINTN)AsmMsrBitFieldRead64 (27, 12, 35) << 12;
+  UINTN  MsrValue;
+  UINTN  ApicBase;
+
+  MsrValue = (UINTN)AsmReadMsr64 (27);
+  ApicBase = MsrValue & 0xffffff000ULL;
+
+  //
+  // Check the APIC Global Enable bit (bit 11) in IA32_APIC_BASE MSR.
+  // This bit will be 1, if local APIC is globally enabled.
+  //
+  ASSERT ((MsrValue & BIT11) != 0);
+
+  //
+  // Check the APIC Extended Mode bit (bit 10) in IA32_APIC_BASE MSR.
+  // This bit will be 0, if local APIC is under XAPIC mode.
+  //
+  ASSERT ((MsrValue & BIT10) == 0);
+
+  //
+  // Check the APIC Software Enable/Disable bit (bit 8) in Spurious-Interrupt
+  // Vector Register.
+  // This bit will be 1, if local APIC is software enabled.
+  //
+  ASSERT ((MmioRead32 (ApicBase + APIC_SVR) & BIT8) != 0);
+
+  return ApicBase;
 }
 
 /**
@@ -62,11 +87,11 @@ InternalX86GetApicBase (
 UINT32
 EFIAPI
 InternalX86GetTimerFrequency (
-  IN      UINTN                     ApicBase
+  IN      UINTN  ApicBase
   )
 {
   return
-    PcdGet32(PcdFSBClock) /
+    PcdGet32 (PcdFSBClock) /
     mTimerLibLocalApicDivisor[MmioBitFieldRead32 (ApicBase + APIC_TDCR, 0, 3)];
 }
 
@@ -81,7 +106,7 @@ InternalX86GetTimerFrequency (
 INT32
 EFIAPI
 InternalX86GetTimerTick (
-  IN      UINTN                     ApicBase
+  IN      UINTN  ApicBase
   )
 {
   return MmioRead32 (ApicBase + APIC_TMCCT);
@@ -97,7 +122,7 @@ InternalX86GetTimerTick (
 **/
 UINT32
 InternalX86GetInitTimerCount (
-  IN      UINTN                     ApicBase
+  IN      UINTN  ApicBase
   )
 {
   return MmioRead32 (ApicBase + APIC_TMICT);
@@ -109,6 +134,9 @@ InternalX86GetInitTimerCount (
   Stalls the CPU for at least the given number of ticks. It's invoked by
   MicroSecondDelay() and NanoSecondDelay().
 
+  This function will ASSERT if the APIC timer intial count returned from
+  InternalX86GetInitTimerCount() is zero.
+
   @param  ApicBase  The base address of memory mapped registers of local APIC.
   @param  Delay     A period of time to delay in ticks.
 
@@ -116,14 +144,14 @@ InternalX86GetInitTimerCount (
 VOID
 EFIAPI
 InternalX86Delay (
-  IN      UINTN                     ApicBase,
-  IN      UINT32                    Delay
+  IN      UINTN   ApicBase,
+  IN      UINT32  Delay
   )
 {
-  INT32                             Ticks;
-  UINT32                            Times;
-  UINT32                            InitCount;
-  UINT32                            StartTick;
+  INT32   Ticks;
+  UINT32  Times;
+  UINT32  InitCount;
+  UINT32  StartTick;
 
   //
   // In case Delay is too larger, separate it into several small delay slot.
@@ -133,13 +161,14 @@ InternalX86Delay (
   // Delay and the Init Count.
   //
   InitCount = InternalX86GetInitTimerCount (ApicBase);
-  Times     = Delay / (InitCount / 2);
-  Delay     = Delay % (InitCount / 2);
+  ASSERT (InitCount != 0);
+  Times = Delay / (InitCount / 2);
+  Delay = Delay % (InitCount / 2);
 
   //
   // Get Start Tick and do delay
   //
-  StartTick  = InternalX86GetTimerTick (ApicBase);
+  StartTick = InternalX86GetTimerTick (ApicBase);
   do {
     //
     // Wait until time out by Delay value
@@ -179,10 +208,10 @@ InternalX86Delay (
 UINTN
 EFIAPI
 MicroSecondDelay (
-  IN      UINTN                     MicroSeconds
+  IN      UINTN  MicroSeconds
   )
 {
-  UINTN                             ApicBase;
+  UINTN  ApicBase;
 
   ApicBase = InternalX86GetApicBase ();
   InternalX86Delay (
@@ -211,10 +240,10 @@ MicroSecondDelay (
 UINTN
 EFIAPI
 NanoSecondDelay (
-  IN      UINTN                     NanoSeconds
+  IN      UINTN  NanoSeconds
   )
 {
-  UINTN                             ApicBase;
+  UINTN  ApicBase;
 
   ApicBase = InternalX86GetApicBase ();
   InternalX86Delay (
@@ -276,11 +305,11 @@ GetPerformanceCounter (
 UINT64
 EFIAPI
 GetPerformanceCounterProperties (
-  OUT      UINT64                    *StartValue,  OPTIONAL
-  OUT      UINT64                    *EndValue     OPTIONAL
+  OUT      UINT64  *StartValue   OPTIONAL,
+  OUT      UINT64  *EndValue     OPTIONAL
   )
 {
-  UINTN                             ApicBase;
+  UINTN  ApicBase;
 
   ApicBase = InternalX86GetApicBase ();
 
@@ -292,7 +321,7 @@ GetPerformanceCounterProperties (
     *EndValue = 0;
   }
 
-  return (UINT64) InternalX86GetTimerFrequency (ApicBase);
+  return (UINT64)InternalX86GetTimerFrequency (ApicBase);
 }
 
 /**
@@ -309,7 +338,7 @@ GetPerformanceCounterProperties (
 UINT64
 EFIAPI
 GetTimeInNanoSecond (
-  IN      UINT64                     Ticks
+  IN      UINT64  Ticks
   )
 {
   UINT64  Frequency;
@@ -331,9 +360,9 @@ GetTimeInNanoSecond (
   // Since 2^29 < 1,000,000,000 = 0x3B9ACA00 < 2^30, Remainder should < 2^(64-30) = 2^34,
   // i.e. highest bit set in Remainder should <= 33.
   //
-  Shift = MAX (0, HighBitSet64 (Remainder) - 33);
-  Remainder = RShiftU64 (Remainder, (UINTN) Shift);
-  Frequency = RShiftU64 (Frequency, (UINTN) Shift);
+  Shift        = MAX (0, HighBitSet64 (Remainder) - 33);
+  Remainder    = RShiftU64 (Remainder, (UINTN)Shift);
+  Frequency    = RShiftU64 (Frequency, (UINTN)Shift);
   NanoSeconds += DivU64x64Remainder (MultU64x32 (Remainder, 1000000000u), Frequency, NULL);
 
   return NanoSeconds;

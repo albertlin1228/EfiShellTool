@@ -1,0 +1,16 @@
+#**********************************************************************
+#*                                                                    *
+#*   Copyright (c) 1985-2022, American Megatrends International LLC.  *
+#*                                                                    *
+#*      All rights reserved. Subject to AMI licensing agreement.      *
+#*                                                                    *
+#**********************************************************************
+
+#**********************************************************************
+## @file
+# Microsoft Visual Studio 2015 Tool Chain Definition
+#**********************************************************************
+
+!include MSFT_DEF.txt
+
+*_VS2019_*_*_FAMILY          = MSFT

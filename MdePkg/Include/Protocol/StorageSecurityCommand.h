@@ -5,14 +5,8 @@
   storage devices without specific knowledge of the type of device or controller
   that manages the device.
 
-  Copyright (c) 2011, Intel Corporation. All rights reserved.<BR>
-  This program and the accompanying materials
-  are licensed and made available under the terms and conditions of the BSD License
-  which accompanies this distribution.  The full text of the license may be found at
-  http://opensource.org/licenses/bsd-license.php
-
-  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
-  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+  Copyright (c) 2011 - 2018, Intel Corporation. All rights reserved.<BR>
+  SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
 
@@ -24,7 +18,7 @@
     0xC88B0B6D, 0x0DFC, 0x49A7, {0x9C, 0xB4, 0x49, 0x07, 0x4B, 0x4C, 0x3A, 0x78 } \
   }
 
-typedef struct _EFI_STORAGE_SECURITY_COMMAND_PROTOCOL  EFI_STORAGE_SECURITY_COMMAND_PROTOCOL;
+typedef struct _EFI_STORAGE_SECURITY_COMMAND_PROTOCOL EFI_STORAGE_SECURITY_COMMAND_PROTOCOL;
 
 /**
   Send a security protocol command to a device that receives data and/or the result
@@ -149,7 +143,7 @@ EFI_STATUS
                                        of the security protocol command. A Timeout value of 0
                                        means that this function will wait indefinitely for the
                                        security protocol command to execute. If Timeout is greater
-                                       than zero, then this function will return EFI_TIMEOUT if the 
+                                       than zero, then this function will return EFI_TIMEOUT if the
                                        time required to execute the receive data command is greater than Timeout.
   @param  SecurityProtocolId           The value of the "Security Protocol" parameter of
                                        the security protocol command to be sent.
@@ -172,7 +166,7 @@ EFI_STATUS
 **/
 typedef
 EFI_STATUS
-(EFIAPI *EFI_STORAGE_SECURITY_SEND_DATA) (
+(EFIAPI *EFI_STORAGE_SECURITY_SEND_DATA)(
   IN EFI_STORAGE_SECURITY_COMMAND_PROTOCOL    *This,
   IN UINT32                                   MediaId,
   IN UINT64                                   Timeout,
@@ -180,7 +174,7 @@ EFI_STATUS
   IN UINT16                                   SecurityProtocolSpecificData,
   IN UINTN                                    PayloadBufferSize,
   IN VOID                                     *PayloadBuffer
-);
+  );
 
 ///
 /// The EFI_STORAGE_SECURITY_COMMAND_PROTOCOL is used to send security protocol
@@ -203,10 +197,10 @@ EFI_STATUS
 /// or their successors.
 ///
 struct _EFI_STORAGE_SECURITY_COMMAND_PROTOCOL {
-  EFI_STORAGE_SECURITY_RECEIVE_DATA ReceiveData;
-  EFI_STORAGE_SECURITY_SEND_DATA    SendData;
+  EFI_STORAGE_SECURITY_RECEIVE_DATA    ReceiveData;
+  EFI_STORAGE_SECURITY_SEND_DATA       SendData;
 };
 
-extern EFI_GUID gEfiStorageSecurityCommandProtocolGuid;
+extern EFI_GUID  gEfiStorageSecurityCommandProtocolGuid;
 
 #endif

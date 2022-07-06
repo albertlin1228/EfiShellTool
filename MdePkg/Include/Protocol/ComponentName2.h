@@ -1,16 +1,10 @@
 /** @file
   UEFI Component Name 2 Protocol as defined in the UEFI 2.1 specification.
-  This protocol is used to retrieve user readable names of drivers 
+  This protocol is used to retrieve user readable names of drivers
   and controllers managed by UEFI Drivers.
 
-  Copyright (c) 2006 - 2011, Intel Corporation. All rights reserved.<BR>
-  This program and the accompanying materials                          
-  are licensed and made available under the terms and conditions of the BSD License         
-  which accompanies this distribution.  The full text of the license may be found at        
-  http://opensource.org/licenses/bsd-license.php                                            
-
-  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,                     
-  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.             
+  Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
+  SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
 
@@ -23,8 +17,7 @@
 #define EFI_COMPONENT_NAME2_PROTOCOL_GUID \
   {0x6a7a5cff, 0xe8d9, 0x4f70, { 0xba, 0xda, 0x75, 0xab, 0x30, 0x25, 0xce, 0x14 } }
 
-typedef struct _EFI_COMPONENT_NAME2_PROTOCOL  EFI_COMPONENT_NAME2_PROTOCOL;
-
+typedef struct _EFI_COMPONENT_NAME2_PROTOCOL EFI_COMPONENT_NAME2_PROTOCOL;
 
 /**
   Retrieves a string that is the user readable name of
@@ -32,7 +25,7 @@ typedef struct _EFI_COMPONENT_NAME2_PROTOCOL  EFI_COMPONENT_NAME2_PROTOCOL;
 
   @param  This       A pointer to the
                      EFI_COMPONENT_NAME2_PROTOCOL instance.
-  
+
   @param  Language   A pointer to a Null-terminated ASCII string
                      array indicating the language. This is the
                      language of the driver name that the caller
@@ -42,7 +35,7 @@ typedef struct _EFI_COMPONENT_NAME2_PROTOCOL  EFI_COMPONENT_NAME2_PROTOCOL;
                      driver is up to the driver writer. Language
                      is specified in RFC 4646 language code
                      format.
-  
+
   @param  DriverName A pointer to the string to return.
                      This string is the name of the
                      driver specified by This in the language
@@ -52,11 +45,11 @@ typedef struct _EFI_COMPONENT_NAME2_PROTOCOL  EFI_COMPONENT_NAME2_PROTOCOL;
                                 Driver specified by This and the
                                 language specified by Language
                                 was returned in DriverName.
-  
+
   @retval EFI_INVALID_PARAMETER Language is NULL.
-  
+
   @retval EFI_INVALID_PARAMETER DriverName is NULL.
-  
+
   @retval EFI_UNSUPPORTED       The driver specified by This
                                 does not support the language
                                 specified by Language.
@@ -69,7 +62,6 @@ EFI_STATUS
   IN  CHAR8                                *Language,
   OUT CHAR16                               **DriverName
   );
-
 
 /**
   Retrieves a string that is the user readable name of
@@ -150,23 +142,23 @@ EFI_STATUS
   );
 
 ///
-/// This protocol is used to retrieve user readable names of drivers 
+/// This protocol is used to retrieve user readable names of drivers
 /// and controllers managed by UEFI Drivers.
 ///
 struct _EFI_COMPONENT_NAME2_PROTOCOL {
-  EFI_COMPONENT_NAME2_GET_DRIVER_NAME      GetDriverName;
-  EFI_COMPONENT_NAME2_GET_CONTROLLER_NAME  GetControllerName;
+  EFI_COMPONENT_NAME2_GET_DRIVER_NAME        GetDriverName;
+  EFI_COMPONENT_NAME2_GET_CONTROLLER_NAME    GetControllerName;
 
   ///
   /// A Null-terminated ASCII string array that contains one or more
   /// supported language codes. This is the list of language codes that
   /// this protocol supports. The number of languages supported by a
   /// driver is up to the driver writer. SupportedLanguages is
-  /// specified in RFC 4646 format.  
+  /// specified in RFC 4646 format.
   ///
-  CHAR8                                    *SupportedLanguages;
+  CHAR8    *SupportedLanguages;
 };
 
-extern EFI_GUID gEfiComponentName2ProtocolGuid;
+extern EFI_GUID  gEfiComponentName2ProtocolGuid;
 
 #endif

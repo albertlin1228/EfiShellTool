@@ -3,16 +3,9 @@
   and the standard requests defined in USB 1.1 spec.
 
 Copyright (c) 2006 - 2008, Intel Corporation. All rights reserved.<BR>
-This program and the accompanying materials
-are licensed and made available under the terms and conditions of the BSD License
-which accompanies this distribution.  The full text of the license may be found at
-http://opensource.org/licenses/bsd-license.php
-
-THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
-WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
-
 
 #ifndef __USB_DXE_LIB_H__
 #define __USB_DXE_LIB_H__
@@ -41,11 +34,10 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 EFI_STATUS
 EFIAPI
 UsbGetHidDescriptor (
-  IN  EFI_USB_IO_PROTOCOL        *UsbIo,
-  IN  UINT8                      Interface,
-  OUT EFI_USB_HID_DESCRIPTOR     *HidDescriptor
+  IN  EFI_USB_IO_PROTOCOL     *UsbIo,
+  IN  UINT8                   Interface,
+  OUT EFI_USB_HID_DESCRIPTOR  *HidDescriptor
   );
-
 
 /**
   Get the report descriptor of the specified USB HID interface.
@@ -71,10 +63,10 @@ UsbGetHidDescriptor (
 EFI_STATUS
 EFIAPI
 UsbGetReportDescriptor (
-  IN  EFI_USB_IO_PROTOCOL     *UsbIo,
-  IN  UINT8                   Interface,
-  IN  UINT16                  DescriptorLength,
-  OUT UINT8                   *DescriptorBuffer
+  IN  EFI_USB_IO_PROTOCOL  *UsbIo,
+  IN  UINT8                Interface,
+  IN  UINT16               DescriptorLength,
+  OUT UINT8                *DescriptorBuffer
   );
 
 /**
@@ -97,9 +89,9 @@ UsbGetReportDescriptor (
 EFI_STATUS
 EFIAPI
 UsbGetProtocolRequest (
-  IN EFI_USB_IO_PROTOCOL     *UsbIo,
-  IN UINT8                   Interface,
-  OUT UINT8                   *Protocol
+  IN EFI_USB_IO_PROTOCOL  *UsbIo,
+  IN UINT8                Interface,
+  OUT UINT8               *Protocol
   );
 
 /**
@@ -121,9 +113,9 @@ UsbGetProtocolRequest (
 EFI_STATUS
 EFIAPI
 UsbSetProtocolRequest (
-  IN EFI_USB_IO_PROTOCOL     *UsbIo,
-  IN UINT8                   Interface,
-  IN UINT8                   Protocol
+  IN EFI_USB_IO_PROTOCOL  *UsbIo,
+  IN UINT8                Interface,
+  IN UINT8                Protocol
   );
 
 /**
@@ -146,10 +138,10 @@ UsbSetProtocolRequest (
 EFI_STATUS
 EFIAPI
 UsbSetIdleRequest (
-  IN EFI_USB_IO_PROTOCOL     *UsbIo,
-  IN UINT8                   Interface,
-  IN UINT8                   ReportId,
-  IN UINT8                   Duration
+  IN EFI_USB_IO_PROTOCOL  *UsbIo,
+  IN UINT8                Interface,
+  IN UINT8                ReportId,
+  IN UINT8                Duration
   );
 
 /**
@@ -173,10 +165,10 @@ UsbSetIdleRequest (
 EFI_STATUS
 EFIAPI
 UsbGetIdleRequest (
-  IN  EFI_USB_IO_PROTOCOL     *UsbIo,
-  IN  UINT8                   Interface,
-  IN  UINT8                   ReportId,
-  OUT UINT8                   *Duration
+  IN  EFI_USB_IO_PROTOCOL  *UsbIo,
+  IN  UINT8                Interface,
+  IN  UINT8                ReportId,
+  OUT UINT8                *Duration
   );
 
 /**
@@ -203,12 +195,12 @@ UsbGetIdleRequest (
 EFI_STATUS
 EFIAPI
 UsbSetReportRequest (
-  IN EFI_USB_IO_PROTOCOL     *UsbIo,
-  IN UINT8                   Interface,
-  IN UINT8                   ReportId,
-  IN UINT8                   ReportType,
-  IN UINT16                  ReportLen,
-  IN UINT8                   *Report
+  IN EFI_USB_IO_PROTOCOL  *UsbIo,
+  IN UINT8                Interface,
+  IN UINT8                ReportId,
+  IN UINT8                ReportType,
+  IN UINT16               ReportLen,
+  IN UINT8                *Report
   );
 
 /**
@@ -238,12 +230,12 @@ UsbSetReportRequest (
 EFI_STATUS
 EFIAPI
 UsbGetReportRequest (
-  IN  EFI_USB_IO_PROTOCOL     *UsbIo,
-  IN  UINT8                   Interface,
-  IN  UINT8                   ReportId,
-  IN  UINT8                   ReportType,
-  IN  UINT16                  ReportLen,
-  OUT UINT8                   *Report
+  IN  EFI_USB_IO_PROTOCOL  *UsbIo,
+  IN  UINT8                Interface,
+  IN  UINT8                ReportId,
+  IN  UINT8                ReportType,
+  IN  UINT16               ReportLen,
+  OUT UINT8                *Report
   );
 
 /**
@@ -275,12 +267,12 @@ UsbGetReportRequest (
 EFI_STATUS
 EFIAPI
 UsbGetDescriptor (
-  IN  EFI_USB_IO_PROTOCOL     *UsbIo,
-  IN  UINT16                  Value,
-  IN  UINT16                  Index,
-  IN  UINT16                  DescriptorLength,
-  OUT VOID                    *Descriptor,
-  OUT UINT32                  *Status
+  IN  EFI_USB_IO_PROTOCOL  *UsbIo,
+  IN  UINT16               Value,
+  IN  UINT16               Index,
+  IN  UINT16               DescriptorLength,
+  OUT VOID                 *Descriptor,
+  OUT UINT32               *Status
   );
 
 /**
@@ -309,12 +301,12 @@ UsbGetDescriptor (
 EFI_STATUS
 EFIAPI
 UsbSetDescriptor (
-  IN  EFI_USB_IO_PROTOCOL     *UsbIo,
-  IN  UINT16                  Value,
-  IN  UINT16                  Index,
-  IN  UINT16                  DescriptorLength,
-  IN  VOID                    *Descriptor,
-  OUT UINT32                  *Status
+  IN  EFI_USB_IO_PROTOCOL  *UsbIo,
+  IN  UINT16               Value,
+  IN  UINT16               Index,
+  IN  UINT16               DescriptorLength,
+  IN  VOID                 *Descriptor,
+  OUT UINT32               *Status
   );
 
 /**
@@ -341,10 +333,10 @@ UsbSetDescriptor (
 EFI_STATUS
 EFIAPI
 UsbGetInterface (
-  IN  EFI_USB_IO_PROTOCOL     *UsbIo,
-  IN  UINT16                  Interface,
-  OUT UINT16                  *AlternateSetting,
-  OUT UINT32                  *Status
+  IN  EFI_USB_IO_PROTOCOL  *UsbIo,
+  IN  UINT16               Interface,
+  OUT UINT16               *AlternateSetting,
+  OUT UINT32               *Status
   );
 
 /**
@@ -370,10 +362,10 @@ UsbGetInterface (
 EFI_STATUS
 EFIAPI
 UsbSetInterface (
-  IN  EFI_USB_IO_PROTOCOL     *UsbIo,
-  IN  UINT16                  Interface,
-  IN  UINT16                  AlternateSetting,
-  OUT UINT32                  *Status
+  IN  EFI_USB_IO_PROTOCOL  *UsbIo,
+  IN  UINT16               Interface,
+  IN  UINT16               AlternateSetting,
+  OUT UINT32               *Status
   );
 
 /**
@@ -399,9 +391,9 @@ UsbSetInterface (
 EFI_STATUS
 EFIAPI
 UsbGetConfiguration (
-  IN  EFI_USB_IO_PROTOCOL     *UsbIo,
-  OUT UINT16                  *ConfigurationValue,
-  OUT UINT32                  *Status
+  IN  EFI_USB_IO_PROTOCOL  *UsbIo,
+  OUT UINT16               *ConfigurationValue,
+  OUT UINT32               *Status
   );
 
 /**
@@ -426,9 +418,9 @@ UsbGetConfiguration (
 EFI_STATUS
 EFIAPI
 UsbSetConfiguration (
-  IN  EFI_USB_IO_PROTOCOL     *UsbIo,
-  IN  UINT16                  ConfigurationValue,
-  OUT UINT32                  *Status
+  IN  EFI_USB_IO_PROTOCOL  *UsbIo,
+  IN  UINT16               ConfigurationValue,
+  OUT UINT32               *Status
   );
 
 /**
@@ -457,11 +449,11 @@ UsbSetConfiguration (
 EFI_STATUS
 EFIAPI
 UsbSetFeature (
-  IN  EFI_USB_IO_PROTOCOL     *UsbIo,
-  IN  USB_TYPES_DEFINITION    Recipient,
-  IN  UINT16                  Value,
-  IN  UINT16                  Target,
-  OUT UINT32                  *Status
+  IN  EFI_USB_IO_PROTOCOL   *UsbIo,
+  IN  USB_TYPES_DEFINITION  Recipient,
+  IN  UINT16                Value,
+  IN  UINT16                Target,
+  OUT UINT32                *Status
   );
 
 /**
@@ -490,11 +482,11 @@ UsbSetFeature (
 EFI_STATUS
 EFIAPI
 UsbClearFeature (
-  IN  EFI_USB_IO_PROTOCOL     *UsbIo,
-  IN  USB_TYPES_DEFINITION    Recipient,
-  IN  UINT16                  Value,
-  IN  UINT16                  Target,
-  OUT UINT32                  *Status
+  IN  EFI_USB_IO_PROTOCOL   *UsbIo,
+  IN  USB_TYPES_DEFINITION  Recipient,
+  IN  UINT16                Value,
+  IN  UINT16                Target,
+  OUT UINT32                *Status
   );
 
 /**
@@ -524,11 +516,11 @@ UsbClearFeature (
 EFI_STATUS
 EFIAPI
 UsbGetStatus (
-  IN  EFI_USB_IO_PROTOCOL     *UsbIo,
-  IN  USB_TYPES_DEFINITION    Recipient,
-  IN  UINT16                  Target,
-  OUT UINT16                  *DeviceStatus,
-  OUT UINT32                  *Status
+  IN  EFI_USB_IO_PROTOCOL   *UsbIo,
+  IN  USB_TYPES_DEFINITION  Recipient,
+  IN  UINT16                Target,
+  OUT UINT16                *DeviceStatus,
+  OUT UINT32                *Status
   );
 
 /**
@@ -555,9 +547,9 @@ UsbGetStatus (
 EFI_STATUS
 EFIAPI
 UsbClearEndpointHalt (
-  IN  EFI_USB_IO_PROTOCOL     *UsbIo,
-  IN  UINT8                   Endpoint,
-  OUT UINT32                  *Status
+  IN  EFI_USB_IO_PROTOCOL  *UsbIo,
+  IN  UINT8                Endpoint,
+  OUT UINT32               *Status
   );
 
 #endif

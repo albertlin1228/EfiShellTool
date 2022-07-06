@@ -2,19 +2,11 @@
   Unaligned access functions of BaseLib.
 
   Copyright (c) 2006 - 2010, Intel Corporation. All rights reserved.<BR>
-  This program and the accompanying materials
-  are licensed and made available under the terms and conditions of the BSD License
-  which accompanies this distribution.  The full text of the license may be found at
-  http://opensource.org/licenses/bsd-license.php.
-
-  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
-  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+  SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
 
-
 #include "BaseLibInternals.h"
-
 
 /**
   Reads a 16-bit value from memory that may be unaligned.
@@ -32,7 +24,7 @@
 UINT16
 EFIAPI
 ReadUnaligned16 (
-  IN CONST UINT16              *Buffer
+  IN CONST UINT16  *Buffer
   )
 {
   ASSERT (Buffer != NULL);
@@ -58,8 +50,8 @@ ReadUnaligned16 (
 UINT16
 EFIAPI
 WriteUnaligned16 (
-  OUT UINT16                    *Buffer,
-  IN  UINT16                    Value
+  OUT UINT16  *Buffer,
+  IN  UINT16  Value
   )
 {
   ASSERT (Buffer != NULL);
@@ -83,7 +75,7 @@ WriteUnaligned16 (
 UINT32
 EFIAPI
 ReadUnaligned24 (
-  IN CONST UINT32              *Buffer
+  IN CONST UINT32  *Buffer
   )
 {
   ASSERT (Buffer != NULL);
@@ -109,8 +101,8 @@ ReadUnaligned24 (
 UINT32
 EFIAPI
 WriteUnaligned24 (
-  OUT UINT32                    *Buffer,
-  IN  UINT32                    Value
+  OUT UINT32  *Buffer,
+  IN  UINT32  Value
   )
 {
   ASSERT (Buffer != NULL);
@@ -135,7 +127,7 @@ WriteUnaligned24 (
 UINT32
 EFIAPI
 ReadUnaligned32 (
-  IN CONST UINT32              *Buffer
+  IN CONST UINT32  *Buffer
   )
 {
   ASSERT (Buffer != NULL);
@@ -161,8 +153,8 @@ ReadUnaligned32 (
 UINT32
 EFIAPI
 WriteUnaligned32 (
-  OUT UINT32                    *Buffer,
-  IN  UINT32                    Value
+  OUT UINT32  *Buffer,
+  IN  UINT32  Value
   )
 {
   ASSERT (Buffer != NULL);
@@ -186,7 +178,7 @@ WriteUnaligned32 (
 UINT64
 EFIAPI
 ReadUnaligned64 (
-  IN CONST UINT64              *Buffer
+  IN CONST UINT64  *Buffer
   )
 {
   ASSERT (Buffer != NULL);
@@ -212,8 +204,8 @@ ReadUnaligned64 (
 UINT64
 EFIAPI
 WriteUnaligned64 (
-  OUT UINT64                    *Buffer,
-  IN  UINT64                    Value
+  OUT UINT64  *Buffer,
+  IN  UINT64  Value
   )
 {
   ASSERT (Buffer != NULL);

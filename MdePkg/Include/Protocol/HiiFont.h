@@ -1,14 +1,11 @@
 /** @file
   The file provides services to retrieve font information.
-  
-Copyright (c) 2006 - 2010, Intel Corporation. All rights reserved.<BR>
-This program and the accompanying materials are licensed and made available under 
-the terms and conditions of the BSD License that accompanies this distribution.  
-The full text of the license may be found at
-http://opensource.org/licenses/bsd-license.php.                                          
-    
-THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,                     
-WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.             
+
+Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
+SPDX-License-Identifier: BSD-2-Clause-Patent
+
+  @par Revision Reference:
+  This Protocol was introduced in UEFI Specification 2.1.
 
 **/
 
@@ -23,21 +20,21 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 
 typedef struct _EFI_HII_FONT_PROTOCOL EFI_HII_FONT_PROTOCOL;
 
-typedef VOID    *EFI_FONT_HANDLE;
+typedef VOID *EFI_FONT_HANDLE;
 
 ///
 /// EFI_HII_OUT_FLAGS.
-/// 
-typedef UINT32  EFI_HII_OUT_FLAGS;
+///
+typedef UINT32 EFI_HII_OUT_FLAGS;
 
-#define EFI_HII_OUT_FLAG_CLIP         0x00000001
-#define EFI_HII_OUT_FLAG_WRAP         0x00000002
-#define EFI_HII_OUT_FLAG_CLIP_CLEAN_Y 0x00000004
-#define EFI_HII_OUT_FLAG_CLIP_CLEAN_X 0x00000008
-#define EFI_HII_OUT_FLAG_TRANSPARENT  0x00000010
-#define EFI_HII_IGNORE_IF_NO_GLYPH    0x00000020
-#define EFI_HII_IGNORE_LINE_BREAK     0x00000040
-#define EFI_HII_DIRECT_TO_SCREEN      0x00000080
+#define EFI_HII_OUT_FLAG_CLIP          0x00000001
+#define EFI_HII_OUT_FLAG_WRAP          0x00000002
+#define EFI_HII_OUT_FLAG_CLIP_CLEAN_Y  0x00000004
+#define EFI_HII_OUT_FLAG_CLIP_CLEAN_X  0x00000008
+#define EFI_HII_OUT_FLAG_TRANSPARENT   0x00000010
+#define EFI_HII_IGNORE_IF_NO_GLYPH     0x00000020
+#define EFI_HII_IGNORE_LINE_BREAK      0x00000040
+#define EFI_HII_DIRECT_TO_SCREEN       0x00000080
 
 /**
   Definition of EFI_HII_ROW_INFO.
@@ -46,26 +43,26 @@ typedef struct _EFI_HII_ROW_INFO {
   ///
   /// The index of the first character in the string which is displayed on the line.
   ///
-  UINTN   StartIndex;
+  UINTN    StartIndex;
   ///
   /// The index of the last character in the string which is displayed on the line.
-  /// If this is the same as StartIndex, then no characters are displayed.  
+  /// If this is the same as StartIndex, then no characters are displayed.
   ///
-  UINTN   EndIndex;
-  UINTN   LineHeight; ///< The height of the line, in pixels.
-  UINTN   LineWidth;  ///< The width of the text on the line, in pixels.
-  
+  UINTN    EndIndex;
+  UINTN    LineHeight; ///< The height of the line, in pixels.
+  UINTN    LineWidth;  ///< The width of the text on the line, in pixels.
+
   ///
   /// The font baseline offset in pixels from the bottom of the row, or 0 if none.
   ///
-  UINTN   BaselineOffset;
+  UINTN    BaselineOffset;
 } EFI_HII_ROW_INFO;
 
 ///
 /// Font info flag. All flags (FONT, SIZE, STYLE, and COLOR) are defined.
 /// They are defined as EFI_FONT_INFO_***
 ///
-typedef UINT32  EFI_FONT_INFO_MASK;
+typedef UINT32 EFI_FONT_INFO_MASK;
 
 #define EFI_FONT_INFO_SYS_FONT        0x00000001
 #define EFI_FONT_INFO_SYS_SIZE        0x00000002
@@ -80,11 +77,11 @@ typedef UINT32  EFI_FONT_INFO_MASK;
 
 //
 // EFI_FONT_INFO
-// 
+//
 typedef struct {
-  EFI_HII_FONT_STYLE FontStyle;
-  UINT16             FontSize;      ///< character cell height in pixels
-  CHAR16             FontName[1];
+  EFI_HII_FONT_STYLE    FontStyle;
+  UINT16                FontSize;   ///< character cell height in pixels
+  CHAR16                FontName[1];
 } EFI_FONT_INFO;
 
 /**
@@ -100,10 +97,10 @@ typedef struct {
   font requested and the font available.
 **/
 typedef struct _EFI_FONT_DISPLAY_INFO {
-  EFI_GRAPHICS_OUTPUT_BLT_PIXEL ForegroundColor;
-  EFI_GRAPHICS_OUTPUT_BLT_PIXEL BackgroundColor;
-  EFI_FONT_INFO_MASK            FontInfoMask;
-  EFI_FONT_INFO                 FontInfo;  
+  EFI_GRAPHICS_OUTPUT_BLT_PIXEL    ForegroundColor;
+  EFI_GRAPHICS_OUTPUT_BLT_PIXEL    BackgroundColor;
+  EFI_FONT_INFO_MASK               FontInfoMask;
+  EFI_FONT_INFO                    FontInfo;
 } EFI_FONT_DISPLAY_INFO;
 
 /**
@@ -155,7 +152,7 @@ typedef struct _EFI_FONT_DISPLAY_INFO {
 
   @param Flags            Describes how the string is to be drawn.
 
-  @param String           Points to the null-terminated string to be 
+  @param String           Points to the null-terminated string to be
 
   @param StringInfo       Points to the string output information,
                           including the color and font. If NULL, then
@@ -203,9 +200,9 @@ typedef struct _EFI_FONT_DISPLAY_INFO {
                           overlap.
 
   @retval EFI_SUCCESS           The string was successfully updated.
-  
+
   @retval EFI_OUT_OF_RESOURCES  Unable to allocate an output buffer for RowInfoArray or Blt.
-  
+
   @retval EFI_INVALID_PARAMETER The String or Blt was NULL.
 
   @retval EFI_INVALID_PARAMETER Flags were invalid combination.
@@ -223,9 +220,7 @@ EFI_STATUS
   OUT       EFI_HII_ROW_INFO      **RowInfoArray OPTIONAL,
   OUT       UINTN                 *RowInfoArraySize OPTIONAL,
   OUT       UINTN                 *ColumnInfoArray OPTIONAL
-);
-
-
+  );
 
 /**
 
@@ -276,7 +271,7 @@ EFI_STATUS
 
   @param Flags      Describes how the string is to be drawn.
 
-  @param PackageList  
+  @param PackageList
                     The package list in the HII database to
                     search for the specified string.
 
@@ -342,8 +337,8 @@ EFI_STATUS
                                 Width was NULL.
   @retval EFI_INVALID_PARAMETER The Blt or PackageList was NULL.
   @retval EFI_INVALID_PARAMETER Flags were invalid combination.
-  @retval EFI_NOT_FOUND         The specified PackageList is not in the Database, 
-                                or the stringid is not in the specified PackageList. 
+  @retval EFI_NOT_FOUND         The specified PackageList is not in the Database,
+                                or the stringid is not in the specified PackageList.
 
 **/
 typedef
@@ -361,8 +356,7 @@ EFI_STATUS
   OUT       EFI_HII_ROW_INFO      **RowInfoArray    OPTIONAL,
   OUT       UINTN                 *RowInfoArraySize OPTIONAL,
   OUT       UINTN                 *ColumnInfoArray  OPTIONAL
-);
-
+  );
 
 /**
 
@@ -406,7 +400,7 @@ EFI_STATUS
   IN CONST  EFI_FONT_DISPLAY_INFO *StringInfo,
   OUT       EFI_IMAGE_OUTPUT      **Blt,
   OUT       UINTN                 *Baseline OPTIONAL
-);
+  );
 
 /**
 
@@ -424,49 +418,47 @@ EFI_STATUS
                         to NULL if there are no more matching fonts.
 
   @param StringInfoIn   Upon entry, points to the font to return
-                        information about. If NULL, then the information 
+                        information about. If NULL, then the information
                         about the system default font will be returned.
 
   @param  StringInfoOut Upon return, contains the matching font's information.
                         If NULL, then no information is returned. This buffer
                         is allocated with a call to the Boot Service AllocatePool().
-                        It is the caller's responsibility to call the Boot 
+                        It is the caller's responsibility to call the Boot
                         Service FreePool() when the caller no longer requires
                         the contents of StringInfoOut.
 
   @param String         Points to the string which will be tested to
                         determine if all characters are available. If
                         NULL, then any font is acceptable.
-  
+
   @retval EFI_SUCCESS            Matching font returned successfully.
-  
+
   @retval EFI_NOT_FOUND          No matching font was found.
 
   @retval EFI_OUT_OF_RESOURCES   There were insufficient resources to complete the request.
-  
+
 **/
 typedef
 EFI_STATUS
 (EFIAPI *EFI_HII_GET_FONT_INFO)(
   IN CONST  EFI_HII_FONT_PROTOCOL *This,
   IN OUT    EFI_FONT_HANDLE       *FontHandle,
-  IN CONST  EFI_FONT_DISPLAY_INFO *StringInfoIn, OPTIONAL
+  IN CONST  EFI_FONT_DISPLAY_INFO *StringInfoIn  OPTIONAL,
   OUT       EFI_FONT_DISPLAY_INFO **StringInfoOut,
   IN CONST  EFI_STRING            String OPTIONAL
-);
+  );
 
 ///
 /// The protocol provides the service to retrieve the font informations.
 ///
 struct _EFI_HII_FONT_PROTOCOL {
-  EFI_HII_STRING_TO_IMAGE     StringToImage;
-  EFI_HII_STRING_ID_TO_IMAGE  StringIdToImage;
-  EFI_HII_GET_GLYPH           GetGlyph;
-  EFI_HII_GET_FONT_INFO       GetFontInfo;
+  EFI_HII_STRING_TO_IMAGE       StringToImage;
+  EFI_HII_STRING_ID_TO_IMAGE    StringIdToImage;
+  EFI_HII_GET_GLYPH             GetGlyph;
+  EFI_HII_GET_FONT_INFO         GetFontInfo;
 };
 
-extern EFI_GUID gEfiHiiFontProtocolGuid;
-
+extern EFI_GUID  gEfiHiiFontProtocolGuid;
 
 #endif
-

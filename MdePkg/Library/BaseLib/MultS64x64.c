@@ -2,18 +2,9 @@
   Math worker functions.
 
   Copyright (c) 2006 - 2010, Intel Corporation. All rights reserved.<BR>
-  This program and the accompanying materials
-  are licensed and made available under the terms and conditions of the BSD License
-  which accompanies this distribution.  The full text of the license may be found at
-  http://opensource.org/licenses/bsd-license.php.
-
-  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
-  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+  SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
-
-
-
 
 #include "BaseLibInternals.h"
 
@@ -34,9 +25,9 @@
 INT64
 EFIAPI
 MultS64x64 (
-  IN      INT64                     Multiplicand,
-  IN      INT64                     Multiplier
+  IN      INT64  Multiplicand,
+  IN      INT64  Multiplier
   )
 {
-  return (INT64)MultU64x64 ((UINT64) Multiplicand, (UINT64) Multiplier);
+  return (INT64)MultU64x64 ((UINT64)Multiplicand, (UINT64)Multiplier);
 }

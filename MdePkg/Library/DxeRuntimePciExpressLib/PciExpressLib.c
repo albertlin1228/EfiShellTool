@@ -5,17 +5,10 @@
   All assertions for I/O operations are handled in MMIO functions in the IoLib
   Library.
 
-  Copyright (c) 2006 - 2012, Intel Corporation. All rights reserved.<BR>
-  This program and the accompanying materials
-  are licensed and made available under the terms and conditions of the BSD License
-  which accompanies this distribution.  The full text of the license may be found at
-  http://opensource.org/licenses/bsd-license.php.
-
-  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
-  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+  Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
+  SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
-
 
 #include <PiDxe.h>
 
@@ -31,28 +24,39 @@
 #include <Library/DxeServicesTableLib.h>
 #include <Library/UefiRuntimeLib.h>
 
+/**
+ Assert the validity of a PCI address. A valid PCI address should contain 1's
+ only in the low 28 bits.
+
+ @param A The address to validate.
+
+**/
+#define ASSERT_INVALID_PCI_ADDRESS(A) \
+ ASSERT (((A) & ~0xfffffff) == 0)
+
 ///
 /// Define table for mapping PCI Express MMIO physical addresses to virtual addresses at OS runtime
 ///
 typedef struct {
-  UINTN  PhysicalAddress;
-  UINTN  VirtualAddress;
+  UINTN    PhysicalAddress;
+  UINTN    VirtualAddress;
 } PCI_EXPRESS_RUNTIME_REGISTRATION_TABLE;
 
 ///
 /// Set Virtual Address Map Event
 ///
-EFI_EVENT                               mDxeRuntimePciExpressLibVirtualNotifyEvent = NULL;
+EFI_EVENT  mDxeRuntimePciExpressLibVirtualNotifyEvent = NULL;
 
 ///
-/// Module global that contains the base physical address of the PCI Express MMIO range.
+/// Module global that contains the base physical address and size of the PCI Express MMIO range.
 ///
-UINTN                                   mDxeRuntimePciExpressLibPciExpressBaseAddress = 0;
+UINTN  mDxeRuntimePciExpressLibPciExpressBaseAddress = 0;
+UINTN  mDxeRuntimePciExpressLibPciExpressBaseSize    = 0;
 
 ///
 /// The number of PCI devices that have been registered for runtime access.
 ///
-UINTN                                   mDxeRuntimePciExpressLibNumberOfRuntimeRanges = 0;
+UINTN  mDxeRuntimePciExpressLibNumberOfRuntimeRanges = 0;
 
 ///
 /// The table of PCI devices that have been registered for runtime access.
@@ -62,8 +66,7 @@ PCI_EXPRESS_RUNTIME_REGISTRATION_TABLE  *mDxeRuntimePciExpressLibRegistrationTab
 ///
 /// The table index of the most recent virtual address lookup.
 ///
-UINTN                                   mDxeRuntimePciExpressLibLastRuntimeRange = 0;
-
+UINTN  mDxeRuntimePciExpressLibLastRuntimeRange = 0;
 
 /**
   Convert the physical PCI Express MMIO addresses for all registered PCI devices
@@ -93,22 +96,22 @@ DxeRuntimePciExpressLibVirtualNotify (
   // virtual addresses.
   //
   for (Index = 0; Index < mDxeRuntimePciExpressLibNumberOfRuntimeRanges; Index++) {
-    EfiConvertPointer (0, (VOID **) &(mDxeRuntimePciExpressLibRegistrationTable[Index].VirtualAddress));
+    EfiConvertPointer (0, (VOID **)&(mDxeRuntimePciExpressLibRegistrationTable[Index].VirtualAddress));
   }
 
   //
   // Convert table pointer that is allocated from EfiRuntimeServicesData to a virtual address.
   //
-  EfiConvertPointer (0, (VOID **) &mDxeRuntimePciExpressLibRegistrationTable);
+  EfiConvertPointer (0, (VOID **)&mDxeRuntimePciExpressLibRegistrationTable);
 }
 
 /**
-  The constructor function caches the PCI Express Base Address and creates a 
+  The constructor function caches the PCI Express Base Address and creates a
   Set Virtual Address Map event to convert physical address to virtual addresses.
-  
+
   @param  ImageHandle   The firmware allocated handle for the EFI image.
   @param  SystemTable   A pointer to the EFI System Table.
-  
+
   @retval EFI_SUCCESS   The constructor completed successfully.
   @retval Other value   The constructor did not complete successfully.
 
@@ -125,17 +128,17 @@ DxeRuntimePciExpressLibConstructor (
   //
   // Cache the physical address of the PCI Express MMIO range into a module global variable
   //
-  mDxeRuntimePciExpressLibPciExpressBaseAddress = (UINTN) PcdGet64 (PcdPciExpressBaseAddress);
+  mDxeRuntimePciExpressLibPciExpressBaseAddress = (UINTN)PcdGet64 (PcdPciExpressBaseAddress);
+  mDxeRuntimePciExpressLibPciExpressBaseSize    = (UINTN)PcdGet64 (PcdPciExpressBaseSize);
 
   //
   // Register SetVirtualAddressMap () notify function
   //
-  Status = gBS->CreateEventEx (
-                  EVT_NOTIFY_SIGNAL,
+  Status = gBS->CreateEvent (
+                  EVT_SIGNAL_VIRTUAL_ADDRESS_CHANGE,
                   TPL_NOTIFY,
                   DxeRuntimePciExpressLibVirtualNotify,
                   NULL,
-                  &gEfiEventVirtualAddressChangeGuid,
                   &mDxeRuntimePciExpressLibVirtualNotifyEvent
                   );
   ASSERT_EFI_ERROR (Status);
@@ -144,12 +147,12 @@ DxeRuntimePciExpressLibConstructor (
 }
 
 /**
-  The destructor function frees any allocated buffers and closes the Set Virtual 
+  The destructor function frees any allocated buffers and closes the Set Virtual
   Address Map event.
-  
+
   @param  ImageHandle   The firmware allocated handle for the EFI image.
   @param  SystemTable   A pointer to the EFI System Table.
-  
+
   @retval EFI_SUCCESS   The destructor completed successfully.
   @retval Other value   The destructor did not complete successfully.
 
@@ -164,7 +167,7 @@ DxeRuntimePciExpressLibDestructor (
   EFI_STATUS  Status;
 
   //
-  // If one or more PCI devices have been registered for runtime access, then 
+  // If one or more PCI devices have been registered for runtime access, then
   // free the registration table.
   //
   if (mDxeRuntimePciExpressLibRegistrationTable != NULL) {
@@ -182,12 +185,16 @@ DxeRuntimePciExpressLibDestructor (
 
 /**
   Gets the base address of PCI Express.
-  
+
   This internal functions retrieves PCI Express Base Address via a PCD entry
   PcdPciExpressBaseAddress.
-  
-  @param  Address  The address that encodes the PCI Bus, Device, Function and Register.
-  @return          The base address of PCI Express.
+
+  If Address > 0x0FFFFFFF, then ASSERT().
+
+  @param  Address   The address that encodes the PCI Bus, Device, Function and Register.
+
+  @retval (UINTN)-1 Invalid PCI address.
+  @retval other     The base address of PCI Express.
 
 **/
 UINTN
@@ -200,7 +207,14 @@ GetPciExpressAddress (
   //
   // Make sure Address is valid
   //
-  ASSERT (((Address) & ~0xfffffff) == 0);
+  ASSERT_INVALID_PCI_ADDRESS (Address);
+
+  //
+  // Make sure the Address is in MMCONF address space
+  //
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINTN)-1;
+  }
 
   //
   // Convert Address to a physical address in the MMIO PCI Express range
@@ -243,30 +257,29 @@ GetPciExpressAddress (
   //
   // No match was found.  This is a critical error at OS runtime, so ASSERT() and force a breakpoint.
   //
-  ASSERT (FALSE);
-  CpuBreakpoint();
+  CpuBreakpoint ();
 
   //
-  // Return the physical address 
+  // Return the physical address
   //
   return Address;
 }
 
 /**
-  Registers a PCI device so PCI configuration registers may be accessed after 
+  Registers a PCI device so PCI configuration registers may be accessed after
   SetVirtualAddressMap().
-  
-  Registers the PCI device specified by Address so all the PCI configuration 
-  registers associated with that PCI device may be accessed after SetVirtualAddressMap() 
+
+  Registers the PCI device specified by Address so all the PCI configuration
+  registers associated with that PCI device may be accessed after SetVirtualAddressMap()
   is called.
-  
+
   If Address > 0x0FFFFFFF, then ASSERT().
 
   @param  Address The address that encodes the PCI Bus, Device, Function and
                   Register.
-  
+
   @retval RETURN_SUCCESS           The PCI device was registered for runtime access.
-  @retval RETURN_UNSUPPORTED       An attempt was made to call this function 
+  @retval RETURN_UNSUPPORTED       An attempt was made to call this function
                                    after ExitBootServices().
   @retval RETURN_UNSUPPORTED       The resources required to access the PCI device
                                    at runtime could not be mapped.
@@ -295,7 +308,14 @@ PciExpressRegisterForRuntimeAccess (
   //
   // Make sure Address is valid
   //
-  ASSERT (((Address) & ~0xfffffff) == 0);
+  ASSERT_INVALID_PCI_ADDRESS (Address);
+
+  //
+  // Make sure the Address is in MMCONF address space
+  //
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return RETURN_UNSUPPORTED;
+  }
 
   //
   // Convert Address to a physical address in the MMIO PCI Express range
@@ -305,7 +325,7 @@ PciExpressRegisterForRuntimeAccess (
   Address = GetPciExpressAddress (Address & 0x0ffff000);
 
   //
-  // See if Address has already been registerd for runtime access
+  // See if Address has already been registered for runtime access
   //
   for (Index = 0; Index < mDxeRuntimePciExpressLibNumberOfRuntimeRanges; Index++) {
     if (mDxeRuntimePciExpressLibRegistrationTable[Index].PhysicalAddress == Address) {
@@ -334,21 +354,21 @@ PciExpressRegisterForRuntimeAccess (
   // Grow the size of the registration table
   //
   NewTable = ReallocateRuntimePool (
-               (mDxeRuntimePciExpressLibNumberOfRuntimeRanges + 0) * sizeof (PCI_EXPRESS_RUNTIME_REGISTRATION_TABLE), 
-               (mDxeRuntimePciExpressLibNumberOfRuntimeRanges + 1) * sizeof (PCI_EXPRESS_RUNTIME_REGISTRATION_TABLE), 
+               (mDxeRuntimePciExpressLibNumberOfRuntimeRanges + 0) * sizeof (PCI_EXPRESS_RUNTIME_REGISTRATION_TABLE),
+               (mDxeRuntimePciExpressLibNumberOfRuntimeRanges + 1) * sizeof (PCI_EXPRESS_RUNTIME_REGISTRATION_TABLE),
                mDxeRuntimePciExpressLibRegistrationTable
                );
   if (NewTable == NULL) {
     return RETURN_OUT_OF_RESOURCES;
   }
-  mDxeRuntimePciExpressLibRegistrationTable = NewTable;
+
+  mDxeRuntimePciExpressLibRegistrationTable                                                                = NewTable;
   mDxeRuntimePciExpressLibRegistrationTable[mDxeRuntimePciExpressLibNumberOfRuntimeRanges].PhysicalAddress = Address;
   mDxeRuntimePciExpressLibRegistrationTable[mDxeRuntimePciExpressLibNumberOfRuntimeRanges].VirtualAddress  = Address;
   mDxeRuntimePciExpressLibNumberOfRuntimeRanges++;
 
   return RETURN_SUCCESS;
 }
-
 
 /**
   Reads an 8-bit PCI configuration register.
@@ -361,16 +381,21 @@ PciExpressRegisterForRuntimeAccess (
 
   @param  Address The address that encodes the PCI Bus, Device, Function and
                   Register.
-
-  @return The read value from the PCI configuration register.
+  @retval 0xFF  Invalid PCI address.
+  @retval other The read value from the PCI configuration register.
 
 **/
 UINT8
 EFIAPI
 PciExpressRead8 (
-  IN      UINTN                     Address
+  IN      UINTN  Address
   )
 {
+  ASSERT_INVALID_PCI_ADDRESS (Address);
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT8)-1;
+  }
+
   return MmioRead8 (GetPciExpressAddress (Address));
 }
 
@@ -387,16 +412,21 @@ PciExpressRead8 (
                   Register.
   @param  Value   The value to write.
 
-  @return The value written to the PCI configuration register.
+  @retval 0xFF  Invalid PCI address.
+  @retval other The value written to the PCI configuration register.
 
 **/
 UINT8
 EFIAPI
 PciExpressWrite8 (
-  IN      UINTN                     Address,
-  IN      UINT8                     Value
+  IN      UINTN  Address,
+  IN      UINT8  Value
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT8)-1;
+  }
+
   return MmioWrite8 (GetPciExpressAddress (Address), Value);
 }
 
@@ -417,16 +447,21 @@ PciExpressWrite8 (
                   Register.
   @param  OrData  The value to OR with the PCI configuration register.
 
-  @return The value written back to the PCI configuration register.
+  @retval 0xFF  Invalid PCI address.
+  @retval other The value written back to the PCI configuration register.
 
 **/
 UINT8
 EFIAPI
 PciExpressOr8 (
-  IN      UINTN                     Address,
-  IN      UINT8                     OrData
+  IN      UINTN  Address,
+  IN      UINT8  OrData
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT8)-1;
+  }
+
   return MmioOr8 (GetPciExpressAddress (Address), OrData);
 }
 
@@ -447,16 +482,21 @@ PciExpressOr8 (
                   Register.
   @param  AndData The value to AND with the PCI configuration register.
 
-  @return The value written back to the PCI configuration register.
+  @retval 0xFF  Invalid PCI address.
+  @retval other  The value written back to the PCI configuration register.
 
 **/
 UINT8
 EFIAPI
 PciExpressAnd8 (
-  IN      UINTN                     Address,
-  IN      UINT8                     AndData
+  IN      UINTN  Address,
+  IN      UINT8  AndData
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT8)-1;
+  }
+
   return MmioAnd8 (GetPciExpressAddress (Address), AndData);
 }
 
@@ -479,17 +519,22 @@ PciExpressAnd8 (
   @param  AndData The value to AND with the PCI configuration register.
   @param  OrData  The value to OR with the result of the AND operation.
 
-  @return The value written back to the PCI configuration register.
+  @retval 0xFF  Invalid PCI address.
+  @retval other The value written back to the PCI configuration register.
 
 **/
 UINT8
 EFIAPI
 PciExpressAndThenOr8 (
-  IN      UINTN                     Address,
-  IN      UINT8                     AndData,
-  IN      UINT8                     OrData
+  IN      UINTN  Address,
+  IN      UINT8  AndData,
+  IN      UINT8  OrData
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT8)-1;
+  }
+
   return MmioAndThenOr8 (
            GetPciExpressAddress (Address),
            AndData,
@@ -515,17 +560,22 @@ PciExpressAndThenOr8 (
   @param  EndBit    The ordinal of the most significant bit in the bit field.
                     Range 0..7.
 
-  @return The value of the bit field read from the PCI configuration register.
+  @retval 0xFF  Invalid PCI address.
+  @retval other The value of the bit field read from the PCI configuration register.
 
 **/
 UINT8
 EFIAPI
 PciExpressBitFieldRead8 (
-  IN      UINTN                     Address,
-  IN      UINTN                     StartBit,
-  IN      UINTN                     EndBit
+  IN      UINTN  Address,
+  IN      UINTN  StartBit,
+  IN      UINTN  EndBit
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT8)-1;
+  }
+
   return MmioBitFieldRead8 (
            GetPciExpressAddress (Address),
            StartBit,
@@ -554,18 +604,23 @@ PciExpressBitFieldRead8 (
                     Range 0..7.
   @param  Value     The new value of the bit field.
 
-  @return The value written back to the PCI configuration register.
+  @retval 0xFF  Invalid PCI address.
+  @retval other The value written back to the PCI configuration register.
 
 **/
 UINT8
 EFIAPI
 PciExpressBitFieldWrite8 (
-  IN      UINTN                     Address,
-  IN      UINTN                     StartBit,
-  IN      UINTN                     EndBit,
-  IN      UINT8                     Value
+  IN      UINTN  Address,
+  IN      UINTN  StartBit,
+  IN      UINTN  EndBit,
+  IN      UINT8  Value
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT8)-1;
+  }
+
   return MmioBitFieldWrite8 (
            GetPciExpressAddress (Address),
            StartBit,
@@ -598,18 +653,23 @@ PciExpressBitFieldWrite8 (
                     Range 0..7.
   @param  OrData    The value to OR with the PCI configuration register.
 
-  @return The value written back to the PCI configuration register.
+  @retval 0xFF  Invalid PCI address.
+  @retval other The value written back to the PCI configuration register.
 
 **/
 UINT8
 EFIAPI
 PciExpressBitFieldOr8 (
-  IN      UINTN                     Address,
-  IN      UINTN                     StartBit,
-  IN      UINTN                     EndBit,
-  IN      UINT8                     OrData
+  IN      UINTN  Address,
+  IN      UINTN  StartBit,
+  IN      UINTN  EndBit,
+  IN      UINT8  OrData
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT8)-1;
+  }
+
   return MmioBitFieldOr8 (
            GetPciExpressAddress (Address),
            StartBit,
@@ -642,18 +702,23 @@ PciExpressBitFieldOr8 (
                     Range 0..7.
   @param  AndData   The value to AND with the PCI configuration register.
 
-  @return The value written back to the PCI configuration register.
+  @retval 0xFF  Invalid PCI address.
+  @retval other The value written back to the PCI configuration register.
 
 **/
 UINT8
 EFIAPI
 PciExpressBitFieldAnd8 (
-  IN      UINTN                     Address,
-  IN      UINTN                     StartBit,
-  IN      UINTN                     EndBit,
-  IN      UINT8                     AndData
+  IN      UINTN  Address,
+  IN      UINTN  StartBit,
+  IN      UINTN  EndBit,
+  IN      UINT8  AndData
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT8)-1;
+  }
+
   return MmioBitFieldAnd8 (
            GetPciExpressAddress (Address),
            StartBit,
@@ -690,19 +755,24 @@ PciExpressBitFieldAnd8 (
   @param  AndData   The value to AND with the PCI configuration register.
   @param  OrData    The value to OR with the result of the AND operation.
 
-  @return The value written back to the PCI configuration register.
+  @retval 0xFF  Invalid PCI address.
+  @retval other The value written back to the PCI configuration register.
 
 **/
 UINT8
 EFIAPI
 PciExpressBitFieldAndThenOr8 (
-  IN      UINTN                     Address,
-  IN      UINTN                     StartBit,
-  IN      UINTN                     EndBit,
-  IN      UINT8                     AndData,
-  IN      UINT8                     OrData
+  IN      UINTN  Address,
+  IN      UINTN  StartBit,
+  IN      UINTN  EndBit,
+  IN      UINT8  AndData,
+  IN      UINT8  OrData
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT8)-1;
+  }
+
   return MmioBitFieldAndThenOr8 (
            GetPciExpressAddress (Address),
            StartBit,
@@ -725,15 +795,20 @@ PciExpressBitFieldAndThenOr8 (
   @param  Address The address that encodes the PCI Bus, Device, Function and
                   Register.
 
-  @return The read value from the PCI configuration register.
+  @retval 0xFFFF  Invalid PCI address.
+  @retval other   The read value from the PCI configuration register.
 
 **/
 UINT16
 EFIAPI
 PciExpressRead16 (
-  IN      UINTN                     Address
+  IN      UINTN  Address
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT16)-1;
+  }
+
   return MmioRead16 (GetPciExpressAddress (Address));
 }
 
@@ -751,16 +826,21 @@ PciExpressRead16 (
                   Register.
   @param  Value   The value to write.
 
-  @return The value written to the PCI configuration register.
+  @retval 0xFFFF  Invalid PCI address.
+  @retval other   The value written to the PCI configuration register.
 
 **/
 UINT16
 EFIAPI
 PciExpressWrite16 (
-  IN      UINTN                     Address,
-  IN      UINT16                    Value
+  IN      UINTN   Address,
+  IN      UINT16  Value
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT16)-1;
+  }
+
   return MmioWrite16 (GetPciExpressAddress (Address), Value);
 }
 
@@ -782,16 +862,21 @@ PciExpressWrite16 (
                   Register.
   @param  OrData  The value to OR with the PCI configuration register.
 
-  @return The value written back to the PCI configuration register.
+  @retval 0xFFFF  Invalid PCI address.
+  @retval other   The value written back to the PCI configuration register.
 
 **/
 UINT16
 EFIAPI
 PciExpressOr16 (
-  IN      UINTN                     Address,
-  IN      UINT16                    OrData
+  IN      UINTN   Address,
+  IN      UINT16  OrData
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT16)-1;
+  }
+
   return MmioOr16 (GetPciExpressAddress (Address), OrData);
 }
 
@@ -813,16 +898,21 @@ PciExpressOr16 (
                   Register.
   @param  AndData The value to AND with the PCI configuration register.
 
-  @return The value written back to the PCI configuration register.
+  @retval 0xFFFF  Invalid PCI address.
+  @retval other   The value written back to the PCI configuration register.
 
 **/
 UINT16
 EFIAPI
 PciExpressAnd16 (
-  IN      UINTN                     Address,
-  IN      UINT16                    AndData
+  IN      UINTN   Address,
+  IN      UINT16  AndData
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT16)-1;
+  }
+
   return MmioAnd16 (GetPciExpressAddress (Address), AndData);
 }
 
@@ -846,17 +936,22 @@ PciExpressAnd16 (
   @param  AndData The value to AND with the PCI configuration register.
   @param  OrData  The value to OR with the result of the AND operation.
 
-  @return The value written back to the PCI configuration register.
+  @retval 0xFFFF  Invalid PCI address.
+  @retval other   The value written back to the PCI configuration register.
 
 **/
 UINT16
 EFIAPI
 PciExpressAndThenOr16 (
-  IN      UINTN                     Address,
-  IN      UINT16                    AndData,
-  IN      UINT16                    OrData
+  IN      UINTN   Address,
+  IN      UINT16  AndData,
+  IN      UINT16  OrData
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT16)-1;
+  }
+
   return MmioAndThenOr16 (
            GetPciExpressAddress (Address),
            AndData,
@@ -883,17 +978,22 @@ PciExpressAndThenOr16 (
   @param  EndBit    The ordinal of the most significant bit in the bit field.
                     Range 0..15.
 
-  @return The value of the bit field read from the PCI configuration register.
+  @retval 0xFFFF  Invalid PCI address.
+  @retval other   The value of the bit field read from the PCI configuration register.
 
 **/
 UINT16
 EFIAPI
 PciExpressBitFieldRead16 (
-  IN      UINTN                     Address,
-  IN      UINTN                     StartBit,
-  IN      UINTN                     EndBit
+  IN      UINTN  Address,
+  IN      UINTN  StartBit,
+  IN      UINTN  EndBit
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT16)-1;
+  }
+
   return MmioBitFieldRead16 (
            GetPciExpressAddress (Address),
            StartBit,
@@ -923,18 +1023,23 @@ PciExpressBitFieldRead16 (
                     Range 0..15.
   @param  Value     The new value of the bit field.
 
-  @return The value written back to the PCI configuration register.
+  @retval 0xFFFF  Invalid PCI address.
+  @retval other   The value written back to the PCI configuration register.
 
 **/
 UINT16
 EFIAPI
 PciExpressBitFieldWrite16 (
-  IN      UINTN                     Address,
-  IN      UINTN                     StartBit,
-  IN      UINTN                     EndBit,
-  IN      UINT16                    Value
+  IN      UINTN   Address,
+  IN      UINTN   StartBit,
+  IN      UINTN   EndBit,
+  IN      UINT16  Value
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT16)-1;
+  }
+
   return MmioBitFieldWrite16 (
            GetPciExpressAddress (Address),
            StartBit,
@@ -968,18 +1073,23 @@ PciExpressBitFieldWrite16 (
                     Range 0..15.
   @param  OrData    The value to OR with the PCI configuration register.
 
-  @return The value written back to the PCI configuration register.
+  @retval 0xFFFF  Invalid PCI address.
+  @retval other   The value written back to the PCI configuration register.
 
 **/
 UINT16
 EFIAPI
 PciExpressBitFieldOr16 (
-  IN      UINTN                     Address,
-  IN      UINTN                     StartBit,
-  IN      UINTN                     EndBit,
-  IN      UINT16                    OrData
+  IN      UINTN   Address,
+  IN      UINTN   StartBit,
+  IN      UINTN   EndBit,
+  IN      UINT16  OrData
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT16)-1;
+  }
+
   return MmioBitFieldOr16 (
            GetPciExpressAddress (Address),
            StartBit,
@@ -1013,18 +1123,23 @@ PciExpressBitFieldOr16 (
                     Range 0..15.
   @param  AndData   The value to AND with the PCI configuration register.
 
-  @return The value written back to the PCI configuration register.
+  @retval 0xFFFF  Invalid PCI address.
+  @retval other   The value written back to the PCI configuration register.
 
 **/
 UINT16
 EFIAPI
 PciExpressBitFieldAnd16 (
-  IN      UINTN                     Address,
-  IN      UINTN                     StartBit,
-  IN      UINTN                     EndBit,
-  IN      UINT16                    AndData
+  IN      UINTN   Address,
+  IN      UINTN   StartBit,
+  IN      UINTN   EndBit,
+  IN      UINT16  AndData
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT16)-1;
+  }
+
   return MmioBitFieldAnd16 (
            GetPciExpressAddress (Address),
            StartBit,
@@ -1062,19 +1177,24 @@ PciExpressBitFieldAnd16 (
   @param  AndData   The value to AND with the PCI configuration register.
   @param  OrData    The value to OR with the result of the AND operation.
 
-  @return The value written back to the PCI configuration register.
+  @retval 0xFFFF  Invalid PCI address.
+  @retval other   The value written back to the PCI configuration register.
 
 **/
 UINT16
 EFIAPI
 PciExpressBitFieldAndThenOr16 (
-  IN      UINTN                     Address,
-  IN      UINTN                     StartBit,
-  IN      UINTN                     EndBit,
-  IN      UINT16                    AndData,
-  IN      UINT16                    OrData
+  IN      UINTN   Address,
+  IN      UINTN   StartBit,
+  IN      UINTN   EndBit,
+  IN      UINT16  AndData,
+  IN      UINT16  OrData
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT16)-1;
+  }
+
   return MmioBitFieldAndThenOr16 (
            GetPciExpressAddress (Address),
            StartBit,
@@ -1097,15 +1217,20 @@ PciExpressBitFieldAndThenOr16 (
   @param  Address The address that encodes the PCI Bus, Device, Function and
                   Register.
 
-  @return The read value from the PCI configuration register.
+  @retval 0xFFFF  Invalid PCI address.
+  @retval other   The read value from the PCI configuration register.
 
 **/
 UINT32
 EFIAPI
 PciExpressRead32 (
-  IN      UINTN                     Address
+  IN      UINTN  Address
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT32)-1;
+  }
+
   return MmioRead32 (GetPciExpressAddress (Address));
 }
 
@@ -1123,16 +1248,21 @@ PciExpressRead32 (
                   Register.
   @param  Value   The value to write.
 
-  @return The value written to the PCI configuration register.
+  @retval 0xFFFFFFFF Invalid PCI address.
+  @retval other      The value written to the PCI configuration register.
 
 **/
 UINT32
 EFIAPI
 PciExpressWrite32 (
-  IN      UINTN                     Address,
-  IN      UINT32                    Value
+  IN      UINTN   Address,
+  IN      UINT32  Value
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT32)-1;
+  }
+
   return MmioWrite32 (GetPciExpressAddress (Address), Value);
 }
 
@@ -1154,16 +1284,21 @@ PciExpressWrite32 (
                   Register.
   @param  OrData  The value to OR with the PCI configuration register.
 
-  @return The value written back to the PCI configuration register.
+  @retval 0xFFFFFFFF Invalid PCI address.
+  @retval other      The value written back to the PCI configuration register.
 
 **/
 UINT32
 EFIAPI
 PciExpressOr32 (
-  IN      UINTN                     Address,
-  IN      UINT32                    OrData
+  IN      UINTN   Address,
+  IN      UINT32  OrData
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT32)-1;
+  }
+
   return MmioOr32 (GetPciExpressAddress (Address), OrData);
 }
 
@@ -1185,16 +1320,21 @@ PciExpressOr32 (
                   Register.
   @param  AndData The value to AND with the PCI configuration register.
 
-  @return The value written back to the PCI configuration register.
+  @retval 0xFFFFFFFF Invalid PCI address.
+  @retval other      The value written back to the PCI configuration register.
 
 **/
 UINT32
 EFIAPI
 PciExpressAnd32 (
-  IN      UINTN                     Address,
-  IN      UINT32                    AndData
+  IN      UINTN   Address,
+  IN      UINT32  AndData
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT32)-1;
+  }
+
   return MmioAnd32 (GetPciExpressAddress (Address), AndData);
 }
 
@@ -1218,17 +1358,22 @@ PciExpressAnd32 (
   @param  AndData The value to AND with the PCI configuration register.
   @param  OrData  The value to OR with the result of the AND operation.
 
-  @return The value written back to the PCI configuration register.
+  @retval 0xFFFFFFFF Invalid PCI address.
+  @retval other      The value written back to the PCI configuration register.
 
 **/
 UINT32
 EFIAPI
 PciExpressAndThenOr32 (
-  IN      UINTN                     Address,
-  IN      UINT32                    AndData,
-  IN      UINT32                    OrData
+  IN      UINTN   Address,
+  IN      UINT32  AndData,
+  IN      UINT32  OrData
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT32)-1;
+  }
+
   return MmioAndThenOr32 (
            GetPciExpressAddress (Address),
            AndData,
@@ -1255,17 +1400,22 @@ PciExpressAndThenOr32 (
   @param  EndBit    The ordinal of the most significant bit in the bit field.
                     Range 0..31.
 
-  @return The value of the bit field read from the PCI configuration register.
+  @retval 0xFFFFFFFF Invalid PCI address.
+  @retval other      The value of the bit field read from the PCI configuration register.
 
 **/
 UINT32
 EFIAPI
 PciExpressBitFieldRead32 (
-  IN      UINTN                     Address,
-  IN      UINTN                     StartBit,
-  IN      UINTN                     EndBit
+  IN      UINTN  Address,
+  IN      UINTN  StartBit,
+  IN      UINTN  EndBit
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT32)-1;
+  }
+
   return MmioBitFieldRead32 (
            GetPciExpressAddress (Address),
            StartBit,
@@ -1295,18 +1445,23 @@ PciExpressBitFieldRead32 (
                     Range 0..31.
   @param  Value     The new value of the bit field.
 
-  @return The value written back to the PCI configuration register.
+  @retval 0xFFFFFFFF Invalid PCI address.
+  @retval other      The value written back to the PCI configuration register.
 
 **/
 UINT32
 EFIAPI
 PciExpressBitFieldWrite32 (
-  IN      UINTN                     Address,
-  IN      UINTN                     StartBit,
-  IN      UINTN                     EndBit,
-  IN      UINT32                    Value
+  IN      UINTN   Address,
+  IN      UINTN   StartBit,
+  IN      UINTN   EndBit,
+  IN      UINT32  Value
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT32)-1;
+  }
+
   return MmioBitFieldWrite32 (
            GetPciExpressAddress (Address),
            StartBit,
@@ -1340,18 +1495,23 @@ PciExpressBitFieldWrite32 (
                     Range 0..31.
   @param  OrData    The value to OR with the PCI configuration register.
 
-  @return The value written back to the PCI configuration register.
+  @retval 0xFFFFFFFF Invalid PCI address.
+  @retval other      The value written back to the PCI configuration register.
 
 **/
 UINT32
 EFIAPI
 PciExpressBitFieldOr32 (
-  IN      UINTN                     Address,
-  IN      UINTN                     StartBit,
-  IN      UINTN                     EndBit,
-  IN      UINT32                    OrData
+  IN      UINTN   Address,
+  IN      UINTN   StartBit,
+  IN      UINTN   EndBit,
+  IN      UINT32  OrData
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT32)-1;
+  }
+
   return MmioBitFieldOr32 (
            GetPciExpressAddress (Address),
            StartBit,
@@ -1385,18 +1545,23 @@ PciExpressBitFieldOr32 (
                     Range 0..31.
   @param  AndData   The value to AND with the PCI configuration register.
 
-  @return The value written back to the PCI configuration register.
+  @retval 0xFFFFFFFF Invalid PCI address.
+  @retval other      The value written back to the PCI configuration register.
 
 **/
 UINT32
 EFIAPI
 PciExpressBitFieldAnd32 (
-  IN      UINTN                     Address,
-  IN      UINTN                     StartBit,
-  IN      UINTN                     EndBit,
-  IN      UINT32                    AndData
+  IN      UINTN   Address,
+  IN      UINTN   StartBit,
+  IN      UINTN   EndBit,
+  IN      UINT32  AndData
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT32)-1;
+  }
+
   return MmioBitFieldAnd32 (
            GetPciExpressAddress (Address),
            StartBit,
@@ -1434,19 +1599,24 @@ PciExpressBitFieldAnd32 (
   @param  AndData   The value to AND with the PCI configuration register.
   @param  OrData    The value to OR with the result of the AND operation.
 
-  @return The value written back to the PCI configuration register.
+  @retval 0xFFFFFFFF Invalid PCI address.
+  @retval other      The value written back to the PCI configuration register.
 
 **/
 UINT32
 EFIAPI
 PciExpressBitFieldAndThenOr32 (
-  IN      UINTN                     Address,
-  IN      UINTN                     StartBit,
-  IN      UINTN                     EndBit,
-  IN      UINT32                    AndData,
-  IN      UINT32                    OrData
+  IN      UINTN   Address,
+  IN      UINTN   StartBit,
+  IN      UINTN   EndBit,
+  IN      UINT32  AndData,
+  IN      UINT32  OrData
   )
 {
+  if (Address >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINT32)-1;
+  }
+
   return MmioBitFieldAndThenOr32 (
            GetPciExpressAddress (Address),
            StartBit,
@@ -1463,7 +1633,7 @@ PciExpressBitFieldAndThenOr32 (
   Size into the buffer specified by Buffer. This function only allows the PCI
   configuration registers from a single PCI function to be read. Size is
   returned. When possible 32-bit PCI configuration read cycles are used to read
-  from StartAdress to StartAddress + Size. Due to alignment restrictions, 8-bit
+  from StartAddress to StartAddress + Size. Due to alignment restrictions, 8-bit
   and 16-bit PCI configuration read cycles may be used at the beginning and the
   end of the range.
 
@@ -1476,24 +1646,32 @@ PciExpressBitFieldAndThenOr32 (
   @param  Size          The size in bytes of the transfer.
   @param  Buffer        The pointer to a buffer receiving the data read.
 
-  @return Size read data from StartAddress.
+  @retval 0xFFFFFFFF Invalid PCI address.
+  @retval other      Size read data from StartAddress.
 
 **/
 UINTN
 EFIAPI
 PciExpressReadBuffer (
-  IN      UINTN                     StartAddress,
-  IN      UINTN                     Size,
-  OUT     VOID                      *Buffer
+  IN      UINTN  StartAddress,
+  IN      UINTN  Size,
+  OUT     VOID   *Buffer
   )
 {
-  UINTN   ReturnValue;
+  UINTN  ReturnValue;
 
   //
   // Make sure Address is valid
   //
-  ASSERT (((StartAddress) & ~0xfffffff) == 0);
+  ASSERT_INVALID_PCI_ADDRESS (StartAddress);
   ASSERT (((StartAddress & 0xFFF) + Size) <= 0x1000);
+
+  //
+  // Make sure the Address is in MMCONF address space
+  //
+  if (StartAddress >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINTN)-1;
+  }
 
   if (Size == 0) {
     return Size;
@@ -1511,41 +1689,41 @@ PciExpressReadBuffer (
     // Read a byte if StartAddress is byte aligned
     //
     *(volatile UINT8 *)Buffer = PciExpressRead8 (StartAddress);
-    StartAddress += sizeof (UINT8);
-    Size -= sizeof (UINT8);
-    Buffer = (UINT8*)Buffer + 1;
+    StartAddress             += sizeof (UINT8);
+    Size                     -= sizeof (UINT8);
+    Buffer                    = (UINT8 *)Buffer + 1;
   }
 
-  if (Size >= sizeof (UINT16) && (StartAddress & 2) != 0) {
+  if ((Size >= sizeof (UINT16)) && ((StartAddress & 2) != 0)) {
     //
     // Read a word if StartAddress is word aligned
     //
-    WriteUnaligned16 ((UINT16 *) Buffer, (UINT16) PciExpressRead16 (StartAddress));
+    WriteUnaligned16 ((UINT16 *)Buffer, (UINT16)PciExpressRead16 (StartAddress));
 
     StartAddress += sizeof (UINT16);
-    Size -= sizeof (UINT16);
-    Buffer = (UINT16*)Buffer + 1;
+    Size         -= sizeof (UINT16);
+    Buffer        = (UINT16 *)Buffer + 1;
   }
 
   while (Size >= sizeof (UINT32)) {
     //
     // Read as many double words as possible
     //
-    WriteUnaligned32 ((UINT32 *) Buffer, (UINT32) PciExpressRead32 (StartAddress));
+    WriteUnaligned32 ((UINT32 *)Buffer, (UINT32)PciExpressRead32 (StartAddress));
 
     StartAddress += sizeof (UINT32);
-    Size -= sizeof (UINT32);
-    Buffer = (UINT32*)Buffer + 1;
+    Size         -= sizeof (UINT32);
+    Buffer        = (UINT32 *)Buffer + 1;
   }
 
   if (Size >= sizeof (UINT16)) {
     //
     // Read the last remaining word if exist
     //
-    WriteUnaligned16 ((UINT16 *) Buffer, (UINT16) PciExpressRead16 (StartAddress));
+    WriteUnaligned16 ((UINT16 *)Buffer, (UINT16)PciExpressRead16 (StartAddress));
     StartAddress += sizeof (UINT16);
-    Size -= sizeof (UINT16);
-    Buffer = (UINT16*)Buffer + 1;
+    Size         -= sizeof (UINT16);
+    Buffer        = (UINT16 *)Buffer + 1;
   }
 
   if (Size >= sizeof (UINT8)) {
@@ -1566,7 +1744,7 @@ PciExpressReadBuffer (
   Size from the buffer specified by Buffer. This function only allows the PCI
   configuration registers from a single PCI function to be written. Size is
   returned. When possible 32-bit PCI configuration write cycles are used to
-  write from StartAdress to StartAddress + Size. Due to alignment restrictions,
+  write from StartAddress to StartAddress + Size. Due to alignment restrictions,
   8-bit and 16-bit PCI configuration write cycles may be used at the beginning
   and the end of the range.
 
@@ -1579,24 +1757,32 @@ PciExpressReadBuffer (
   @param  Size          The size in bytes of the transfer.
   @param  Buffer        The pointer to a buffer containing the data to write.
 
-  @return Size written to StartAddress.
+  @retval 0xFFFFFFFF Invalid PCI address.
+  @retval other      Size written to StartAddress.
 
 **/
 UINTN
 EFIAPI
 PciExpressWriteBuffer (
-  IN      UINTN                     StartAddress,
-  IN      UINTN                     Size,
-  IN      VOID                      *Buffer
+  IN      UINTN  StartAddress,
+  IN      UINTN  Size,
+  IN      VOID   *Buffer
   )
 {
-  UINTN                             ReturnValue;
+  UINTN  ReturnValue;
 
   //
   // Make sure Address is valid
   //
-  ASSERT (((StartAddress) & ~0xfffffff) == 0);
+  ASSERT_INVALID_PCI_ADDRESS (StartAddress);
   ASSERT (((StartAddress & 0xFFF) + Size) <= 0x1000);
+
+  //
+  // Make sure the Address is in MMCONF address space
+  //
+  if (StartAddress >= mDxeRuntimePciExpressLibPciExpressBaseSize) {
+    return (UINTN)-1;
+  }
 
   if (Size == 0) {
     return 0;
@@ -1613,47 +1799,47 @@ PciExpressWriteBuffer (
     //
     // Write a byte if StartAddress is byte aligned
     //
-    PciExpressWrite8 (StartAddress, *(UINT8*)Buffer);
+    PciExpressWrite8 (StartAddress, *(UINT8 *)Buffer);
     StartAddress += sizeof (UINT8);
-    Size -= sizeof (UINT8);
-    Buffer = (UINT8*)Buffer + 1;
+    Size         -= sizeof (UINT8);
+    Buffer        = (UINT8 *)Buffer + 1;
   }
 
-  if (Size >= sizeof (UINT16) && (StartAddress & 2) != 0) {
+  if ((Size >= sizeof (UINT16)) && ((StartAddress & 2) != 0)) {
     //
     // Write a word if StartAddress is word aligned
     //
-    PciExpressWrite16 (StartAddress, ReadUnaligned16 ((UINT16*)Buffer));
+    PciExpressWrite16 (StartAddress, ReadUnaligned16 ((UINT16 *)Buffer));
     StartAddress += sizeof (UINT16);
-    Size -= sizeof (UINT16);
-    Buffer = (UINT16*)Buffer + 1;
+    Size         -= sizeof (UINT16);
+    Buffer        = (UINT16 *)Buffer + 1;
   }
 
   while (Size >= sizeof (UINT32)) {
     //
     // Write as many double words as possible
     //
-    PciExpressWrite32 (StartAddress, ReadUnaligned32 ((UINT32*)Buffer));
+    PciExpressWrite32 (StartAddress, ReadUnaligned32 ((UINT32 *)Buffer));
     StartAddress += sizeof (UINT32);
-    Size -= sizeof (UINT32);
-    Buffer = (UINT32*)Buffer + 1;
+    Size         -= sizeof (UINT32);
+    Buffer        = (UINT32 *)Buffer + 1;
   }
 
   if (Size >= sizeof (UINT16)) {
     //
     // Write the last remaining word if exist
     //
-    PciExpressWrite16 (StartAddress, ReadUnaligned16 ((UINT16*)Buffer));
+    PciExpressWrite16 (StartAddress, ReadUnaligned16 ((UINT16 *)Buffer));
     StartAddress += sizeof (UINT16);
-    Size -= sizeof (UINT16);
-    Buffer = (UINT16*)Buffer + 1;
+    Size         -= sizeof (UINT16);
+    Buffer        = (UINT16 *)Buffer + 1;
   }
 
   if (Size >= sizeof (UINT8)) {
     //
     // Write the last remaining byte if exist
     //
-    PciExpressWrite8 (StartAddress, *(UINT8*)Buffer);
+    PciExpressWrite8 (StartAddress, *(UINT8 *)Buffer);
   }
 
   return ReturnValue;

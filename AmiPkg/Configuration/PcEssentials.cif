@@ -4,5 +4,9 @@
 	LocalRoot = "AmiPkg\Configuration\"
 	RefName = "AmiPkg.PcEssentials"
 [parts]
+"AmiModulePkg.AmiBoardInfo"
+"AmiModulePkg.Recovery"
+"AmiModulePkg.RuntimeSmm"
 "AmiPkg.IntelArchitecture"
+"MdeModulePkg.SingleSegmentPciCfg2"
 <endComponent>

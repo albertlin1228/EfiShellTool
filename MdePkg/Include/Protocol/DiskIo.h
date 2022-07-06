@@ -5,14 +5,8 @@
   oriented devices. The Disk IO protocol is intended to layer on top of the
   Block IO protocol.
 
-  Copyright (c) 2006 - 2008, Intel Corporation. All rights reserved.<BR>
-  This program and the accompanying materials                          
-  are licensed and made available under the terms and conditions of the BSD License         
-  which accompanies this distribution.  The full text of the license may be found at        
-  http://opensource.org/licenses/bsd-license.php                                            
-
-  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,                     
-  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.             
+  Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
+  SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
 
@@ -26,15 +20,15 @@
 
 ///
 /// Protocol GUID name defined in EFI1.1.
-/// 
+///
 #define DISK_IO_PROTOCOL  EFI_DISK_IO_PROTOCOL_GUID
 
 typedef struct _EFI_DISK_IO_PROTOCOL EFI_DISK_IO_PROTOCOL;
 
 ///
 /// Protocol defined in EFI1.1.
-/// 
-typedef EFI_DISK_IO_PROTOCOL  EFI_DISK_IO;
+///
+typedef EFI_DISK_IO_PROTOCOL EFI_DISK_IO;
 
 /**
   Read BufferSize bytes from Offset into Buffer.
@@ -91,11 +85,11 @@ EFI_STATUS
   IN VOID                         *Buffer
   );
 
-#define EFI_DISK_IO_PROTOCOL_REVISION 0x00010000
+#define EFI_DISK_IO_PROTOCOL_REVISION  0x00010000
 
 ///
 /// Revision defined in EFI1.1
-/// 
+///
 #define EFI_DISK_IO_INTERFACE_REVISION  EFI_DISK_IO_PROTOCOL_REVISION
 
 ///
@@ -107,11 +101,11 @@ struct _EFI_DISK_IO_PROTOCOL {
   /// revisions must be backwards compatible. If a future version is not
   /// backwards compatible, it is not the same GUID.
   ///
-  UINT64          Revision;
-  EFI_DISK_READ   ReadDisk;
-  EFI_DISK_WRITE  WriteDisk;
+  UINT64            Revision;
+  EFI_DISK_READ     ReadDisk;
+  EFI_DISK_WRITE    WriteDisk;
 };
 
-extern EFI_GUID gEfiDiskIoProtocolGuid;
+extern EFI_GUID  gEfiDiskIoProtocolGuid;
 
 #endif

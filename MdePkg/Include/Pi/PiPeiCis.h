@@ -1,18 +1,11 @@
 /** @file
   PI PEI master include file. This file should match the PI spec.
 
-Copyright (c) 2006 - 2013, Intel Corporation. All rights reserved.<BR>
-This program and the accompanying materials are licensed and made available under 
-the terms and conditions of the BSD License that accompanies this distribution.  
-The full text of the license may be found at
-http://opensource.org/licenses/bsd-license.php.                                            
-                                           
-
-THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,                     
-WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.             
+Copyright (c) 2006 - 2019, Intel Corporation. All rights reserved.<BR>
+SPDX-License-Identifier: BSD-2-Clause-Patent
 
   @par Revision Reference:
-  PI Version 1.2.
+  PI Version 1.7.
 
 **/
 
@@ -24,32 +17,30 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 
 ///
 /// The handles of EFI FV.
-/// 
-typedef VOID    *EFI_PEI_FV_HANDLE;
+///
+typedef VOID *EFI_PEI_FV_HANDLE;
 
 ///
 /// The handles of EFI FFS.
-/// 
-typedef VOID    *EFI_PEI_FILE_HANDLE;
+///
+typedef VOID *EFI_PEI_FILE_HANDLE;
 
 ///
 /// Declare the forward reference data structure for EFI_PEI_SERVICE.
-/// 
-typedef struct _EFI_PEI_SERVICES          EFI_PEI_SERVICES;
+///
+typedef struct _EFI_PEI_SERVICES EFI_PEI_SERVICES;
 
 ///
 /// Declare the forward reference data structure for EFI_PEI_NOTIFY_DESCRIPTOR.
-/// 
+///
 typedef struct _EFI_PEI_NOTIFY_DESCRIPTOR EFI_PEI_NOTIFY_DESCRIPTOR;
-
 
 #include <Ppi/CpuIo.h>
 #include <Ppi/PciCfg2.h>
 
-
 /**
-  The PEI Dispatcher will invoke each PEIM one time.  During this pass, the PEI 
-  Dispatcher will pass control to the PEIM at the AddressOfEntryPoint in the PE Header. 
+  The PEI Dispatcher will invoke each PEIM one time.  During this pass, the PEI
+  Dispatcher will pass control to the PEIM at the AddressOfEntryPoint in the PE Header.
 
   @param  FileHandle       Pointer to the FFS file header.
   @param  PeiServices      Describes the list of possible PEI Services.
@@ -73,6 +64,7 @@ EFI_STATUS
   @param  Ppi              Address of the PPI that was installed.
 
   @return Status of the notification.
+          The status code returned from this function is ignored.
 **/
 typedef
 EFI_STATUS
@@ -94,40 +86,40 @@ EFI_STATUS
 
 ///
 /// The data structure through which a PEIM describes available services to the PEI Foundation.
-/// 
+///
 typedef struct {
   ///
   /// This field is a set of flags describing the characteristics of this imported table entry.
   /// All flags are defined as EFI_PEI_PPI_DESCRIPTOR_***, which can also be combined into one.
   ///
-  UINTN     Flags;
+  UINTN       Flags;
   ///
   /// The address of the EFI_GUID that names the interface.
   ///
-  EFI_GUID  *Guid;
+  EFI_GUID    *Guid;
   ///
   /// A pointer to the PPI. It contains the information necessary to install a service.
   ///
-  VOID      *Ppi;
+  VOID        *Ppi;
 } EFI_PEI_PPI_DESCRIPTOR;
 
-/// 
-/// The data structure in a given PEIM that tells the PEI 
+///
+/// The data structure in a given PEIM that tells the PEI
 /// Foundation where to invoke the notification service.
-/// 
+///
 struct _EFI_PEI_NOTIFY_DESCRIPTOR {
   ///
   /// Details if the type of notification are callback or dispatch.
   ///
-  UINTN                       Flags;
+  UINTN                          Flags;
   ///
   /// The address of the EFI_GUID that names the interface.
   ///
-  EFI_GUID                    *Guid;
+  EFI_GUID                       *Guid;
   ///
   /// Address of the notification callback function itself within the PEIM.
   ///
-  EFI_PEIM_NOTIFY_ENTRY_POINT Notify;
+  EFI_PEIM_NOTIFY_ENTRY_POINT    Notify;
 };
 
 ///
@@ -138,17 +130,17 @@ typedef union {
   ///
   /// The typedef structure of the notification descriptor.
   ///
-  EFI_PEI_NOTIFY_DESCRIPTOR   Notify;
+  EFI_PEI_NOTIFY_DESCRIPTOR    Notify;
   ///
   /// The typedef structure of the PPI descriptor.
   ///
-  EFI_PEI_PPI_DESCRIPTOR      Ppi;
+  EFI_PEI_PPI_DESCRIPTOR       Ppi;
 } EFI_PEI_DESCRIPTOR;
 
 /**
-  This service is the first one provided by the PEI Foundation.  This function 
-  installs an interface in the PEI PPI database by GUID.  The purpose of the 
-  service is to publish an interface that other parties can use to call 
+  This service is the first one provided by the PEI Foundation.  This function
+  installs an interface in the PEI PPI database by GUID.  The purpose of the
+  service is to publish an interface that other parties can use to call
   additional PEIMs.
 
   @param  PeiServices      An indirect pointer to the EFI_PEI_SERVICES table
@@ -156,8 +148,8 @@ typedef union {
   @param  PpiList          A pointer to the list of interfaces that the caller shall install.
 
   @retval EFI_SUCCESS           The interface was successfully installed.
-  @retval EFI_INVALID_PARAMETER The PpiList pointer is NULL or Any of the PEI PPI 
-                                descriptors in the list do not have the 
+  @retval EFI_INVALID_PARAMETER The PpiList pointer is NULL or Any of the PEI PPI
+                                descriptors in the list do not have the
                                 EFI_PEI_PPI_DESCRIPTOR_PPI bit set in the Flags field.
   @retval EFI_OUT_OF_RESOURCES  There is no additional space in the PPI database.
 
@@ -170,10 +162,10 @@ EFI_STATUS
   );
 
 /**
-  This function reinstalls an interface in the PEI PPI database by GUID. 
-  The purpose of the service is to publish an interface that other parties 
-  can use to replace a same-named interface in the protocol database 
-  with a different interface. 
+  This function reinstalls an interface in the PEI PPI database by GUID.
+  The purpose of the service is to publish an interface that other parties
+  can use to replace a same-named interface in the protocol database
+  with a different interface.
 
   @param  PeiServices      An indirect pointer to the EFI_PEI_SERVICES table
                            published by the PEI Foundation.
@@ -181,7 +173,7 @@ EFI_STATUS
   @param  NewPpi           A pointer to the new interfaces that the caller shall install.
 
   @retval EFI_SUCCESS           The interface was successfully installed.
-  @retval EFI_INVALID_PARAMETER The PpiList pointer is NULL or Any of the PEI PPI descriptors in the 
+  @retval EFI_INVALID_PARAMETER The PpiList pointer is NULL or Any of the PEI PPI descriptors in the
                                 list do not have the EFI_PEI_PPI_DESCRIPTOR_PPI bit set in the Flags field.
   @retval EFI_OUT_OF_RESOURCES  There is no additional space in the PPI database.
   @retval EFI_NOT_FOUND         The PPI for which the reinstallation was requested has not been installed.
@@ -196,7 +188,7 @@ EFI_STATUS
   );
 
 /**
-  This function locates an interface in the PEI PPI database by GUID. 
+  This function locates an interface in the PEI PPI database by GUID.
 
   @param  PeiServices      An indirect pointer to the EFI_PEI_SERVICES published by the PEI Foundation.
   @param  Guid             A pointer to the GUID whose corresponding interface needs to be found.
@@ -219,17 +211,17 @@ EFI_STATUS
   );
 
 /**
-  This function installs a notification service to be called back when a 
-  given interface is installed or reinstalled.  The purpose of the service 
-  is to publish an interface that other parties can use to call additional PPIs 
+  This function installs a notification service to be called back when a
+  given interface is installed or reinstalled.  The purpose of the service
+  is to publish an interface that other parties can use to call additional PPIs
   that may materialize later.
 
   @param  PeiServices      An indirect pointer to the EFI_PEI_SERVICES table published by the PEI Foundation
   @param  NotifyList       A pointer to the list of notification interfaces that the caller shall install.
 
   @retval EFI_SUCCESS           The interface was successfully installed.
-  @retval EFI_INVALID_PARAMETER The PpiList pointer is NULL, or any of the PEI PPI descriptors in the 
-                                list do not have the EFI_PEI_PPI_DESCRIPTOR_PPI bit set in the Flags field.
+  @retval EFI_INVALID_PARAMETER The PpiList pointer is NULL, or any of the PEI PPI descriptors in the
+                                list do not have the EFI_PEI_PPI_DESCRIPTOR_NOTIFY_TYPES bit set in the Flags field.
   @retval EFI_OUT_OF_RESOURCES  There is no additional space in the PPI database.
 
 **/
@@ -273,7 +265,7 @@ EFI_STATUS
   );
 
 /**
-  This function returns the pointer to the list of Hand-Off Blocks (HOBs) in memory. 
+  This function returns the pointer to the list of Hand-Off Blocks (HOBs) in memory.
 
   @param  PeiServices      An indirect pointer to the EFI_PEI_SERVICES table published by the PEI Foundation
   @param  HobList          A pointer to the list of HOBs that the PEI Foundation will initialize
@@ -311,8 +303,8 @@ EFI_STATUS
   );
 
 /**
-  The purpose of the service is to abstract the capability of the PEI 
-  Foundation to discover instances of firmware volumes in the system. 
+  The purpose of the service is to abstract the capability of the PEI
+  Foundation to discover instances of firmware volumes in the system.
 
   This service enables PEIMs to discover additional firmware volumes. The PEI Foundation uses this
   service to abstract the locations and formats of various firmware volumes. These volumes include
@@ -448,20 +440,25 @@ EFI_STATUS
   );
 
 /**
-  The purpose of the service is to publish an interface that allows 
+  The purpose of the service is to publish an interface that allows
   PEIMs to allocate memory ranges that are managed by the PEI Foundation.
+
+  Prior to InstallPeiMemory() being called, PEI will allocate pages from the heap.
+  After InstallPeiMemory() is called, PEI will allocate pages within the region
+  of memory provided by InstallPeiMemory() service in a best-effort fashion.
+  Location-specific allocations are not managed by the PEI foundation code.
 
   @param  PeiServices      An indirect pointer to the EFI_PEI_SERVICES table published by the PEI Foundation.
   @param  MemoryType       The type of memory to allocate.
   @param  Pages            The number of contiguous 4 KB pages to allocate.
-  @param  Memory           A pointer to a physical address. On output, the address is set to the base 
+  @param  Memory           A pointer to a physical address. On output, the address is set to the base
                            of the page range that was allocated.
 
   @retval EFI_SUCCESS           The memory range was successfully allocated.
   @retval EFI_OUT_OF_RESOURCES  The pages could not be allocated.
-  @retval EFI_INVALID_PARAMETER The type is not equal to EfiLoaderCode, EfiLoaderData, EfiRuntimeServicesCode, 
+  @retval EFI_INVALID_PARAMETER The type is not equal to EfiLoaderCode, EfiLoaderData, EfiRuntimeServicesCode,
                                 EfiRuntimeServicesData, EfiBootServicesCode, EfiBootServicesData,
-                                EfiACPIReclaimMemory, or EfiACPIMemoryNVS.
+                                EfiACPIReclaimMemory, EfiReservedMemoryType, or EfiACPIMemoryNVS.
 
 **/
 typedef
@@ -474,7 +471,28 @@ EFI_STATUS
   );
 
 /**
-  The purpose of this service is to publish an interface that 
+  Frees memory pages.
+
+  @param[in] PeiServices        An indirect pointer to the EFI_PEI_SERVICES table published by the PEI Foundation.
+  @param[in] Memory             The base physical address of the pages to be freed.
+  @param[in] Pages              The number of contiguous 4 KB pages to free.
+
+  @retval EFI_SUCCESS           The requested pages were freed.
+  @retval EFI_INVALID_PARAMETER Memory is not a page-aligned address or Pages is invalid.
+  @retval EFI_NOT_FOUND         The requested memory pages were not allocated with
+                                AllocatePages().
+
+**/
+typedef
+EFI_STATUS
+(EFIAPI *EFI_PEI_FREE_PAGES)(
+  IN CONST EFI_PEI_SERVICES     **PeiServices,
+  IN EFI_PHYSICAL_ADDRESS       Memory,
+  IN UINTN                      Pages
+  );
+
+/**
+  The purpose of this service is to publish an interface that
   allows PEIMs to allocate memory ranges that are managed by the PEI Foundation.
 
   @param  PeiServices      An indirect pointer to the EFI_PEI_SERVICES table published by the PEI Foundation.
@@ -570,7 +588,7 @@ EFI_STATUS
 
   This service resets the entire platform, including all processors
   and devices, and reboots the system.
-  This service will never return EFI_SUCCESS.  
+  This service will never return EFI_SUCCESS.
 
   @param  PeiServices      An indirect pointer to the EFI_PEI_SERVICES
                            table published by the PEI Foundation.
@@ -582,6 +600,28 @@ typedef
 EFI_STATUS
 (EFIAPI *EFI_PEI_RESET_SYSTEM)(
   IN CONST EFI_PEI_SERVICES   **PeiServices
+  );
+
+/**
+  Resets the entire platform.
+
+  @param[in] ResetType      The type of reset to perform.
+  @param[in] ResetStatus    The status code for the reset.
+  @param[in] DataSize       The size, in bytes, of ResetData.
+  @param[in] ResetData      For a ResetType of EfiResetCold, EfiResetWarm, or EfiResetShutdown
+                            the data buffer starts with a Null-terminated string, optionally
+                            followed by additional binary data. The string is a description
+                            that the caller may use to further indicate the reason for the
+                            system reset.
+
+**/
+typedef
+VOID
+(EFIAPI *EFI_PEI_RESET2_SYSTEM)(
+  IN EFI_RESET_TYPE     ResetType,
+  IN EFI_STATUS         ResetStatus,
+  IN UINTN              DataSize,
+  IN VOID               *ResetData OPTIONAL
   );
 
 /**
@@ -619,25 +659,25 @@ typedef struct {
   ///
   /// Name of the file.
   ///
-  EFI_GUID                FileName;
+  EFI_GUID                  FileName;
   ///
   /// File type.
   ///
-  EFI_FV_FILETYPE         FileType;
+  EFI_FV_FILETYPE           FileType;
   ///
   /// Attributes of the file.
   ///
-  EFI_FV_FILE_ATTRIBUTES  FileAttributes;
+  EFI_FV_FILE_ATTRIBUTES    FileAttributes;
   ///
   /// Points to the file's data (not the header).
   /// Not valid if EFI_FV_FILE_ATTRIB_MEMORY_MAPPED
   /// is zero.
   ///
-  VOID                    *Buffer;
+  VOID                      *Buffer;
   ///
   /// Size of the file's data.
   ///
-  UINT32                  BufferSize;
+  UINT32                    BufferSize;
 } EFI_FV_FILE_INFO;
 
 ///
@@ -647,29 +687,29 @@ typedef struct {
   ///
   /// Name of the file.
   ///
-  EFI_GUID                FileName;
+  EFI_GUID                  FileName;
   ///
   /// File type.
   ///
-  EFI_FV_FILETYPE         FileType;
+  EFI_FV_FILETYPE           FileType;
   ///
   /// Attributes of the file.
   ///
-  EFI_FV_FILE_ATTRIBUTES  FileAttributes;
+  EFI_FV_FILE_ATTRIBUTES    FileAttributes;
   ///
   /// Points to the file's data (not the header).
   /// Not valid if EFI_FV_FILE_ATTRIB_MEMORY_MAPPED
   /// is zero.
   ///
-  VOID                    *Buffer;
+  VOID                      *Buffer;
   ///
   /// Size of the file's data.
   ///
-  UINT32                  BufferSize;
+  UINT32                    BufferSize;
   ///
   /// Authentication status for this file.
   ///
-  UINT32                  AuthenticationStatus;
+  UINT32                    AuthenticationStatus;
 } EFI_FV_FILE_INFO2;
 
 /**
@@ -688,7 +728,7 @@ typedef struct {
   @retval EFI_INVALID_PARAMETER   FileHandle does not
                                   represent a valid file.
   @retval EFI_INVALID_PARAMETER   FileInfo is NULL.
-  
+
 **/
 typedef
 EFI_STATUS
@@ -728,25 +768,25 @@ typedef struct {
   ///
   /// Attributes of the firmware volume.
   ///
-  EFI_FVB_ATTRIBUTES_2  FvAttributes;
+  EFI_FVB_ATTRIBUTES_2    FvAttributes;
   ///
   /// Format of the firmware volume.
   ///
-  EFI_GUID              FvFormat;
+  EFI_GUID                FvFormat;
   ///
   /// Name of the firmware volume.
   ///
-  EFI_GUID              FvName;
+  EFI_GUID                FvName;
   ///
   /// Points to the first byte of the firmware
   /// volume, if bit EFI_FVB_MEMORY_MAPPED is
   /// set in FvAttributes.
   ///
-  VOID                  *FvStart;
+  VOID                    *FvStart;
   ///
   /// Size of the firmware volume.
   ///
-  UINT64                FvSize;
+  UINT64                  FvSize;
 } EFI_FV_INFO;
 
 /**
@@ -788,7 +828,7 @@ EFI_STATUS
 
   @param  FileHandle            PEIM's file handle. Must be the currently
                                 executing PEIM.
-  
+
   @retval EFI_SUCCESS           The PEIM was successfully registered for
                                 shadowing.
   @retval EFI_ALREADY_STARTED   The PEIM was previously
@@ -803,15 +843,14 @@ EFI_STATUS
   IN  EFI_PEI_FILE_HANDLE FileHandle
   );
 
-
 //
 // PEI Specification Revision information
 //
 #define PEI_SPECIFICATION_MAJOR_REVISION  1
-#define PEI_SPECIFICATION_MINOR_REVISION  30
+#define PEI_SPECIFICATION_MINOR_REVISION  70
 ///
-/// Specification inconsistency here: 
-/// In the PI1.0 spec, PEI_SERVICES_SIGNATURE is defined as 0x5652455320494550. But 
+/// Specification inconsistency here:
+/// In the PI1.0 spec, PEI_SERVICES_SIGNATURE is defined as 0x5652455320494550. But
 /// to pass a multiple tool chain, it appends an ULL.
 ///
 //
@@ -819,14 +858,14 @@ EFI_STATUS
 //
 #define PEI_SERVICES_SIGNATURE  0x5652455320494550ULL
 ///
-/// Specification inconsistency here: 
-/// In the PI1.0 specification, there is a typo error in PEI_SERVICES_REVISION. In the specification the defintion is 
+/// Specification inconsistency here:
+/// In the PI1.0 specification, there is a typo error in PEI_SERVICES_REVISION. In the specification the defintion is
 /// #define ((PEI_SPECIFICATION_MAJOR_REVISION<<16) |(PEI_SPECIFICATION_MINOR_REVISION))
 /// and it should be as follows:
 ///
-#define PEI_SERVICES_REVISION   ((PEI_SPECIFICATION_MAJOR_REVISION<<16) | (PEI_SPECIFICATION_MINOR_REVISION))
+#define PEI_SERVICES_REVISION  ((PEI_SPECIFICATION_MAJOR_REVISION<<16) | (PEI_SPECIFICATION_MINOR_REVISION))
 
-/// 
+///
 /// EFI_PEI_SERVICES is a collection of functions whose implementation is provided by the PEI
 /// Foundation. These services fall into various classes, including the following:
 /// - Managing the boot mode
@@ -839,137 +878,137 @@ struct _EFI_PEI_SERVICES {
   ///
   /// The table header for the PEI Services Table.
   ///
-  EFI_TABLE_HEADER                Hdr;
+  EFI_TABLE_HEADER                  Hdr;
 
   //
   // PPI Functions
   //
-  EFI_PEI_INSTALL_PPI             InstallPpi;
-  EFI_PEI_REINSTALL_PPI           ReInstallPpi;
-  EFI_PEI_LOCATE_PPI              LocatePpi;
-  EFI_PEI_NOTIFY_PPI              NotifyPpi;
+  EFI_PEI_INSTALL_PPI               InstallPpi;
+  EFI_PEI_REINSTALL_PPI             ReInstallPpi;
+  EFI_PEI_LOCATE_PPI                LocatePpi;
+  EFI_PEI_NOTIFY_PPI                NotifyPpi;
 
   //
   // Boot Mode Functions
   //
-  EFI_PEI_GET_BOOT_MODE           GetBootMode;
-  EFI_PEI_SET_BOOT_MODE           SetBootMode;
+  EFI_PEI_GET_BOOT_MODE             GetBootMode;
+  EFI_PEI_SET_BOOT_MODE             SetBootMode;
 
   //
   // HOB Functions
   //
-  EFI_PEI_GET_HOB_LIST            GetHobList;
-  EFI_PEI_CREATE_HOB              CreateHob;
+  EFI_PEI_GET_HOB_LIST              GetHobList;
+  EFI_PEI_CREATE_HOB                CreateHob;
 
   //
   // Firmware Volume Functions
   //
-  EFI_PEI_FFS_FIND_NEXT_VOLUME2   FfsFindNextVolume;
-  EFI_PEI_FFS_FIND_NEXT_FILE2     FfsFindNextFile;
-  EFI_PEI_FFS_FIND_SECTION_DATA2  FfsFindSectionData;
+  EFI_PEI_FFS_FIND_NEXT_VOLUME2     FfsFindNextVolume;
+  EFI_PEI_FFS_FIND_NEXT_FILE2       FfsFindNextFile;
+  EFI_PEI_FFS_FIND_SECTION_DATA2    FfsFindSectionData;
 
   //
   // PEI Memory Functions
   //
-  EFI_PEI_INSTALL_PEI_MEMORY      InstallPeiMemory;
-  EFI_PEI_ALLOCATE_PAGES          AllocatePages;
-  EFI_PEI_ALLOCATE_POOL           AllocatePool;
-  EFI_PEI_COPY_MEM                CopyMem;
-  EFI_PEI_SET_MEM                 SetMem;
+  EFI_PEI_INSTALL_PEI_MEMORY        InstallPeiMemory;
+  EFI_PEI_ALLOCATE_PAGES            AllocatePages;
+  EFI_PEI_ALLOCATE_POOL             AllocatePool;
+  EFI_PEI_COPY_MEM                  CopyMem;
+  EFI_PEI_SET_MEM                   SetMem;
 
   //
   // Status Code
   //
-  EFI_PEI_REPORT_STATUS_CODE      ReportStatusCode;
+  EFI_PEI_REPORT_STATUS_CODE        ReportStatusCode;
 
   //
   // Reset
   //
-  EFI_PEI_RESET_SYSTEM            ResetSystem;
+  EFI_PEI_RESET_SYSTEM              ResetSystem;
 
   //
   // (the following interfaces are installed by publishing PEIM)
   // I/O Abstractions
   //
-  EFI_PEI_CPU_IO_PPI              *CpuIo;
-  EFI_PEI_PCI_CFG2_PPI            *PciCfg;
+  EFI_PEI_CPU_IO_PPI                *CpuIo;
+  EFI_PEI_PCI_CFG2_PPI              *PciCfg;
 
   //
   // Future Installed Services
   //
-  EFI_PEI_FFS_FIND_BY_NAME        FfsFindFileByName;
-  EFI_PEI_FFS_GET_FILE_INFO       FfsGetFileInfo;
-  EFI_PEI_FFS_GET_VOLUME_INFO     FfsGetVolumeInfo;
-  EFI_PEI_REGISTER_FOR_SHADOW     RegisterForShadow;
-  EFI_PEI_FFS_FIND_SECTION_DATA3  FindSectionData3;
-  EFI_PEI_FFS_GET_FILE_INFO2      FfsGetFileInfo2;
+  EFI_PEI_FFS_FIND_BY_NAME          FfsFindFileByName;
+  EFI_PEI_FFS_GET_FILE_INFO         FfsGetFileInfo;
+  EFI_PEI_FFS_GET_VOLUME_INFO       FfsGetVolumeInfo;
+  EFI_PEI_REGISTER_FOR_SHADOW       RegisterForShadow;
+  EFI_PEI_FFS_FIND_SECTION_DATA3    FindSectionData3;
+  EFI_PEI_FFS_GET_FILE_INFO2        FfsGetFileInfo2;
+  EFI_PEI_RESET2_SYSTEM             ResetSystem2;
+  EFI_PEI_FREE_PAGES                FreePages;
 };
-
 
 ///
 /// EFI_SEC_PEI_HAND_OFF structure holds information about
 /// PEI core's operating environment, such as the size of location of
 /// temporary RAM, the stack location and BFV location.
-/// 
+///
 typedef struct _EFI_SEC_PEI_HAND_OFF {
   ///
   /// Size of the data structure.
-  /// 
-  UINT16  DataSize;
+  ///
+  UINT16    DataSize;
 
   ///
-  /// Points to the first byte of the boot firmware volume, 
-  /// which the PEI Dispatcher should search for 
+  /// Points to the first byte of the boot firmware volume,
+  /// which the PEI Dispatcher should search for
   /// PEI modules.
-  /// 
-  VOID    *BootFirmwareVolumeBase;
+  ///
+  VOID      *BootFirmwareVolumeBase;
 
   ///
   /// Size of the boot firmware volume, in bytes.
-  /// 
-  UINTN   BootFirmwareVolumeSize;
+  ///
+  UINTN     BootFirmwareVolumeSize;
 
   ///
   /// Points to the first byte of the temporary RAM.
-  /// 
-  VOID    *TemporaryRamBase;
+  ///
+  VOID      *TemporaryRamBase;
 
   ///
   /// Size of the temporary RAM, in bytes.
-  /// 
-  UINTN   TemporaryRamSize;
+  ///
+  UINTN     TemporaryRamSize;
 
   ///
-  /// Points to the first byte of the temporary RAM 
-  /// available for use by the PEI Foundation. The area 
-  /// described by PeiTemporaryRamBase and PeiTemporaryRamSize 
+  /// Points to the first byte of the temporary RAM
+  /// available for use by the PEI Foundation. The area
+  /// described by PeiTemporaryRamBase and PeiTemporaryRamSize
   /// must not extend outside beyond the area described by
   /// TemporaryRamBase & TemporaryRamSize. This area should not
-  /// overlap with the area reported by StackBase and 
+  /// overlap with the area reported by StackBase and
   /// StackSize.
   ///
-  VOID    *PeiTemporaryRamBase;
+  VOID     *PeiTemporaryRamBase;
 
   ///
-  /// The size of the available temporary RAM available for 
+  /// The size of the available temporary RAM available for
   /// use by the PEI Foundation, in bytes.
-  /// 
-  UINTN   PeiTemporaryRamSize;
+  ///
+  UINTN    PeiTemporaryRamSize;
 
   ///
-  /// Points to the first byte of the stack. 
-  /// This are may be part of the memory described by 
-  /// TemporaryRamBase and TemporaryRamSize 
+  /// Points to the first byte of the stack.
+  /// This are may be part of the memory described by
+  /// TemporaryRamBase and TemporaryRamSize
   /// or may be an entirely separate area.
-  /// 
-  VOID    *StackBase;
+  ///
+  VOID     *StackBase;
 
   ///
   /// Size of the stack, in bytes.
-  /// 
-  UINTN   StackSize;
+  ///
+  UINTN    StackSize;
 } EFI_SEC_PEI_HAND_OFF;
-
 
 /**
   The entry point of PEI Foundation.
@@ -978,13 +1017,14 @@ typedef struct _EFI_SEC_PEI_HAND_OFF {
   allows the SEC phase to pass information about the stack,
   temporary RAM and the Boot Firmware Volume. In addition, it also
   allows the SEC phase to pass services and data forward for use
-  during the PEI phase in the form of one or more PPIs. There is
-  no limit to the number of additional PPIs that can be passed
-  from SEC into the PEI Foundation. As part of its initialization
-  phase, the PEI Foundation will add these SEC-hosted PPIs to its
-  PPI database such that both the PEI Foundation and any modules
-  can leverage the associated service calls and/or code in these
-  early PPIs.
+  during the PEI phase in the form of one or more PPIs. These PPI's
+  will be installed and/or immediately signaled if they are
+  notification type. There is no limit to the number of additional
+  PPIs that can be passed from SEC into the PEI Foundation. As part
+  of its initialization phase, the PEI Foundation will add these
+  SEC-hosted PPIs to its PPI database such that both the PEI
+  Foundation and any modules can leverage the associated service
+  calls and/or code in these early PPIs.
 
   @param SecCoreData    Points to a data structure containing
                         information about the PEI core's
@@ -1011,6 +1051,6 @@ VOID
 (EFIAPI *EFI_PEI_CORE_ENTRY_POINT)(
   IN CONST  EFI_SEC_PEI_HAND_OFF    *SecCoreData,
   IN CONST  EFI_PEI_PPI_DESCRIPTOR  *PpiList
-);
+  );
 
 #endif

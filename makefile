@@ -1,33 +1,15 @@
 #**********************************************************************
-#**********************************************************************
-#**                                                                  **
-#**        (C)Copyright 1985-2013, American Megatrends, Inc.         **
-#**                                                                  **
-#**                       All Rights Reserved.                       **
-#**                                                                  **
-#**      5555 Oakbrook Parkway, Suite 200, Norcross, GA 30093        **
-#**                                                                  **
-#**                       Phone: (770)-246-8600                      **
-#**                                                                  **
-#**********************************************************************
+#*                                                                    *
+#*   Copyright (c) 1985-2019, American Megatrends International LLC.  *
+#*                                                                    *
+#*      All rights reserved. Subject to AMI licensing agreement.      *
+#*                                                                    *
 #**********************************************************************
 
 #**********************************************************************
-# $Header: $
-#
-# $Revision:  $
-#
-# $Date:  $
-#**********************************************************************
-#<AMI_FHDR_START>
-#
-# Name:	build.mak
-#
-# Description:	First makefile to be called during build, calls ParseVeb,
-#  AMISDL, and dater.mak to generate files needed by Main.mak, then launches 
-#  Main.mak
-#
-#<AMI_FHDR_END>
+## @file
+#  First makefile to be called during build, calls ParseVeb and AMISDL 
+#  to generate files needed by Main.mak, then launches Main.mak.
 #**********************************************************************
 export CONFIGURATION_DIR:=AmiPkg/Configuration/
 export UTILITIES_MAK:=$(CONFIGURATION_DIR)utilities.mak
@@ -42,11 +24,22 @@ export MAIN_MAK:=$(CONFIGURATION_DIR)Main.mak
 export TOKEN_MAK:=Build/Token.mak
 export MODULE_MAK:=Build/module.mak
 export APTIO_MAKE:=$(MAKE) --no-print-directory
-AMISDL_MAK:=$(CONFIGURATION_DIR)RunAmiSdl.mak
 
-.PHONY : all clean rebuild run RunAmiSdl AptioV sdl
+# Script that runs AmiSdl and other AMI preprocessing tools can be either part of the build tools (higher priority)
+# or part of the project (lower priority).
+ifeq ($(wildcard $(TOOLS_DIR)/RunAmiTools.mak),$(TOOLS_DIR)/RunAmiTools.mak)
+RUN_AMI_TOOLS_MAK:=$(TOOLS_DIR)/RunAmiTools.mak
+else
+RUN_AMI_TOOLS_MAK:=$(CONFIGURATION_DIR)RunAmiSdl.mak
+endif
 
-all: $(BUILD_DIR) RunAmiSdl AptioV
+.PHONY : all clean rebuild run RunAmiSdl AptioV sdl Prologue
+
+all: Prologue $(BUILD_DIR) RunAmiSdl AptioV
+
+# Print build information
+Prologue:
+	$(ECHO) Build Tools: $(BUILD_TOOLS_VERSION).
 
 # Clean out the old files
 clean:
@@ -57,7 +50,7 @@ clean:
   ifeq ($(wildcard Conf), Conf) 	
 	-$(RMDIR) Conf
   endif	
-	@$(APTIO_MAKE) -s -f $(AMISDL_MAK) clean
+	@$(APTIO_MAKE) -s -f $(RUN_AMI_TOOLS_MAK) clean
 	@$(ECHO) Done.
 	
 rebuild: clean all
@@ -72,7 +65,7 @@ $(BUILD_DIR):
 	mkdir $(BUILD_DIR)
 
 RunAmiSdl:
-	@$(APTIO_MAKE) -f $(AMISDL_MAK) all
+	@$(APTIO_MAKE) -f $(RUN_AMI_TOOLS_MAK) all
 
 # If TODAY/NOW are not defined on the command line, generate them automatically.
 # These auto-generated values may be overridden with TODAY/NOW SDL tokens.
@@ -88,18 +81,6 @@ endif
 
 AptioV:
 	$(APTIO_MAKE) -f $(MAIN_MAK) $(target)
-
-
-#**********************************************************************
-#**********************************************************************
-#**                                                                  **
-#**        (C)Copyright 1985-2013, American Megatrends, Inc.         **
-#**                                                                  **
-#**                       All Rights Reserved.                       **
-#**                                                                  **
-#**      5555 Oakbrook Parkway, Suite 200, Norcross, GA 30093        **
-#**                                                                  **
-#**                       Phone: (770)-246-8600                      **
-#**                                                                  **
-#**********************************************************************
-#**********************************************************************
+ifeq ($(call __ge, $(BUILD_TOOLS_VERSION), 29),yes)
+	@$(APTIO_MAKE) -s -f $(RUN_AMI_TOOLS_MAK) End
+endif

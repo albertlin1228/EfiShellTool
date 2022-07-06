@@ -2,14 +2,8 @@
   Provides library functions for each of the UEFI Runtime Services.
   Only available to DXE and UEFI module types.
 
-Copyright (c) 2006 - 2010, Intel Corporation. All rights reserved.<BR>
-This program and the accompanying materials are licensed and made available under 
-the terms and conditions of the BSD License that accompanies this distribution.  
-The full text of the license may be found at
-http://opensource.org/licenses/bsd-license.php.
-
-THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
-WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
+SPDX-License-Identifier: BSD-2-Clause-Patent
 **/
 
 #ifndef __UEFI_RUNTIME_LIB__
@@ -34,7 +28,7 @@ EfiAtRuntime (
   );
 
 /**
-  This function allows the caller to determine if UEFI SetVirtualAddressMap() has been called. 
+  This function allows the caller to determine if UEFI SetVirtualAddressMap() has been called.
 
   This function returns TRUE after all the EVT_SIGNAL_VIRTUAL_ADDRESS_CHANGE functions have
   executed as a result of the OS calling SetVirtualAddressMap(). Prior to this time FALSE
@@ -75,8 +69,8 @@ EfiGoneVirtual (
 EFI_STATUS
 EFIAPI
 EfiGetTime (
-  OUT EFI_TIME                    *Time,
-  OUT EFI_TIME_CAPABILITIES       *Capabilities  OPTIONAL
+  OUT EFI_TIME               *Time,
+  OUT EFI_TIME_CAPABILITIES  *Capabilities  OPTIONAL
   );
 
 /**
@@ -104,7 +98,7 @@ EfiGetTime (
 EFI_STATUS
 EFIAPI
 EfiSetTime (
-  IN EFI_TIME                   *Time
+  IN EFI_TIME  *Time
   );
 
 /**
@@ -131,9 +125,9 @@ EfiSetTime (
 EFI_STATUS
 EFIAPI
 EfiGetWakeupTime (
-  OUT BOOLEAN                     *Enabled,
-  OUT BOOLEAN                     *Pending,
-  OUT EFI_TIME                    *Time
+  OUT BOOLEAN   *Enabled,
+  OUT BOOLEAN   *Pending,
+  OUT EFI_TIME  *Time
   );
 
 /**
@@ -161,8 +155,8 @@ EfiGetWakeupTime (
 EFI_STATUS
 EFIAPI
 EfiSetWakeupTime (
-  IN BOOLEAN                      Enable,
-  IN EFI_TIME                     *Time   OPTIONAL
+  IN BOOLEAN   Enable,
+  IN EFI_TIME  *Time   OPTIONAL
   );
 
 /**
@@ -198,11 +192,11 @@ EfiSetWakeupTime (
 EFI_STATUS
 EFIAPI
 EfiGetVariable (
-  IN      CHAR16                   *VariableName,
-  IN      EFI_GUID                 *VendorGuid,
-  OUT     UINT32                   *Attributes OPTIONAL,
-  IN OUT  UINTN                    *DataSize,
-  OUT     VOID                     *Data
+  IN      CHAR16    *VariableName,
+  IN      EFI_GUID  *VendorGuid,
+  OUT     UINT32    *Attributes OPTIONAL,
+  IN OUT  UINTN     *DataSize,
+  OUT     VOID      *Data
   );
 
 /**
@@ -238,9 +232,9 @@ EfiGetVariable (
 EFI_STATUS
 EFIAPI
 EfiGetNextVariableName (
-  IN OUT UINTN                    *VariableNameSize,
-  IN OUT CHAR16                   *VariableName,
-  IN OUT EFI_GUID                 *VendorGuid
+  IN OUT UINTN     *VariableNameSize,
+  IN OUT CHAR16    *VariableName,
+  IN OUT EFI_GUID  *VendorGuid
   );
 
 /**
@@ -275,11 +269,11 @@ EfiGetNextVariableName (
 EFI_STATUS
 EFIAPI
 EfiSetVariable (
-  IN CHAR16                       *VariableName,
-  IN EFI_GUID                     *VendorGuid,
-  IN UINT32                       Attributes,
-  IN UINTN                        DataSize,
-  IN VOID                         *Data
+  IN CHAR16    *VariableName,
+  IN EFI_GUID  *VendorGuid,
+  IN UINT32    Attributes,
+  IN UINTN     DataSize,
+  IN VOID      *Data
   );
 
 /**
@@ -301,7 +295,7 @@ EfiSetVariable (
 EFI_STATUS
 EFIAPI
 EfiGetNextHighMonotonicCount (
-  OUT UINT32                      *HighCount
+  OUT UINT32  *HighCount
   );
 
 /**
@@ -329,21 +323,20 @@ EfiGetNextHighMonotonicCount (
                       Null-terminated Unicode string, optionally followed by additional binary data. The string is a
                       description that the caller may use to further indicate the reason for the system reset. ResetData
                       is only valid if ResetStatus is something other then EFI_SUCCESS. This pointer must be a physical
-                      address. For a ResetType of EfiRestUpdate the data buffer also starts with a Null-terminated string
-                      that is followed by a physical VOID * to an EFI_CAPSULE_HEADER.
-
+                      address. For a ResetType of EfiResetPlatformSpecific the data buffer also starts with a Null-terminated
+                      string that is followed by an EFI_GUID that describes the specific type of reset to perform.
 **/
 VOID
 EFIAPI
 EfiResetSystem (
-  IN EFI_RESET_TYPE               ResetType,
-  IN EFI_STATUS                   ResetStatus,
-  IN UINTN                        DataSize,
-  IN VOID                         *ResetData OPTIONAL
+  IN EFI_RESET_TYPE  ResetType,
+  IN EFI_STATUS      ResetStatus,
+  IN UINTN           DataSize,
+  IN VOID            *ResetData OPTIONAL
   );
 
 /**
-  This service is a wrapper for the UEFI Runtime Service ConvertPointer().  
+  This service is a wrapper for the UEFI Runtime Service ConvertPointer().
 
   The ConvertPointer() function is used by an EFI component during the SetVirtualAddressMap() operation.
   ConvertPointer()must be called using physical address pointers during the execution of SetVirtualAddressMap().
@@ -363,15 +356,15 @@ EfiResetSystem (
 EFI_STATUS
 EFIAPI
 EfiConvertPointer (
-  IN UINTN                  DebugDisposition,
-  IN OUT VOID               **Address
+  IN UINTN     DebugDisposition,
+  IN OUT VOID  **Address
   );
 
 /**
   Determines the new virtual address that is to be used on subsequent memory accesses.
 
   For IA32, x64, and EBC, this service is a wrapper for the UEFI Runtime Service
-  ConvertPointer().  See the UEFI Specification for details. 
+  ConvertPointer().  See the UEFI Specification for details.
   For IPF, this function interprets Address as a pointer to an EFI_PLABEL structure
   and both the EntryPoint and GP fields of an EFI_PLABEL are converted from physical
   to virtiual addressing.  Since IPF allows the GP to point to an address outside
@@ -392,8 +385,8 @@ EfiConvertPointer (
 EFI_STATUS
 EFIAPI
 EfiConvertFunctionPointer (
-  IN UINTN                DebugDisposition,
-  IN OUT VOID             **Address
+  IN UINTN     DebugDisposition,
+  IN OUT VOID  **Address
   );
 
 /**
@@ -425,12 +418,11 @@ EfiConvertFunctionPointer (
 EFI_STATUS
 EFIAPI
 EfiSetVirtualAddressMap (
-  IN UINTN                          MemoryMapSize,
-  IN UINTN                          DescriptorSize,
-  IN UINT32                         DescriptorVersion,
-  IN CONST EFI_MEMORY_DESCRIPTOR    *VirtualMap
+  IN UINTN                        MemoryMapSize,
+  IN UINTN                        DescriptorSize,
+  IN UINT32                       DescriptorVersion,
+  IN CONST EFI_MEMORY_DESCRIPTOR  *VirtualMap
   );
-
 
 /**
   Convert the standard Lib double linked list to a virtual mapping.
@@ -449,8 +441,8 @@ EfiSetVirtualAddressMap (
 EFI_STATUS
 EFIAPI
 EfiConvertList (
-  IN UINTN                DebugDisposition,
-  IN OUT LIST_ENTRY       *ListHead
+  IN UINTN           DebugDisposition,
+  IN OUT LIST_ENTRY  *ListHead
   );
 
 /**
@@ -491,11 +483,10 @@ EfiConvertList (
 EFI_STATUS
 EFIAPI
 EfiUpdateCapsule (
-  IN EFI_CAPSULE_HEADER       **CapsuleHeaderArray,
-  IN UINTN                    CapsuleCount,
-  IN EFI_PHYSICAL_ADDRESS     ScatterGatherList OPTIONAL
+  IN EFI_CAPSULE_HEADER    **CapsuleHeaderArray,
+  IN UINTN                 CapsuleCount,
+  IN EFI_PHYSICAL_ADDRESS  ScatterGatherList OPTIONAL
   );
-
 
 /**
   This service is a wrapper for the UEFI Runtime Service QueryCapsuleCapabilities().
@@ -534,12 +525,11 @@ EfiUpdateCapsule (
 EFI_STATUS
 EFIAPI
 EfiQueryCapsuleCapabilities (
-  IN  EFI_CAPSULE_HEADER       **CapsuleHeaderArray,
-  IN  UINTN                    CapsuleCount,
-  OUT UINT64                   *MaximumCapsuleSize,
-  OUT EFI_RESET_TYPE           *ResetType
+  IN  EFI_CAPSULE_HEADER  **CapsuleHeaderArray,
+  IN  UINTN               CapsuleCount,
+  OUT UINT64              *MaximumCapsuleSize,
+  OUT EFI_RESET_TYPE      *ResetType
   );
-
 
 /**
   This service is a wrapper for the UEFI Runtime Service QueryVariableInfo().
@@ -585,4 +575,3 @@ EfiQueryVariableInfo (
   );
 
 #endif
-

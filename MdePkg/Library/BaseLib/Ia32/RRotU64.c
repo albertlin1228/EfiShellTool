@@ -1,19 +1,10 @@
 /** @file
   64-bit right rotation for Ia32
 
-  Copyright (c) 2006 - 2008, Intel Corporation. All rights reserved.<BR>
-  This program and the accompanying materials
-  are licensed and made available under the terms and conditions of the BSD License
-  which accompanies this distribution.  The full text of the license may be found at
-  http://opensource.org/licenses/bsd-license.php.
-
-  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
-  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+  Copyright (c) 2006 - 2015, Intel Corporation. All rights reserved.<BR>
+  SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
-
-
-
 
 /**
   Rotates a 64-bit integer right between 0 and 63 bits, filling
@@ -32,8 +23,8 @@
 UINT64
 EFIAPI
 InternalMathRRotU64 (
-  IN      UINT64                    Operand,
-  IN      UINTN                     Count
+  IN      UINT64  Operand,
+  IN      UINTN   Count
   )
 {
   _asm {
@@ -45,9 +36,10 @@ InternalMathRRotU64 (
     rol     ebx, cl
     shrd    edx, ebx, cl
     test    cl, 32                      // Count >= 32?
-    cmovnz  ecx, eax
-    cmovnz  eax, edx
-    cmovnz  edx, ecx
+    jz      L0
+    mov     ecx, eax
+    mov     eax, edx
+    mov     edx, ecx
+L0:
   }
 }
-

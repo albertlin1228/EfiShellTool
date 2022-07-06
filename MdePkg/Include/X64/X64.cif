@@ -4,5 +4,6 @@
 	LocalRoot = "MdePkg\Include\X64\"
 	RefName = "MdePkg.X64"
 [files]
+"Nasm.inc"	
 "ProcessorBind.h"	
 <endComponent>
