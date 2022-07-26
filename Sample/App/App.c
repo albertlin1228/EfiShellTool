@@ -23,7 +23,8 @@ CHAR16 *gScreenBuffer = NULL;
 CHAR16 *gStringLine;
 EFI_INPUT_KEY gInputKey;
 
-VOID SwitchScreen()
+VOID 
+SwitchScreen()
 {
     gST->ConOut->ClearScreen (gST->ConOut);
     gST->ConOut->EnableCursor(gST->ConOut,TRUE);    
@@ -31,7 +32,14 @@ VOID SwitchScreen()
     gST->ConOut->SetCursorPosition( gST->ConOut,0,gRow);
 }
 
-VOID DisplayString(
+VOID
+AllocateStringMem()
+{
+    gStringLine = AllocateZeroPool (0x100);
+}
+
+VOID 
+DisplayString(
   UINTN Column,
   UINTN Font,
   UINTN BackGroundColor
@@ -48,25 +56,25 @@ ListMainItem()
 {
     gRow=0;
     
-    gStringLine = AllocateZeroPool (0x100);
+    AllocateStringMem();
     Swprintf(gStringLine,L"1. List PCI device");
     DisplayString(0,EFI_WHITE,EFI_BLUE);
     
     gRow=1;
     
-    gStringLine = AllocateZeroPool (0x100);    
-    Swprintf(gStringLine,L"2. Search IO port");
+    AllocateStringMem();
+    Swprintf(gStringLine,L"2. Search MMIO/IO address");
     DisplayString(0,EFI_WHITE,EFI_BLUE);
     
     gRow=2;
     
-    gStringLine = AllocateZeroPool (0x100);    
-    Swprintf(gStringLine,L"3. Search MMIO address");
+    AllocateStringMem();  
+    Swprintf(gStringLine,L"3. List ACPI table");
     DisplayString(0,EFI_WHITE,EFI_BLUE);
     
     gRow=3;
     
-    gStringLine = AllocateZeroPool (0x100);    
+    AllocateStringMem();    
     Swprintf(gStringLine,L"4. List SMBIOS table");
     DisplayString(0,EFI_WHITE,EFI_BLUE);
     
@@ -82,14 +90,13 @@ MovePage(
   UINT16        PciDevCount
 )
 {
-    UINT8  Index;
-    
+    UINT16  Index;
+  
     gRow=0;
     
     SwitchScreen();
     
-    gStringLine = AllocateZeroPool (0x100);
-    
+    AllocateStringMem();
     StrCat(gStringLine,L"  No.  Bus  Dev  Fun    VID    DID");
     DisplayString(0,EFI_WHITE,EFI_BLUE);
     
@@ -98,9 +105,9 @@ MovePage(
         if(Index < PciDevCount)
         {
             gRow++;
-            gStringLine = AllocateZeroPool (0x100);
-        
-            Swprintf(gStringLine,L"  %03d   %02X   %02X   %02X   %02X   %02X",\
+
+            AllocateStringMem();
+            Swprintf(gStringLine,L"  %03d   %02X   %02X   %02X   %04X   %04X",\
                                 Index,
                                 PciDevList[Index].Bus,\
                                 PciDevList[Index].Dev,\
@@ -115,10 +122,8 @@ MovePage(
     
     gRow++;
     
-    gStringLine = AllocateZeroPool (0x100);
-    
+    AllocateStringMem();    
     Swprintf(gStringLine,L"Page/MaxPage:%d/%d",PageIndex,MaxPage);
-
     DisplayString(0,EFI_WHITE,EFI_BLUE);
     
     gST->ConOut->SetCursorPosition( gST->ConOut,4,1);
@@ -211,34 +216,30 @@ DisplayPciReg(
             
     gRow=0;
     SwitchScreen();
-    gStringLine = AllocateZeroPool (0x100);
+    
+    AllocateStringMem();
     Swprintf(gStringLine,L"    00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F");
     DisplayString(0,EFI_WHITE,EFI_BLUE);
     
     gRow=1;
-    gStringLine = AllocateZeroPool (0x100);
+    
+    AllocateStringMem();
     Swprintf(gStringLine,L"======================================================================");
     DisplayString(0,EFI_WHITE,EFI_BLUE);
     
     gRow=2;
     for(x=0;x<=0xF;x++)
     {
-        gStringLine = AllocateZeroPool (0x100);
-        
-        Swprintf(gStringLine,L"%X0",x);
-        
+        AllocateStringMem();
+        Swprintf(gStringLine,L"%X0",x);        
         DisplayString(0,EFI_WHITE,EFI_BLUE);
         
         for(y=0;y<0x4;y++)
         {    
-            gStringLine = AllocateZeroPool (0x100);
-
-            RegVal=MmioRead32((PciDevList[NowList].PFA)+(16*x)+(4*y));
-            
-            TransformType(RegVal,8,&Reg3,&Reg2,&Reg1,&Reg0);
-            
-            Swprintf(gStringLine,L"%02X %02X %02X %02X",Reg0,Reg1,Reg2,Reg3);
-            
+            AllocateStringMem();
+            RegVal=MmioRead32((PciDevList[NowList].PFA)+(16*x)+(4*y));            
+            TransformType(RegVal,8,&Reg3,&Reg2,&Reg1,&Reg0);            
+            Swprintf(gStringLine,L"%02X %02X %02X %02X",Reg0,Reg1,Reg2,Reg3);            
             DisplayString(12*y+4,EFI_WHITE,EFI_BLUE);
             
             PciReg[x][4*y]=Reg0;
@@ -254,7 +255,7 @@ DisplayPciReg(
         
         gRow++;
     }
-    gStringLine = AllocateZeroPool (0x100);
+    AllocateStringMem();
     Swprintf(gStringLine,L"Bus:%02X  Dev:%02X  Fun:%02X  Starting Address:0x%8X",\
             PciDevList[NowList].Bus,\
             PciDevList[NowList].Dev,\
@@ -264,9 +265,11 @@ DisplayPciReg(
     DisplayString(0,EFI_WHITE,EFI_BLUE);
     
     gRow++;
-    gStringLine = AllocateZeroPool (0x100);
+    
     *IsPcie=IsPcieDev(PciReg);
-    Swprintf(gStringLine,L"CapId:%02X PCIe:%x",PciReg[3][4],*IsPcie);
+    
+    AllocateStringMem();
+    Swprintf(gStringLine,L"PCIe:%x  PciePage:%d",*IsPcie,PageIndex);
     DisplayString(0,EFI_WHITE,EFI_BLUE);
 }
 
@@ -291,11 +294,12 @@ DisplayPci(
     if(IsPcie == 1 )
     {
         gRow++;
-        gStringLine = AllocateZeroPool (0x100);
+        
+        AllocateStringMem();
         Swprintf(gStringLine,L"Next  Previous");
         DisplayString(0,EFI_WHITE,EFI_BLUE);
          
-        MaxPage=16;
+        MaxPage=15;
         PageIndex=0;
         
         do
@@ -307,11 +311,15 @@ DisplayPci(
                 SwitchScreen();            
 
                 if(PageIndex < MaxPage)
+                {
+                    PciDevList[NowList].PFA=PciDevList[NowList].PFA+0x100;
                     PageIndex++;
+                }
                 else
+                {
+                    PciDevList[NowList].PFA=PciDevList[NowList].PFA;
                     PageIndex = MaxPage;
-                
-                PciDevList[NowList].PFA=PciDevList[NowList].PFA+0x100;
+                }
                 
                 DisplayPciReg(PageIndex,MaxPage,PciDevList,PciDevCount,NowList,PciReg,&IsPcie);
                 
@@ -325,12 +333,16 @@ DisplayPci(
                 SwitchScreen();            
                 
                 if(PageIndex >= 1)
+                {
+                    PciDevList[NowList].PFA=PciDevList[NowList].PFA-0x100;
                     PageIndex--;
+                }
                 else
+                {
+                    PciDevList[NowList].PFA=PciDevList[NowList].PFA;
                     PageIndex=0;
-                
-                PciDevList[NowList].PFA=PciDevList[NowList].PFA-0x100;
-                
+                }
+                                
                 DisplayPciReg(PageIndex,MaxPage,PciDevList,PciDevCount,NowList,PciReg,&IsPcie);
                 
                 gRow=0;
@@ -446,12 +458,13 @@ PciEnumeration(
 {
     EFI_STATUS Status=EFI_SUCCESS;
     UINT16 Bus=0,PciDevCount=1;
-    UINT8 Dev=0,Fun=0,Index=0,i=0;
+    UINT8 Dev=0,Fun=0,i=0;
     UINT32 RegValue=0;
     UINT8 PageIndex=0,MaxPage=0;
     UINT32 VidDid=0;
     UINT32 Address=0;
     UINT16 Vid=0,Did=0;
+    UINT16 Index=0;
 //    EFI_GCD_MEMORY_SPACE_DESCRIPTOR  *MemorySpaceMap;
     UINTN NumberOfDescriptors=0;
     UINTN EventIndex=0,EventIndex1=0,NowList=0;
@@ -459,9 +472,10 @@ PciEnumeration(
     PCI_DEV_LIST *PciDevList=NULL;
     UINT32 RegCachLineSize=0;
     UINT8  IsMulFun=0;
+    UINT8  BaseClass=0;
     UINT8  PciReg[16][16];
     UINT8  Intger1=0,Intger2=0,InputVal=0;
-    UINTN  KeyIndex;
+//    UINTN  KeyIndex;
     UINT8  Count=0;
         
     //Initializing Input key 
@@ -498,7 +512,7 @@ PciEnumeration(
     for(Bus=0; Bus<MAX_BUS; Bus++)
     {   
         for(Dev=0; Dev<MAX_DEV; Dev++)
-        {            
+        {                        
             for(Fun=0; Fun<MAX_FUN; Fun++)
             {          
                 Address = PCI_ACCESS_ENABLE_BIT + ((UINT8)Bus << 20) + (Dev << 15) + (Fun << 12);
@@ -508,33 +522,31 @@ PciEnumeration(
                 Did = (VidDid & 0xffff0000) >> 16;
                 Vid = (VidDid & 0x0000ffff);
                 
-                if(VidDid == 0xffffffff)
-                {
-                    if(Fun == 0)
-                        break;
-                    else
-                        continue;
-                }
                                                                          
                 if(VidDid != 0xffffffff)
-                {                                                         
+                {   
+                    //
+                    //Using read Class code(BaseClass 0xB) instead of Header Type Multi-Func
+                    //
+                    //IoWrite32(PCI_INDEX_PORT,Address+0x0C);
+                    //RegCachLineSize=IoRead32(PCI_DATA_PORT);
+                    //RegCachLineSize=MmioRead32(Address+0x0C);
+                    //IsMulFun=(RegCachLineSize & 0x00ff0000)>>16;
+                    //IsMulFun=IsMulFun>>7;
+                    //
+
+                    BaseClass=MmioRead8(Address+0x0B);
+                    if(BaseClass == 0xFF)
+                        break;
+
                     PciDevList[Index].PFA=Address;
-                    PciDevList[Index].Bus=(UINT8)Bus;
+                    PciDevList[Index].Bus=Bus;
                     PciDevList[Index].Dev=Dev;
                     PciDevList[Index].Fun=Fun;
                     PciDevList[Index].VendorId=Vid;
                     PciDevList[Index].DeviceId=Did;
-                    
+
                     Index++;
-                    
-                    //IoWrite32(PCI_INDEX_PORT,Address+0x0C);
-                    //RegCachLineSize=IoRead32(PCI_DATA_PORT);
-                    RegCachLineSize=MmioRead32(Address+0x0C);
-                    IsMulFun=(RegCachLineSize & 0x00ff0000)>>16;
-                    IsMulFun=IsMulFun>>7;
-                    
-                    if(Fun == 0 && IsMulFun == 0)
-                        break;
 
                  }//if(VidDid != 0xffffffff)
             }//fun
@@ -543,16 +555,12 @@ PciEnumeration(
     
     PciDevCount = Index;//Remove last addition
     
-    MaxPage=(PciDevCount/20)+1;
-    
-    gRow=0;
+    MaxPage=(PciDevCount/20);
     
     MovePage(0,MaxPage,PciDevList,PciDevCount);
     
-    gStringLine = AllocateZeroPool (0x100);
-    
+    AllocateStringMem();    
     Swprintf(gStringLine,L"Page/MaxPage:%d/%d",PageIndex,MaxPage);
-
     DisplayString(0,EFI_WHITE,EFI_BLUE);
     
     gRow=1;
@@ -625,17 +633,19 @@ PciEnumeration(
                         
             do
             {
+                //
+                //Input value
+                //
+                /*
                 if(gInputKey.UnicodeChar == 101)//"enter" to edit
                 {
                     gInputKey.UnicodeChar=0;
                     gInputKey.ScanCode=0;
                     
-                    gStringLine = AllocateZeroPool (0x100);
-                
-                    Swprintf(gStringLine,L"  ");
-                    
                     gColumn=gColumn-1;
                     
+                    AllocateStringMem();                
+                    Swprintf(gStringLine,L"  ");                                                         
                     DisplayString(gColumn,EFI_WHITE,EFI_BLACK);
                     
                     gColumn=gColumn+1;
@@ -705,8 +715,8 @@ PciEnumeration(
                             break;
                         }
                     }
-                    while(gInputKey.UnicodeChar != CHAR_CARRIAGE_RETURN);
-                }
+                    while(gInputKey.UnicodeChar != CHAR_CARRIAGE_RETURN);                    
+                }*/
                 
                 if (gInputKey.ScanCode == EFI_SCAN_DN)
                 {
@@ -789,38 +799,198 @@ PciConfiguration()
 }
 
 VOID
-IoPortConfiguration()
+IoReadPage(
+  UINT8 IoPort
+)
 {
-    gStringLine = AllocateZeroPool (0x100);
+    UINT8 RowIndex,ColIndex;
+    UINT8 IoReadVal;
     
     SwitchScreen();
     
-    StrCat(gStringLine,L"IOIO");
+    gRow=0;
+    gColumn=0;
     
-    DisplayString(0,EFI_WHITE,EFI_BLUE);   
+    for(RowIndex=0;RowIndex<0x10;RowIndex++)
+    {
+        for(ColIndex=0;ColIndex<0x10;ColIndex++)
+        {
+            IoReadVal = IoRead8( IoPort+(RowIndex*16)+ColIndex); //ex:Input 0x4E Output 0x4F
+            AllocateStringMem();
+            Swprintf(gStringLine,L"%02X",IoReadVal);
+            DisplayString(gColumn,EFI_WHITE,EFI_BLUE);
+            gColumn+=3;
+        }
+        gRow+=1;
+        gColumn=0;
+    }
 }
 
 VOID
-MmioConfiguration()
+SearchIoPort()
 {
-    gStringLine = AllocateZeroPool (0x100);
+    UINT8  Count=0;
+    UINT8  Intger1=0,Intger2=0,InputVal=0;
+    UINTN  KeyIndex;
+    EFI_STATUS Status=EFI_SUCCESS;
+    UINTN EventIndex=0;
     
     SwitchScreen();
     
-    StrCat(gStringLine,L"MMIO");
+    AllocateStringMem();
+    Swprintf(gStringLine,L"Input IO port:");
+    DisplayString(0,EFI_WHITE,EFI_BLUE);
     
+    gRow=1;
+    gColumn=0;
+    
+    gST->ConOut->SetCursorPosition( gST->ConOut,gColumn,gRow);
+    
+    do{                                
+            gInputKey.UnicodeChar=0;
+            gInputKey.ScanCode=0;
+            
+            Count=0;
+            
+            do
+            {
+                gBS->WaitForEvent(1, &(gST->ConIn->WaitForKey), &KeyIndex); 
+                Status = gST->ConIn->ReadKeyStroke(gST->ConIn,&gInputKey);
+                
+                Count++;
+                
+                if(gInputKey.UnicodeChar == CHAR_CARRIAGE_RETURN)
+                {
+                    IoReadPage(InputVal);
+                    continue;
+                }
+                
+                if((gInputKey.UnicodeChar < 48 || gInputKey.UnicodeChar > 57) && \
+                   (gInputKey.UnicodeChar < 97 || gInputKey.UnicodeChar > 102)
+                   )
+                {
+                    Count=0;
+                }
+       
+                if(Count == 1)
+                {                                        
+                    ConvertCharToInt(&Intger1);
+                    
+                    gColumn=gColumn-1;
+                                        
+                    AllocateStringMem();
+                    Swprintf(gStringLine,L"0%X",Intger1);                                       
+                    DisplayString(gColumn,EFI_WHITE,EFI_BLACK);
+                                        
+                    gColumn=gColumn+1;
+                                                            
+                    gST->ConOut->SetCursorPosition( gST->ConOut,gColumn,gRow);
+                    
+                    InputVal=Intger1;
+                }
+                else if(Count == 2)
+                {                    
+                    ConvertCharToInt(&Intger2);
+                    
+                    gColumn=gColumn-1;
+                    
+                    AllocateStringMem();
+                    Swprintf(gStringLine,L"%X%X",Intger1,Intger2);                                    
+                    DisplayString(gColumn,EFI_WHITE,EFI_BLACK);
+                
+                    gColumn=gColumn+1;
+                                                        
+                    gST->ConOut->SetCursorPosition( gST->ConOut,gColumn,gRow);
+                
+                    InputVal=Intger1*16+Intger2;
+                    
+                    //WriteBackVal(InputVal,PageIndex,MaxPage,PciDevList,PciDevCount,NowList,PciReg);
+                    
+                    break;
+                }
+            }
+            while(gInputKey.UnicodeChar != CHAR_CARRIAGE_RETURN); 
+        
+        gBS->Stall(100000);     //100ms
+        gBS->WaitForEvent (1, &(gST->ConIn->WaitForKey), &EventIndex);
+        gST->ConIn->ReadKeyStroke( gST->ConIn, &gInputKey );
+    }
+    while(gInputKey.ScanCode != EFI_SCAN_ESC);
+}
+
+VOID
+MmioIoConfiguration()
+{    
+    UINTN Index;
+    
+    SwitchScreen();
+    
+    gRow=0;
+    
+    AllocateStringMem();
+    Swprintf(gStringLine,L"1. Search IO port");
+    DisplayString(0,EFI_WHITE,EFI_BLUE);
+    
+    gRow=1;
+    
+    AllocateStringMem();
+    Swprintf(gStringLine,L"2. Search MMIO address");
+    DisplayString(0,EFI_WHITE,EFI_BLUE);
+    
+    gRow=0;
+    
+    do
+    {      
+        if (gInputKey.ScanCode == EFI_SCAN_DN)
+        {
+            gST->ConOut->SetCursorPosition( gST->ConOut,0,gRow+1);
+            gRow++;                
+        }
+            
+        if (gInputKey.ScanCode == EFI_SCAN_UP)
+        {                
+            gST->ConOut->SetCursorPosition( gST->ConOut,0,gRow-1);
+            gRow--;            
+        }
+            
+        if (gInputKey.UnicodeChar == CHAR_CARRIAGE_RETURN)
+        {
+            switch(gRow)
+            {
+                case 0:
+                    SearchIoPort();
+                    break;
+                //case 1:
+                //    SearchMmioAddr();
+                //    break;
+             }        
+        }
+            
+        gBS->Stall(100000);     //100ms
+        gBS->WaitForEvent (1, &(gST->ConIn->WaitForKey), &Index);
+        gST->ConIn->ReadKeyStroke( gST->ConIn, &gInputKey );
+    }
+    while(gInputKey.ScanCode != EFI_SCAN_ESC);
+}
+
+VOID
+ListAcpiTable()
+{
+
+    SwitchScreen();
+
+    AllocateStringMem();
+    StrCat(gStringLine,L"MMIO");
     DisplayString(0,EFI_WHITE,EFI_BLUE);   
 }
 
 VOID
 ListSmBiosTable()
-{
-    gStringLine = AllocateZeroPool (0x100);
-    
+{  
     SwitchScreen();
     
+    AllocateStringMem();
     StrCat(gStringLine,L"SMBIOS");
-    
     DisplayString(0,EFI_WHITE,EFI_BLUE);   
 }
 
@@ -877,6 +1047,7 @@ ApplicationEntry (
     UINT8                       ExitTimer=0;
     EFI_STATUS                  Status=EFI_SUCCESS;
     UINTN                       LastLine;
+    
     ExitTimer=0;
     gRow =0;
     LastLine = gColumn;
@@ -932,10 +1103,10 @@ ApplicationEntry (
                     PciConfiguration();
                     break;
                 case 1:
-                    IoPortConfiguration();
+                    MmioIoConfiguration();
                     break;
                 case 2:
-                    MmioConfiguration();
+                    ListAcpiTable();
                     break;
                 case 3:
                     ListSmBiosTable();
