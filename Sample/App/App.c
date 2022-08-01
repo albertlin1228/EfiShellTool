@@ -23,6 +23,8 @@ CHAR16 *gScreenBuffer = NULL;
 CHAR16 *gStringLine;
 EFI_INPUT_KEY gInputKey;
 
+extern EFI_GUID gEfiAcpi20TableGuid;
+
 VOID 
 SwitchScreen()
 {
@@ -49,6 +51,46 @@ DisplayString(
     gST->ConOut->SetCursorPosition( gST->ConOut,Column,gRow);
     gST->ConOut->OutputString(gST->ConOut,gStringLine);
     gBS->FreePool (gStringLine);
+}
+
+VOID 
+DrawTableFormat(
+  UINT8 Data[]
+)
+{
+    UINT8 Index=0,x=0,y=0,Reg0=0,Reg1=0,Reg2=0,Reg3=0;
+    UINT32 RegVal=0;
+    
+    gRow=0;
+            
+    SwitchScreen();
+    
+    AllocateStringMem();
+    Swprintf(gStringLine,L"    00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F");
+    DisplayString(0,EFI_WHITE,EFI_BLUE);
+    
+    gRow=1;
+    
+    AllocateStringMem();
+    Swprintf(gStringLine,L"======================================================================");
+    DisplayString(0,EFI_WHITE,EFI_BLUE);
+    
+    gRow=2;
+    for(x=0;x<=15;x++)
+    {
+        AllocateStringMem();
+        Swprintf(gStringLine,L"%X0",x);        
+        DisplayString(0,EFI_WHITE,EFI_BLUE);
+        
+        for(y=0;y<=15;y++)
+        {    
+            AllocateStringMem();          
+            Swprintf(gStringLine,L"%02X ",Data[x*16+y] );            
+            DisplayString(3*y+4,EFI_WHITE,EFI_BLUE);   
+        }
+        
+        gRow++;
+    }
 }
 
 VOID
@@ -151,20 +193,19 @@ TransformType(
 
 BOOLEAN
 IsPcieDev(
-  IN  UINT8         PciReg[][16]
+  IN  UINT8  Data[]
 )
 {
-    UINT8 x=0,y=0;
+    UINT8 Index=0;
     UINT8 Offset=0,CapabilityOffset=0,CapId=0,ReturnVal=FALSE;
     
-    CapabilityOffset=PciReg[3][4];
+    Index=0x34;
+    CapabilityOffset=Data[Index];
     
     do 
     {
-        x=CapabilityOffset/16;
-        y=CapabilityOffset%16;
-        
-        CapId = PciReg[x][y];
+       
+        CapId = Data[CapabilityOffset];
         
         if (CapId == 0x10)//Pcie dev 
         {
@@ -172,9 +213,9 @@ IsPcieDev(
             break;
         }
         
-        y=y++;
+        CapabilityOffset++;
         
-        CapabilityOffset = PciReg[x][y];
+        CapabilityOffset = Data[CapabilityOffset];
     } 
     while (CapabilityOffset != 0);
     
@@ -211,50 +252,32 @@ DisplayPciReg(
   OUT BOOLEAN       *IsPcie
 )
 {
-    UINT8 Index=0,x=0,y=0,Reg0=0,Reg1=0,Reg2=0,Reg3=0;
+    UINT8 Index=0,x=0,y=0,Reg0=0,Reg1=0,Reg2=0,Reg3=0,Group1=0,Group2=0;
+    UINT8 CalculateData[256];
     UINT32 RegVal=0;
-            
-    gRow=0;
-    SwitchScreen();
-    
-    AllocateStringMem();
-    Swprintf(gStringLine,L"    00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F");
-    DisplayString(0,EFI_WHITE,EFI_BLUE);
-    
-    gRow=1;
-    
-    AllocateStringMem();
-    Swprintf(gStringLine,L"======================================================================");
-    DisplayString(0,EFI_WHITE,EFI_BLUE);
-    
-    gRow=2;
-    for(x=0;x<=0xF;x++)
+   
+    for(x=0;x<=15;x++)
     {
-        AllocateStringMem();
-        Swprintf(gStringLine,L"%X0",x);        
-        DisplayString(0,EFI_WHITE,EFI_BLUE);
-        
-        for(y=0;y<0x4;y++)
-        {    
-            AllocateStringMem();
-            RegVal=MmioRead32((PciDevList[NowList].PFA)+(16*x)+(4*y));            
-            TransformType(RegVal,8,&Reg3,&Reg2,&Reg1,&Reg0);            
-            Swprintf(gStringLine,L"%02X %02X %02X %02X",Reg0,Reg1,Reg2,Reg3);            
-            DisplayString(12*y+4,EFI_WHITE,EFI_BLUE);
+        for(y=0;y<=15;y++)
+        {
+            Group1=y/4;
+            Group2=y%4;
             
-            PciReg[x][4*y]=Reg0;
-            PciReg[x][4*y+1]=Reg1;
-            PciReg[x][4*y+2]=Reg2;
-            PciReg[x][4*y+3]=Reg3;
-#if 0            
-            Swprintf(gStringLine,L"%08X",RegVal);            
-            
-            DisplayString(10*y+4);
-#endif            
+            if(Group2 == 0)
+            {
+                RegVal=MmioRead32((PciDevList[NowList].PFA)+(16*x)+y );            
+                TransformType(RegVal,8,&Reg3,&Reg2,&Reg1,&Reg0); 
+                
+                CalculateData[16*x+y+0]=Reg0;
+                CalculateData[16*x+y+1]=Reg1;
+                CalculateData[16*x+y+2]=Reg2;
+                CalculateData[16*x+y+3]=Reg3;
+            }
         }
-        
-        gRow++;
-    }
+    }   
+    
+    DrawTableFormat(CalculateData);
+    
     AllocateStringMem();
     Swprintf(gStringLine,L"Bus:%02X  Dev:%02X  Fun:%02X  Starting Address:0x%8X",\
             PciDevList[NowList].Bus,\
@@ -266,7 +289,7 @@ DisplayPciReg(
     
     gRow++;
     
-    *IsPcie=IsPcieDev(PciReg);
+    *IsPcie=IsPcieDev(CalculateData);
     
     AllocateStringMem();
     Swprintf(gStringLine,L"PCIe:%x  PciePage:%d",*IsPcie,PageIndex);
@@ -976,12 +999,60 @@ MmioIoConfiguration()
 VOID
 ListAcpiTable()
 {
-
+    EFI_ACPI_2_0_ROOT_SYSTEM_DESCRIPTION_POINTER  *Rsdp;
+//    EFI_ACPI_DESCRIPTION_HEADER                   *Rsdt;
+//    EFI_ACPI_DESCRIPTION_HEADER                   *Xsdt;
+//    EFI_ACPI_2_0_FIXED_ACPI_DESCRIPTION_TABLE     *Fadt;
+//    EFI_ACPI_2_0_FIRMWARE_ACPI_CONTROL_STRUCTURE  *Facs;
+    UINTN  Index;
+//    UINT8  RowIndex,ColIndex;
+    UINT32  RsdpVal;
+    
+    Rsdp  = NULL;
+    
     SwitchScreen();
 
     AllocateStringMem();
-    StrCat(gStringLine,L"MMIO");
+    StrCat(gStringLine,L"ACPI Table");
     DisplayString(0,EFI_WHITE,EFI_BLUE);   
+    
+    gRow=1;
+    
+    //
+    // Find ACPI table RSD_PTR(Root System Description Pointer) from system table
+    //
+    for (Index = 0; Index < gST->NumberOfTableEntries; Index++) {
+        if (CompareGuid (&(gST->ConfigurationTable[Index].VendorGuid), &gEfiAcpi20TableGuid)) {
+            //
+            // A match was found.
+            //
+            Rsdp = gST->ConfigurationTable[Index].VendorTable;
+            break;
+        }
+    }
+    
+    gRow=0;
+    gColumn=0;
+    
+    RsdpVal = Rsdp->RsdtAddress; //ex:Input 0x4E Output 0x4F
+    AllocateStringMem();
+    Swprintf(gStringLine,L"%02X",RsdpVal);
+    DisplayString(gColumn,EFI_WHITE,EFI_BLUE);
+    /*
+    for(RowIndex=0;RowIndex<0x10;RowIndex++)
+    {
+        for(ColIndex=0;ColIndex<0x10;ColIndex++)
+        {
+            RsdpVal = *(Rsdp->RsdtAddress +(RowIndex*16)+ColIndex ); //ex:Input 0x4E Output 0x4F
+            AllocateStringMem();
+            Swprintf(gStringLine,L"%02X",RsdpVal);
+            DisplayString(gColumn,EFI_WHITE,EFI_BLUE);
+            gColumn+=3;
+        }
+        gRow+=1;
+        gColumn=0;
+    }*/
+
 }
 
 VOID
