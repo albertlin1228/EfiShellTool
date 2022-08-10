@@ -61,21 +61,17 @@ DrawTableFormat(
     UINT8 Index=0,x=0,y=0,Reg0=0,Reg1=0,Reg2=0,Reg3=0;
     UINT32 RegVal=0;
     
-    gRow=0;
-            
-    SwitchScreen();
-    
     AllocateStringMem();
     Swprintf(gStringLine,L"    00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F");
     DisplayString(0,EFI_WHITE,EFI_BLUE);
     
-    gRow=1;
+    gRow++;
     
     AllocateStringMem();
     Swprintf(gStringLine,L"======================================================================");
     DisplayString(0,EFI_WHITE,EFI_BLUE);
     
-    gRow=2;
+    gRow++;
     for(x=0;x<=15;x++)
     {
         AllocateStringMem();
@@ -223,24 +219,6 @@ IsPcieDev(
     
 }
 
-/*
-VOID
-DisplayPcieDevice(
-  IN  UINT8         PcieDev,
-  IN  UINT8         PageIndex,
-  IN  UINT8         MaxPage,
-  IN  PCI_DEV_LIST  *PciDevList,
-  IN  UINT16        PciDevCount,
-  IN  UINTN         NowList,
-  OUT UINT8         PciReg[][16]
-)
-{
-    UINTN EventIndex=0;
-            
-
-}
-*/
-
 VOID
 DisplayPciReg(
   IN  UINT8         PageIndex,
@@ -275,6 +253,9 @@ DisplayPciReg(
             }
         }
     }   
+    gRow=0;
+            
+    SwitchScreen();
     
     DrawTableFormat(CalculateData);
     
@@ -827,26 +808,18 @@ IoReadPage(
 )
 {
     UINT8 RowIndex,ColIndex;
-    UINT8 IoReadVal;
+    UINT8 Data[256];
     
+    for(RowIndex=0;RowIndex<16;RowIndex++)
+    {
+        for(ColIndex=0;ColIndex<16;ColIndex++)
+            Data[RowIndex*16+ColIndex] = IoRead8( IoPort+(RowIndex*16)+ColIndex); //ex:Input 0x4E Output 0x4F           
+    }
+    gRow=0;
+            
     SwitchScreen();
     
-    gRow=0;
-    gColumn=0;
-    
-    for(RowIndex=0;RowIndex<0x10;RowIndex++)
-    {
-        for(ColIndex=0;ColIndex<0x10;ColIndex++)
-        {
-            IoReadVal = IoRead8( IoPort+(RowIndex*16)+ColIndex); //ex:Input 0x4E Output 0x4F
-            AllocateStringMem();
-            Swprintf(gStringLine,L"%02X",IoReadVal);
-            DisplayString(gColumn,EFI_WHITE,EFI_BLUE);
-            gColumn+=3;
-        }
-        gRow+=1;
-        gColumn=0;
-    }
+    DrawTableFormat(Data);
 }
 
 VOID
@@ -997,7 +970,7 @@ MmioIoConfiguration()
 }
 
 VOID
-ListAcpiTable()
+ListRSDT()
 {
     EFI_ACPI_2_0_ROOT_SYSTEM_DESCRIPTION_POINTER  *Rsdp;
 //    EFI_ACPI_DESCRIPTION_HEADER                   *Rsdt;
@@ -1005,18 +978,20 @@ ListAcpiTable()
 //    EFI_ACPI_2_0_FIXED_ACPI_DESCRIPTION_TABLE     *Fadt;
 //    EFI_ACPI_2_0_FIRMWARE_ACPI_CONTROL_STRUCTURE  *Facs;
     UINTN  Index;
-//    UINT8  RowIndex,ColIndex;
-    UINT32  RsdpVal;
+    UINT8  RowIndex,ColIndex;
+    UINT8  RsdpVal;
+    UINT8  Data[256];
     
     Rsdp  = NULL;
+    
+    gRow=0;
     
     SwitchScreen();
 
     AllocateStringMem();
     StrCat(gStringLine,L"ACPI Table");
     DisplayString(0,EFI_WHITE,EFI_BLUE);   
-    
-    gRow=1;
+
     
     //
     // Find ACPI table RSD_PTR(Root System Description Pointer) from system table
@@ -1031,27 +1006,128 @@ ListAcpiTable()
         }
     }
     
-    gRow=0;
+    gRow=1;
     gColumn=0;
-    
-    RsdpVal = Rsdp->RsdtAddress; //ex:Input 0x4E Output 0x4F
+
     AllocateStringMem();
-    Swprintf(gStringLine,L"%02X",RsdpVal);
+    Swprintf(gStringLine,L"RSDT Address:%02X",Rsdp->RsdtAddress);
     DisplayString(gColumn,EFI_WHITE,EFI_BLUE);
-    /*
-    for(RowIndex=0;RowIndex<0x10;RowIndex++)
+    
+    gRow=2;
+    
+    for(RowIndex=0;RowIndex<16;RowIndex++)
     {
-        for(ColIndex=0;ColIndex<0x10;ColIndex++)
-        {
-            RsdpVal = *(Rsdp->RsdtAddress +(RowIndex*16)+ColIndex ); //ex:Input 0x4E Output 0x4F
-            AllocateStringMem();
-            Swprintf(gStringLine,L"%02X",RsdpVal);
-            DisplayString(gColumn,EFI_WHITE,EFI_BLUE);
-            gColumn+=3;
+        for(ColIndex=0;ColIndex<16;ColIndex++)
+        { 
+            RsdpVal = MmioRead8(Rsdp->RsdtAddress +(RowIndex*16)+ColIndex );
+            Data[RowIndex*16+ColIndex] = RsdpVal;
         }
-        gRow+=1;
-        gColumn=0;
-    }*/
+    }
+            
+    DrawTableFormat(Data);
+    
+}
+
+VOID
+ListXSDT()
+{
+    gRow=0;
+        
+    SwitchScreen();
+    
+    AllocateStringMem();
+    Swprintf(gStringLine,L"XSDT table");
+    DisplayString(gColumn,EFI_WHITE,EFI_BLUE);
+}
+
+VOID
+ListFADT()
+{
+    UINT8  RowIndex,ColIndex;
+    UINT8  Data[256];
+    EFI_ACPI_2_0_FIXED_ACPI_DESCRIPTION_TABLE  *Fadt;
+    
+    gRow=0;
+        
+    SwitchScreen();
+
+    Fadt = (EFI_ACPI_2_0_FIXED_ACPI_DESCRIPTION_TABLE *)EfiLocateFirstAcpiTable (
+                                                           EFI_ACPI_2_0_FIXED_ACPI_DESCRIPTION_TABLE_SIGNATURE
+                                                          );
+    for(RowIndex=0;RowIndex<16;RowIndex++)
+    {
+        for(ColIndex=0;ColIndex<16;ColIndex++)
+        { 
+            Data[RowIndex*16+ColIndex] = (UINT8)(Fadt+RowIndex*16+ColIndex);
+        }
+    }
+    gRow=0;
+    
+    DrawTableFormat(Data);
+}
+
+VOID
+ListAcpiTable()
+{
+    UINTN Index;
+    
+    SwitchScreen();
+    
+    do
+    {        
+        gRow=0;
+        
+        AllocateStringMem();
+        Swprintf(gStringLine,L"1. RSDT");
+        DisplayString(0,EFI_WHITE,EFI_BLUE);
+        
+        gRow=1;
+        
+        AllocateStringMem();
+        Swprintf(gStringLine,L"2. XSDT");
+        DisplayString(0,EFI_WHITE,EFI_BLUE);
+        
+        gRow=2;
+        
+        AllocateStringMem();
+        Swprintf(gStringLine,L"3. FADT");
+        DisplayString(0,EFI_WHITE,EFI_BLUE);
+        
+        gRow=0;
+        
+        if (gInputKey.ScanCode == EFI_SCAN_DN)
+        {
+            gST->ConOut->SetCursorPosition( gST->ConOut,0,gRow+1);
+            gRow++; 
+        }
+        
+        if (gInputKey.ScanCode == EFI_SCAN_UP)
+        {           
+            gST->ConOut->SetCursorPosition( gST->ConOut,0,gRow-1);
+            gRow--;            
+        }
+        
+        if (gInputKey.UnicodeChar == CHAR_CARRIAGE_RETURN)
+        {
+            switch(gRow)
+            {
+                case 0:
+                    ListRSDT();
+                    break;
+                case 1:
+                    ListXSDT();
+                    break;
+                case 2:
+                    ListFADT();
+                    break;    
+            }
+        }
+        
+        gBS->Stall(100000);     //100ms
+        gBS->WaitForEvent (1, &(gST->ConIn->WaitForKey), &Index);
+        gST->ConIn->ReadKeyStroke( gST->ConIn, &gInputKey );
+    }
+    while(gInputKey.ScanCode != EFI_SCAN_ESC);
 
 }
 
