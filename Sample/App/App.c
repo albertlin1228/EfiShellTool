@@ -1067,34 +1067,49 @@ ListFADT()
 }
 
 VOID
+ListAcpiList()
+{
+    gRow=0;
+    
+    AllocateStringMem();
+    Swprintf(gStringLine,L"1. RSDT");
+    DisplayString(0,EFI_WHITE,EFI_BLUE);
+    
+    gRow=1;
+    
+    AllocateStringMem();
+    Swprintf(gStringLine,L"2. XSDT");
+    DisplayString(0,EFI_WHITE,EFI_BLUE);
+    
+    gRow=2;
+    
+    AllocateStringMem();
+    Swprintf(gStringLine,L"3. FADT");
+    DisplayString(0,EFI_WHITE,EFI_BLUE);
+}
+
+VOID
 ListAcpiTable()
 {
     UINTN Index;
     
+    //Initializing Input key 
+    gInputKey.ScanCode=0;
+
+    gInputKey.UnicodeChar=0;
+    
+    gRow=0;
+
     SwitchScreen();
     
+    ListAcpiList();
+    
+    gRow=0;
+
+    gST->ConOut->SetCursorPosition( gST->ConOut,0,gRow);
+
     do
-    {        
-        gRow=0;
-        
-        AllocateStringMem();
-        Swprintf(gStringLine,L"1. RSDT");
-        DisplayString(0,EFI_WHITE,EFI_BLUE);
-        
-        gRow=1;
-        
-        AllocateStringMem();
-        Swprintf(gStringLine,L"2. XSDT");
-        DisplayString(0,EFI_WHITE,EFI_BLUE);
-        
-        gRow=2;
-        
-        AllocateStringMem();
-        Swprintf(gStringLine,L"3. FADT");
-        DisplayString(0,EFI_WHITE,EFI_BLUE);
-        
-        gRow=0;
-        
+    {                  
         if (gInputKey.ScanCode == EFI_SCAN_DN)
         {
             gST->ConOut->SetCursorPosition( gST->ConOut,0,gRow+1);
@@ -1120,15 +1135,22 @@ ListAcpiTable()
                 case 2:
                     ListFADT();
                     break;    
-            }
-        }
+             }
+         }
         
-        gBS->Stall(100000);     //100ms
-        gBS->WaitForEvent (1, &(gST->ConIn->WaitForKey), &Index);
-        gST->ConIn->ReadKeyStroke( gST->ConIn, &gInputKey );
+         gBS->Stall(100000);     //100ms
+         gBS->WaitForEvent (1, &(gST->ConIn->WaitForKey), &Index);
+         gST->ConIn->ReadKeyStroke( gST->ConIn, &gInputKey );
     }
     while(gInputKey.ScanCode != EFI_SCAN_ESC);
-
+    
+    SwitchScreen();
+    
+    ListMainItem();
+       
+    gST->ConOut->SetCursorPosition( gST->ConOut,0,0);
+       
+    gRow=0;
 }
 
 VOID
